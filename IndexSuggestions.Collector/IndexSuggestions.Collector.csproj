@@ -17,6 +17,8 @@
     <ProjectReference Include="..\IndexSuggestions.Collector.Postgres\IndexSuggestions.Collector.Postgres.csproj" />
     <ProjectReference Include="..\IndexSuggestions.Common.NLog\IndexSuggestions.Common.NLog.csproj" />
     <ProjectReference Include="..\IndexSuggestions.Common\IndexSuggestions.Common.csproj" />
+    <ProjectReference Include="..\IndexSuggestions.DAL.Contracts\IndexSuggestions.DAL.Contracts.csproj" />
+    <ProjectReference Include="..\IndexSuggestions.DAL.Postgres\IndexSuggestions.DAL.Postgres.csproj" />
   </ItemGroup>
 
   <ItemGroup>

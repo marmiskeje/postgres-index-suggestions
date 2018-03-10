@@ -14,6 +14,7 @@ namespace IndexSuggestions.Collector
         private readonly ILog log;
         private readonly ILogProcessor logProcessor;
         private readonly ILogProcessingConfiguration configuration;
+        private readonly ILogEntryGroupBox groupBox;
         private volatile string currentFile = null;
         private volatile bool isDisposed = false;
         private Thread worker;
@@ -21,11 +22,12 @@ namespace IndexSuggestions.Collector
         private ManualResetEvent changedFileEvent = new ManualResetEvent(false);
         private ManualResetEvent changedFileOldProcessedEvent = new ManualResetEvent(false);
 
-        public ContinuousFileProcessor(ILog log, ILogProcessingConfiguration configuration, ILogProcessor logProcessor)
+        public ContinuousFileProcessor(ILog log, ILogProcessingConfiguration configuration, ILogProcessor logProcessor, ILogEntryGroupBox groupBox)
         {
             this.log = log;
             this.configuration = configuration;
             this.logProcessor = logProcessor;
+            this.groupBox = groupBox;
             worker = new Thread(Thread_Job);
             worker.Start();
         }
@@ -69,7 +71,7 @@ namespace IndexSuggestions.Collector
                                 {
                                     try
                                     {
-                                        logProcessor.ProcessLine(line, reader.EndOfStream);
+                                        groupBox.Publish(logProcessor.ProcessLine(line, reader.EndOfStream));
                                     }
                                     catch (Exception ex)
                                     {

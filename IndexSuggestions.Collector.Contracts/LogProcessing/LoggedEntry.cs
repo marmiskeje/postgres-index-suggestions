@@ -20,5 +20,6 @@ namespace IndexSuggestions.Collector.Contracts
         public string Statement { get; set; }
         public string QueryTree { get; set; }
         public string PlanTree { get; set; }
+        public string Detail { get; set; }
     }
 }

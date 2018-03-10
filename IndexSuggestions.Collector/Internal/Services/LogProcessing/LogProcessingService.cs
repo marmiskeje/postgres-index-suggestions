@@ -10,12 +10,15 @@ namespace IndexSuggestions.Collector
         private readonly ILogProcessingConfiguration configuration;
         private readonly ILogProcessor logProcessor;
         private readonly IContinuousFileProcessor continuousFileProcessor;
+        private readonly ILogEntryGroupBox groupBox;
         private FileSystemWatcher fileSystemWatcher;
-        public LogProcessingService(ILogProcessingConfiguration configuration, ILogProcessor logProcessor, IContinuousFileProcessor continuousFileProcessor)
+        public LogProcessingService(ILogProcessingConfiguration configuration, ILogProcessor logProcessor, IContinuousFileProcessor continuousFileProcessor,
+                                    ILogEntryGroupBox groupBox)
         {
             this.configuration = configuration;
             this.logProcessor = logProcessor;
             this.continuousFileProcessor = continuousFileProcessor;
+            this.groupBox = groupBox;
         }
 
         public void Start()
@@ -40,7 +43,7 @@ namespace IndexSuggestions.Collector
                             var line = reader.ReadLine();
                             if (line != null)
                             {
-                                logProcessor.ProcessLine(line, reader.EndOfStream);
+                                groupBox.Publish(logProcessor.ProcessLine(line, reader.EndOfStream));
                             }
                         }
                     }

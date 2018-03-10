@@ -75,6 +75,7 @@ namespace IndexSuggestions.Collector.Postgres
                     result.VirtualTransactionIdentifier = columns[8];
                     
                     string input = columns[10];
+                    result.Detail = input;
                     Match match = null;
                     if (input.StartsWith("STATEMENT:"))
                     {
