@@ -61,7 +61,7 @@ namespace IndexSuggestions.Collector
                 {
                     using (var fileStream = new FileStream(file, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
                     {
-                        var encoding = CodePagesEncodingProvider.Instance.GetEncoding(configuration.Encoding);
+                        var encoding = CodePagesEncodingProvider.Instance.GetEncoding(configuration.Encoding) ?? Encoding.UTF8;
                         using (var reader = new StreamReader(fileStream, encoding))
                         {
                             while (true)

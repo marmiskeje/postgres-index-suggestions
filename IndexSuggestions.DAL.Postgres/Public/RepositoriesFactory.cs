@@ -8,7 +8,6 @@ namespace IndexSuggestions.DAL.Postgres
     public sealed class RepositoriesFactory : IRepositoriesFactory
     {
         private static readonly Lazy<IRepositoriesFactory> instance = new Lazy<IRepositoriesFactory>(() => new RepositoriesFactory()); // default thread-safe
-        private static Type dependency;
 
         public static IRepositoriesFactory Instance { get { return instance.Value; } }
 
@@ -41,6 +40,11 @@ namespace IndexSuggestions.DAL.Postgres
         public INormalizedStatementsRepository GetNormalizedStatementsRepository()
         {
             return new NormalizedStatementsRepository(CreateContext);
+        }
+
+        public ISettingPropertiesRepository GetSettingPropertiesRepository()
+        {
+            return new SettingPropertiesRepository(CreateContext);
         }
     }
 }

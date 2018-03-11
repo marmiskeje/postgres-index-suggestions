@@ -5,11 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.0.1" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.0-preview1" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IndexSuggestions.Common\IndexSuggestions.Common.csproj" />
     <ProjectReference Include="..\IndexSuggestions.DAL.Contracts\IndexSuggestions.DAL.Contracts.csproj" />
   </ItemGroup>
 

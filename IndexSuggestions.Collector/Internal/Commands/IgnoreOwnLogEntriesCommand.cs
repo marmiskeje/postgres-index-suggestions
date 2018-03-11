@@ -6,16 +6,19 @@ using System.Text;
 
 namespace IndexSuggestions.Collector
 {
-    internal class NormalizeStatementCommand : ChainableCommand
+    /// <summary>
+    /// We need to ignore own log entries otherwise infinite log processing can occur.
+    /// </summary>
+    internal class IgnoreOwnLogEntriesCommand : ChainableCommand
     {
         private readonly LogEntryProcessingContext context;
-        public NormalizeStatementCommand(LogEntryProcessingContext context)
+        public IgnoreOwnLogEntriesCommand(LogEntryProcessingContext context)
         {
             this.context = context;
         }
         protected override void OnExecute()
         {
-            this.context.NormalizedStatement = context.Entry.Statement;
+            this.IsEnabledSuccessorCall = context.Entry.ApplicationName != "IndexSuggestions";
         }
     }
 }

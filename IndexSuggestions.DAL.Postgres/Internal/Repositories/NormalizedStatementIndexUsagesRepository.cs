@@ -10,15 +10,25 @@ namespace IndexSuggestions.DAL.Postgres
     {
         public NormalizedStatementIndexUsagesRepository(Func<IndexSuggestionsContext> createContextFunc) : base(createContextFunc)
         {
-
+            
         }
 
-        public NormalizedStatementIndexUsage Get(long statementId, long indexId, DateTime date)
+        public NormalizedStatementIndexUsage Get(long statementId, long indexId, DateTime date, bool useCache = false)
         {
-            using (var context = CreateContextFunc())
+            return Get(() =>
             {
-                return context.NormalizedStatementIndexUsages.Where(x => x.NormalizedStatementID == statementId && x.IndexID == indexId && x.Date == date).SingleOrDefault();
-            }
+                using (var context = CreateContextFunc())
+                {
+                    return context.NormalizedStatementIndexUsages.Where(x => x.NormalizedStatementID == statementId && x.IndexID == indexId && x.Date == date).SingleOrDefault();
+                }
+            }, $"{statementId}{indexId}{date.Ticks}", useCache);
+        }
+
+        protected override ISet<string> GetAllCacheKeys(long key, NormalizedStatementIndexUsage entity)
+        {
+            var result = new HashSet<string>(new[] { $"{entity.NormalizedStatementID}{entity.IndexID}{entity.Date.Ticks}" });
+            result.UnionWith(base.GetAllCacheKeys(key, entity));
+            return result;
         }
     }
 }

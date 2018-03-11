@@ -6,12 +6,14 @@ using System.Text;
 
 namespace IndexSuggestions.DAL.Contracts
 {
-    public class NormalizedStatement : IEntity<long>
+    public class SettingProperty : IEntity<long>
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long ID { get; set; }
-        [MaxLength(4000)]
-        public string Statement { get; set; }
-        public List<NormalizedStatementIndexUsage> NormalizedStatementIndexUsages { get; set; }
+        [MaxLength(64)]
+        public string Key { get; set; }
+        public int? IntValue { get; set; }
+        public DateTime? DateTimeValue { get; set; }
+        public string StrValue { get; set; }
     }
 }

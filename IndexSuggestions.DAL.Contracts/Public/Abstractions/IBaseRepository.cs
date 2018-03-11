@@ -8,6 +8,6 @@ namespace IndexSuggestions.DAL.Contracts
     {
         void Create(TEntity entity);
         void Update(TEntity entity);
-        TEntity GetByPrimaryKey(TKey key);
+        TEntity GetByPrimaryKey(TKey key, bool useCache = false);
     }
 }

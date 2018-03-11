@@ -12,13 +12,16 @@ namespace IndexSuggestions.Collector
         private readonly ILogEntryGroupBox groupBox;
         private readonly ILogEntryProcessingChainFactory chainFactory;
         private readonly ICommandProcessingQueue<IExecutableCommand> queue;
+        private readonly ILastProcessedLogEntryEvidence lastProcessedEvidence;
         private readonly Timer timer;
         private bool isDisposed = false;
-        public LogEntryProcessingService(ILogEntryGroupBox groupBox, ICommandProcessingQueue<IExecutableCommand> queue, ILogEntryProcessingChainFactory chainFactory)
+        public LogEntryProcessingService(ILogEntryGroupBox groupBox, ICommandProcessingQueue<IExecutableCommand> queue, ILogEntryProcessingChainFactory chainFactory,
+                                         ILastProcessedLogEntryEvidence lastProcessedEvidence)
         {
             this.groupBox = groupBox;
             this.queue = queue;
             this.chainFactory = chainFactory;
+            this.lastProcessedEvidence = lastProcessedEvidence;
             this.timer = new Timer(2000);
             this.timer.Elapsed += Timer_Elapsed;
         }
@@ -26,11 +29,19 @@ namespace IndexSuggestions.Collector
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             var entries = groupBox.Provide();
+            var lastTimestamp = lastProcessedEvidence.Provide();
             foreach (var entry in entries)
             {
-                LogEntryProcessingContext context = new LogEntryProcessingContext();
-                context.Entry = entry;
-                queue.Enqueue(chainFactory.StatementIndexStatsChain(context));
+                if (entry.Timestamp >= lastTimestamp)
+                {
+                    LogEntryProcessingContext context = new LogEntryProcessingContext();
+                    context.Entry = entry;
+                    queue.Enqueue(chainFactory.StatementIndexStatsChain(context)); 
+                }
+                else
+                {
+
+                }
             }
         }
 

@@ -6,7 +6,7 @@ using System.Text;
 
 namespace IndexSuggestions.DAL.Contracts
 {
-    public class NormalizedStatementIndexUsage
+    public class NormalizedStatementIndexUsage : IEntity<long>
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long ID { get; set; }

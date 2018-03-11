@@ -37,8 +37,10 @@ namespace IndexSuggestions.Collector
             var logProcessingService = new LogProcessingService(collectorConfiguration.LogProcessing, logProcessor, continuousFileProcessor, logEntryGroupBox);
             var queue = new CommandProcessingQueue<IExecutableCommand>(log, "ProcessingQueue");
             var commandFactory = new Postgres.LogEntryProcessingCommandFactory();
-            var chainFactory = new LogEntryProcessingChainFactory(commandFactory, RepositoriesFactory.Instance);
-            var logEntryProcessingService = new LogEntryProcessingService(logEntryGroupBox, queue, chainFactory);
+            var repositoriesFactory = RepositoriesFactory.Instance;
+            var lastProcessedEvidence = new LastProcessedLogEntryEvidence(log, repositoriesFactory.GetSettingPropertiesRepository());
+            var chainFactory = new LogEntryProcessingChainFactory(log, commandFactory, repositoriesFactory, lastProcessedEvidence);
+            var logEntryProcessingService = new LogEntryProcessingService(logEntryGroupBox, queue, chainFactory, lastProcessedEvidence);
 
             logProcessingService.Start();
             logEntryProcessingService.Start();
@@ -49,6 +51,7 @@ namespace IndexSuggestions.Collector
             queue.Dispose();
             logEntryGroupBox.Dispose();
             logEntryProcessingService.Dispose();
+            lastProcessedEvidence.Dispose();
         }
     }
 }

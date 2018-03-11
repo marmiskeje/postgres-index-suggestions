@@ -25,21 +25,21 @@ namespace IndexSuggestions.Collector
                 foreach (var indexId in indices)
                 {
                     var indicesRepository = repositories.GetIndicesRepository();
-                    var index = indicesRepository.GetByPrimaryKey(indexId);
+                    var index = indicesRepository.GetByPrimaryKey(indexId, true);
                     if (index == null)
                     {
                         index = new Index() { ID = indexId };
                         indicesRepository.Create(index);
                     }
                     var statementsRepository = repositories.GetNormalizedStatementsRepository();
-                    var statement = statementsRepository.GetByStatement(context.NormalizedStatement);
+                    var statement = statementsRepository.GetByStatement(context.NormalizedStatement, true);
                     if (statement == null)
                     {
                         statement = new NormalizedStatement() { Statement = context.NormalizedStatement };
                         statementsRepository.Create(statement);
                     }
                     var usageRepository = repositories.GetNormalizedStatementIndexUsagesRepository();
-                    var usage = usageRepository.Get(statement.ID, index.ID, context.Entry.Timestamp.Date);
+                    var usage = usageRepository.Get(statement.ID, index.ID, context.Entry.Timestamp.Date, true);
                     if (usage == null)
                     {
                         usage = new NormalizedStatementIndexUsage() { Date = context.Entry.Timestamp.Date, IndexID = index.ID, NormalizedStatementID = statement.ID };

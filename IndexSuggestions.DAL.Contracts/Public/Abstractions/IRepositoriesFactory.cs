@@ -9,5 +9,6 @@ namespace IndexSuggestions.DAL.Contracts
         IIndicesRepository GetIndicesRepository();
         INormalizedStatementIndexUsagesRepository GetNormalizedStatementIndexUsagesRepository();
         INormalizedStatementsRepository GetNormalizedStatementsRepository();
+        ISettingPropertiesRepository GetSettingPropertiesRepository();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using IndexSuggestions.Collector.Contracts;
 using IndexSuggestions.Common.CommandProcessing;
+using IndexSuggestions.Common.Logging;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -16,6 +17,11 @@ namespace IndexSuggestions.Collector.Postgres
             chain.Add(new LoadDebugTreeToContextCommand(() => context.Entry.PlanTree, x => wrapperContext.QueryPlan = x));
             chain.Add(new LoadQueryPlanToContextCommand(wrapperContext));
             return new ActionDelegateCommand(() => chain.FirstCommand.Execute());
+        }
+
+        public IChainableCommand NormalizeStatementCommand(ILog log, LogEntryProcessingContext context)
+        {
+            return new NormalizeStatementCommand(log, context);
         }
     }
 }
