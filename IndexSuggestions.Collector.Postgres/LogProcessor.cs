@@ -10,6 +10,8 @@ namespace IndexSuggestions.Collector.Postgres
     {
         private readonly List<string> cache = new List<string>();
         private readonly ILogProcessingConfiguration configuration;
+        private readonly Regex statementRegex = new Regex(@"LOG:.*duration:.*execute.*");
+        private readonly Regex durationRegex = new Regex(@"duration:.*ms");
         private readonly Regex queryRegex = new Regex(@"{QUERY[\s|\S]*}");
         private readonly Regex planRegex = new Regex(@"{PLANNEDSTMT[\s|\S]*}");
 
@@ -77,9 +79,18 @@ namespace IndexSuggestions.Collector.Postgres
                     string input = columns[10];
                     result.Detail = input;
                     Match match = null;
-                    if (input.StartsWith("STATEMENT:"))
+                    if ((match = statementRegex.Match(input)) != null && match.Success)
                     {
-                        result.Statement = input.Substring(10).Trim();
+                        result.Statement = match.Value.Substring(match.Value.LastIndexOf(":") + 1).Trim();
+                        if ((match = durationRegex.Match(match.Value)) != null && match.Success)
+                        {
+                            var durationStr = match.Value.Replace("ms", "").Substring(9).Trim();
+                            double duration = 0;
+                            if (double.TryParse(durationStr, out duration))
+                            {
+                                result.Duration = TimeSpan.FromMilliseconds(duration); 
+                            }
+                        }
                     }
                     else if ((match = queryRegex.Match(input)) != null && match.Success)
                     {

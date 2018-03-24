@@ -30,19 +30,18 @@ namespace IndexSuggestions.Collector.Postgres
                 LoggedEntry currentResult = new LoggedEntry();
                 foreach (var e in entries)
                 {
-                    if ((!String.IsNullOrEmpty(currentResult.QueryTree))
-                        && (!String.IsNullOrEmpty(e.QueryTree)))
+                    FillResult(ref currentResult, e);
+                    if (!String.IsNullOrWhiteSpace(currentResult.Statement))
                     {
                         result.Add(currentResult);
                         currentResult = new LoggedEntry();
                     }
-                    FillResult(ref currentResult, e);
                 }
-                if (!result.Contains(currentResult))
+                if (!result.Contains(currentResult) && !String.IsNullOrWhiteSpace(currentResult.Statement))
                 {
                     result.Add(currentResult);
                 }
-                return result;
+                return result.OrderBy(x => x.Timestamp);
             }
 
             private void FillResult(ref LoggedEntry result, LoggedEntry e)
