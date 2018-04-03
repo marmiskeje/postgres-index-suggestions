@@ -1,0 +1,12 @@
+﻿/*
+  EXAMPLES
+
+  sqlserver: Server=127.0.0.1;Initial Catalog=indexsuggestions;User id=aUser;Password=aPassword;Application Name=IndexSuggestions;
+  npgsql: Server=127.0.0.1;Port=5432;Database=postgres;User Id=postgres;Password = root;ApplicationName=IndexSuggestions
+  */
+{
+  "DBConnection": {
+    "ProviderName": "sqlserver", /* sqlserver|npgsql|mysql|mariadb*/
+    "ConnectionString": "Server=127.0.0.1;Initial Catalog=indexsuggestions;Trusted_Connection=True;Application Name=IndexSuggestions;"
+  }
+}

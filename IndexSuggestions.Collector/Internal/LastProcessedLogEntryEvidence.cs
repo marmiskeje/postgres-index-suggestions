@@ -24,7 +24,7 @@ namespace IndexSuggestions.Collector
             this.settingsRepository = settingsRepository;
             lastSetting = this.settingsRepository.Get(SettingPropertyKeys.LAST_PROCESSED_LOG_ENTRY_TIMESTAMP);
             last = lastSetting.DateTimeValue.HasValue ? lastSetting.DateTimeValue.Value : DateTime.MinValue;
-            timer = new Timer(60000);
+            timer = new Timer(5000);
             timer.Elapsed += (x,y) => TimerJob();
             timer.Start();
         }

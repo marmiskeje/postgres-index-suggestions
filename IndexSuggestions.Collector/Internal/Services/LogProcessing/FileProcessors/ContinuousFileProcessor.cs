@@ -8,13 +8,9 @@ using System.Threading;
 
 namespace IndexSuggestions.Collector
 {
-    class ContinuousFileProcessor : IContinuousFileProcessor
+    class ContinuousFileProcessor : FileProcessor, IContinuousFileProcessor
     {
         private readonly object lockObject = new object();
-        private readonly ILog log;
-        private readonly ILogProcessor logProcessor;
-        private readonly ILogProcessingConfiguration configuration;
-        private readonly ILogEntryGroupBox groupBox;
         private volatile string currentFile = null;
         private volatile bool isDisposed = false;
         private Thread worker;
@@ -23,11 +19,8 @@ namespace IndexSuggestions.Collector
         private ManualResetEvent changedFileOldProcessedEvent = new ManualResetEvent(false);
 
         public ContinuousFileProcessor(ILog log, ILogProcessingConfiguration configuration, ILogProcessor logProcessor, ILogEntryGroupBox groupBox)
+            : base(log, configuration, logProcessor, groupBox)
         {
-            this.log = log;
-            this.configuration = configuration;
-            this.logProcessor = logProcessor;
-            this.groupBox = groupBox;
             worker = new Thread(Thread_Job);
             worker.Start();
         }
@@ -45,7 +38,7 @@ namespace IndexSuggestions.Collector
                             changedFileEvent.Set();
                             changedFileOldProcessedEvent.WaitOne(5000);
                             changedFileOldProcessedEvent.Reset();
-                            log.Write(SeverityType.Info, "Processed log file changed to: {0}", file ?? "NONE");
+                            Log.Write(SeverityType.Info, "Processed log file changed to: {0}", file ?? "NONE");
                         }
                     }
                 }
@@ -61,22 +54,14 @@ namespace IndexSuggestions.Collector
                 {
                     using (var fileStream = new FileStream(file, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
                     {
-                        var encoding = CodePagesEncodingProvider.Instance.GetEncoding(configuration.Encoding) ?? Encoding.UTF8;
-                        using (var reader = new StreamReader(fileStream, encoding))
+                        using (var reader = new StreamReader(fileStream, Encoding))
                         {
                             while (true)
                             {
                                 string line = reader.ReadLine();
                                 if (line != null)
                                 {
-                                    try
-                                    {
-                                        groupBox.Publish(logProcessor.ProcessLine(line, reader.EndOfStream));
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        log.Write(ex);
-                                    }
+                                    ProcessLine(line, reader.EndOfStream);
                                 }
                                 else
                                 {
@@ -85,7 +70,7 @@ namespace IndexSuggestions.Collector
                                         changedFileOldProcessedEvent.Set();
                                         break;
                                     }
-                                    changedFileEvent.WaitOne(60000);
+                                    changedFileEvent.WaitOne(10000);
                                     changedFileEvent.Reset();
                                 }
                             }

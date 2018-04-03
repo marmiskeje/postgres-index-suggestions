@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace IndexSuggestions.DAL.Postgres
+namespace IndexSuggestions.DAL
 {
     internal abstract class BaseRepository<TKey, TEntity> : IBaseRepository<TKey, TEntity> where TEntity : class, IEntity<TKey>
     {

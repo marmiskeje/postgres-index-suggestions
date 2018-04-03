@@ -105,7 +105,7 @@ namespace IndexSuggestions.Collector.Postgres
         public LogEntryGroupBox()
         {
             timer = new Timer(Timer_Job);
-            timer.Change(2000, 2000);
+            timer.Change(1000, 1000);
         }
         public IEnumerable<LoggedEntry> Provide()
         {

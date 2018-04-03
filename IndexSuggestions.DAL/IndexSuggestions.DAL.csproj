@@ -1,30 +1,25 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="2.1.0-preview1-final" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="2.1.0-preview1-final" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.0-preview1-final" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.0-preview1-final" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.1.0-preview1-final" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.5.0-preview1-26216-02" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="2.1.0-preview1" />
+    <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="2.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\IndexSuggestions.Collector.Contracts\IndexSuggestions.Collector.Contracts.csproj" />
-    <ProjectReference Include="..\IndexSuggestions.Collector.Postgres\IndexSuggestions.Collector.Postgres.csproj" />
-    <ProjectReference Include="..\IndexSuggestions.Common.NLog\IndexSuggestions.Common.NLog.csproj" />
     <ProjectReference Include="..\IndexSuggestions.Common\IndexSuggestions.Common.csproj" />
     <ProjectReference Include="..\IndexSuggestions.DAL.Contracts\IndexSuggestions.DAL.Contracts.csproj" />
-    <ProjectReference Include="..\IndexSuggestions.DAL\IndexSuggestions.DAL.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="appsettings.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="dalsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 
-namespace IndexSuggestions.DAL.Postgres
+namespace IndexSuggestions.DAL
 {
     internal class NormalizedStatementsRepository : BaseRepository<long, NormalizedStatement>, INormalizedStatementsRepository
     {

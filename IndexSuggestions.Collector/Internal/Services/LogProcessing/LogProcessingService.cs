@@ -8,17 +8,14 @@ namespace IndexSuggestions.Collector
     internal class LogProcessingService : ILogProcessingService
     {
         private readonly ILogProcessingConfiguration configuration;
-        private readonly ILogProcessor logProcessor;
+        private readonly IFileProcessor oneFileProcessor;
         private readonly IContinuousFileProcessor continuousFileProcessor;
-        private readonly ILogEntryGroupBox groupBox;
         private FileSystemWatcher fileSystemWatcher;
-        public LogProcessingService(ILogProcessingConfiguration configuration, ILogProcessor logProcessor, IContinuousFileProcessor continuousFileProcessor,
-                                    ILogEntryGroupBox groupBox)
+        public LogProcessingService(ILogProcessingConfiguration configuration, IFileProcessor oneFileProcessor, IContinuousFileProcessor continuousFileProcessor)
         {
             this.configuration = configuration;
-            this.logProcessor = logProcessor;
+            this.oneFileProcessor = oneFileProcessor;
             this.continuousFileProcessor = continuousFileProcessor;
-            this.groupBox = groupBox;
         }
 
         public void Start()
@@ -33,21 +30,7 @@ namespace IndexSuggestions.Collector
             FileInfo lastFile = null;
             foreach (var file in files)
             {
-                using (var fileStream = new FileStream(file.FullName, FileMode.Open, FileAccess.ReadWrite, FileShare.ReadWrite))
-                {
-                    var encoding = CodePagesEncodingProvider.Instance.GetEncoding(configuration.Encoding) ?? Encoding.UTF8;
-                    using (var reader = new StreamReader(fileStream, encoding))
-                    {
-                        while (!reader.EndOfStream)
-                        {
-                            var line = reader.ReadLine();
-                            if (line != null)
-                            {
-                                groupBox.Publish(logProcessor.ProcessLine(line, reader.EndOfStream));
-                            }
-                        }
-                    }
-                }
+                oneFileProcessor.ProcessFile(file);
                 lastFile = file;
             }
             continuousFileProcessor.ChangeCurrentFile(lastFile.FullName);

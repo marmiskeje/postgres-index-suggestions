@@ -1,7 +1,7 @@
 ﻿using IndexSuggestions.Collector.Contracts;
 using IndexSuggestions.Common.CommandProcessing;
 using IndexSuggestions.Common.Logging;
-using IndexSuggestions.DAL.Postgres;
+using IndexSuggestions.DAL;
 using Microsoft.Extensions.Configuration;
 using System;
 using System.Collections.Generic;
@@ -33,8 +33,9 @@ namespace IndexSuggestions.Collector
             var collectorConfiguration = new CollectorConfiguration(appSettings);
             var logProcessor = new Postgres.LogProcessor(collectorConfiguration.LogProcessing);
             var logEntryGroupBox = new Postgres.LogEntryGroupBox();
+            var oneFileProcessor = new FileProcessor(log, collectorConfiguration.LogProcessing, logProcessor, logEntryGroupBox);
             var continuousFileProcessor = new ContinuousFileProcessor(log, collectorConfiguration.LogProcessing, logProcessor, logEntryGroupBox);
-            var logProcessingService = new LogProcessingService(collectorConfiguration.LogProcessing, logProcessor, continuousFileProcessor, logEntryGroupBox);
+            var logProcessingService = new LogProcessingService(collectorConfiguration.LogProcessing, oneFileProcessor, continuousFileProcessor);
             var queue = new CommandProcessingQueue<IExecutableCommand>(log, "ProcessingQueue");
             var commandFactory = new Postgres.LogEntryProcessingCommandFactory();
             var repositoriesFactory = RepositoriesFactory.Instance;
