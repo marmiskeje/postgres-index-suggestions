@@ -7,21 +7,24 @@ using System.Text;
 
 namespace IndexSuggestions.Collector
 {
-    internal class ApplyParseTreeWorkloadDefinitionCommand : ChainableCommand
+    internal class ApplyQueryTreeWorkloadDefinitionCommand : ChainableCommand
     {
         private readonly LogEntryProcessingContext context;
-        public ApplyParseTreeWorkloadDefinitionCommand(LogEntryProcessingContext context)
+        public ApplyQueryTreeWorkloadDefinitionCommand(LogEntryProcessingContext context)
         {
             this.context = context;
         }
         protected override void OnExecute()
         {
-            bool canContinue = true;
-            var workloadDefinition = context.PersistedData.Workload.Definition;
-            List<long> relationIds = new List<long>(); // TODO fill from parse tree
-            foreach (var relationId in relationIds)
+            bool canContinue = context.QueryTree != null;
+            if (canContinue)
             {
-                canContinue = canContinue && ApplyWorkloadProperty(relationId, workloadDefinition.Relations.RestrictionType, workloadDefinition.Relations.Values.Select(x => x.ID).ToHashSet());
+                var workloadDefinition = context.PersistedData.Workload.Definition;
+                List<long> relationIds = new List<long>(); // TODO fill from parse tree
+                foreach (var relationId in relationIds)
+                {
+                    canContinue = canContinue && ApplyWorkloadProperty(relationId, workloadDefinition.Relations.RestrictionType, workloadDefinition.Relations.Values.Select(x => x.ID).ToHashSet());
+                } 
             }
             IsEnabledSuccessorCall = canContinue;
         }

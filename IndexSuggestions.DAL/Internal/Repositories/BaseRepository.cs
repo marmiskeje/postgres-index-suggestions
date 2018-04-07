@@ -26,6 +26,7 @@ namespace IndexSuggestions.DAL
 
         public void Create(TEntity entity)
         {
+            FillEntitySet(entity);
             using (var context = CreateContextFunc())
             {
                 context.Set<TEntity>().Add(entity);
@@ -49,6 +50,7 @@ namespace IndexSuggestions.DAL
                     value = loadFromDbFunc();
                     if (value != null)
                     {
+                        FillEntityGet(value);
                         Cache.Save(cacheKeyToUse, value, CacheExpiration);
                     }
                 }
@@ -57,8 +59,19 @@ namespace IndexSuggestions.DAL
             return loadFromDbFunc();
         }
 
+        protected virtual void FillEntityGet(TEntity entity)
+        {
+
+        }
+
+        protected virtual void FillEntitySet(TEntity entity)
+        {
+
+        }
+
         public void Update(TEntity entity)
         {
+            FillEntitySet(entity);
             using (var context = CreateContextFunc())
             {
                 context.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Modified;

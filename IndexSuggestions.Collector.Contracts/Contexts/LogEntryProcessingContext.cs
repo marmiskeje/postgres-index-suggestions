@@ -11,6 +11,7 @@ namespace IndexSuggestions.Collector.Contracts
         public string NormalizedStatement { get; set; }
         public string NormalizedStatementFingerprint { get; set; }
         public QueryPlanNode QueryPlan { get; set; }
+        public QueryTreeData QueryTree { get; set; }
         public LogEntryProcessingContextPersistedData PersistedData { get; private set; }
         public LogEntryProcessingContext()
         {

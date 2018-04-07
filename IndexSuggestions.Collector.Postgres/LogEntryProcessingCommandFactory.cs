@@ -9,6 +9,16 @@ namespace IndexSuggestions.Collector.Postgres
 {
     public class LogEntryProcessingCommandFactory : ILogEntryProcessingCommandFactory
     {
+        public IChainableCommand LoadQueryTreeToContextCommand(LogEntryProcessingContext context)
+        {
+            LogEntryProcessingWrapperContext wrapperContext = new LogEntryProcessingWrapperContext();
+            wrapperContext.InnerContext = context;
+            var chain = new CommandChainCreator();
+            chain.Add(new LoadDebugTreeToContextCommand(() => context.Entry.QueryTree, x => wrapperContext.QueryTree = x));
+            chain.Add(new LoadQueryTreeToContextCommand(wrapperContext));
+            return chain.AsChainableCommand();
+        }
+
         public IChainableCommand LoadQueryPlanToContextCommand(LogEntryProcessingContext context)
         {
             LogEntryProcessingWrapperContext wrapperContext = new LogEntryProcessingWrapperContext();

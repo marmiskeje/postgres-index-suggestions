@@ -9,6 +9,7 @@ namespace IndexSuggestions.Collector.Contracts
     public interface ILogEntryProcessingCommandFactory
     {
         IChainableCommand LoadQueryPlanToContextCommand(LogEntryProcessingContext context);
+        IChainableCommand LoadQueryTreeToContextCommand(LogEntryProcessingContext context);
         IChainableCommand NormalizeStatementCommand(ILog log, LogEntryProcessingContext context);
     }
 }

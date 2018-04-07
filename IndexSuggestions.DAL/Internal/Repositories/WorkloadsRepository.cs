@@ -12,11 +12,16 @@ namespace IndexSuggestions.DAL
             CacheExpiration = TimeSpan.FromMinutes(5);
         }
 
-        protected override Workload GetByIdLoadFromDb(long id)
+        protected override void FillEntitySet(Workload entity)
         {
-            var result = base.GetByIdLoadFromDb(id);
-            result.Definition = JsonSerializationUtility.Deserialize<WorkloadDefinition>(result.DefinitionData);
-            return result;
+            base.FillEntitySet(entity);
+            entity.DefinitionData = JsonSerializationUtility.Serialize(entity.Definition);
+        }
+
+        protected override void FillEntityGet(Workload entity)
+        {
+            base.FillEntityGet(entity);
+            entity.Definition = JsonSerializationUtility.Deserialize<WorkloadDefinition>(entity.DefinitionData);
         }
     }
 }

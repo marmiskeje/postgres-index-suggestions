@@ -28,8 +28,9 @@ namespace IndexSuggestions.Collector
             CommandChainCreator chain = new CommandChainCreator();
             chain.Add(new LoadWorkloadToContextCommand(context, repositoriesFactory));
             chain.Add(new ApplyLogEntryWorkloadDefinitionCommand(context));
-            // load parse tree
-            chain.Add(new ApplyParseTreeWorkloadDefinitionCommand(context));
+            chain.Add(commandFactory.LoadQueryTreeToContextCommand(context));
+            chain.Add(new ApplyQueryTreeWorkloadDefinitionCommand(context));
+            chain.Add(new SaveStatementDefinitionIfNotExistsCommand(context, repositoriesFactory));
             chain.Add(new CreateOrUpdateNormalizedWorkloadStatementCommand(context, repositoriesFactory));
             return chain.AsChainableCommand();
         }

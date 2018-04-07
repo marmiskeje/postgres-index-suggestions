@@ -10,5 +10,6 @@ namespace IndexSuggestions.Collector.Postgres
     {
         public LogEntryProcessingContext InnerContext { get; set; }
         public JObject QueryPlan { get; set; }
+        public JObject QueryTree { get; set; }
     }
 }
