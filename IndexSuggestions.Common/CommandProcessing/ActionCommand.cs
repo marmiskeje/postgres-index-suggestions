@@ -4,10 +4,10 @@ using System.Text;
 
 namespace IndexSuggestions.Common.CommandProcessing
 {
-    public class ActionDelegateCommand : ChainableCommand
+    public class ActionCommand : ChainableCommand
     {
         private readonly Action action;
-        public ActionDelegateCommand(Action action)
+        public ActionCommand(Action action)
         {
             this.action = action;
         }

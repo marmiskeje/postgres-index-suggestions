@@ -10,5 +10,7 @@ namespace IndexSuggestions.DAL.Contracts
         INormalizedStatementIndexUsagesRepository GetNormalizedStatementIndexUsagesRepository();
         INormalizedStatementsRepository GetNormalizedStatementsRepository();
         ISettingPropertiesRepository GetSettingPropertiesRepository();
+        IWorkloadsRepository GetWorkloadsRepository();
+        INormalizedWorkloadStatementsRepository GetNormalizedWorkloadStatementsRepository();
     }
 }

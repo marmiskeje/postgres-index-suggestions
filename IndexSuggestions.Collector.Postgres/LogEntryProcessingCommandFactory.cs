@@ -16,7 +16,7 @@ namespace IndexSuggestions.Collector.Postgres
             var chain = new CommandChainCreator();
             chain.Add(new LoadDebugTreeToContextCommand(() => context.Entry.PlanTree, x => wrapperContext.QueryPlan = x));
             chain.Add(new LoadQueryPlanToContextCommand(wrapperContext));
-            return new ActionDelegateCommand(() => chain.FirstCommand.Execute());
+            return chain.AsChainableCommand();
         }
 
         public IChainableCommand NormalizeStatementCommand(ILog log, LogEntryProcessingContext context)

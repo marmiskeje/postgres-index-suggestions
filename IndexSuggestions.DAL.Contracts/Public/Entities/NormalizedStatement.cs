@@ -15,5 +15,6 @@ namespace IndexSuggestions.DAL.Contracts
         [MaxLength(100)]
         public string StatementFingerprint { get; set; }
         public List<NormalizedStatementIndexUsage> NormalizedStatementIndexUsages { get; set; }
+        public List<NormalizedWorkloadStatement> NormalizedWorkloadStatements { get; set; }
     }
 }

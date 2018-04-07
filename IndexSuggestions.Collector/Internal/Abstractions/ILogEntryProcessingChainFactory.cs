@@ -8,6 +8,6 @@ namespace IndexSuggestions.Collector
 {
     internal interface ILogEntryProcessingChainFactory
     {
-        IExecutableCommand StatementIndexStatsChain(LogEntryProcessingContext context);
+        IExecutableCommand StatementProcessingChain(LogEntryProcessingContext context);
     }
 }

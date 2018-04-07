@@ -36,7 +36,7 @@ namespace IndexSuggestions.Collector
                 {
                     LogEntryProcessingContext context = new LogEntryProcessingContext();
                     context.Entry = entry;
-                    queue.Enqueue(chainFactory.StatementIndexStatsChain(context)); 
+                    queue.Enqueue(chainFactory.StatementProcessingChain(context)); 
                 }
                 else
                 {

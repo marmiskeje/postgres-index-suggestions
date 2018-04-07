@@ -51,5 +51,15 @@ namespace IndexSuggestions.DAL
         {
             return new SettingPropertiesRepository(CreateContext);
         }
+
+        public IWorkloadsRepository GetWorkloadsRepository()
+        {
+            return new WorkloadsRepository(CreateContext);
+        }
+
+        public INormalizedWorkloadStatementsRepository GetNormalizedWorkloadStatementsRepository()
+        {
+            return new NormalizedWorkloadStatementsRepository(CreateContext);
+        }
     }
 }

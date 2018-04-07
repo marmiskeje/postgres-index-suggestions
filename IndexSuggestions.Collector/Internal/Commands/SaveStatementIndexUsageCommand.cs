@@ -18,8 +18,9 @@ namespace IndexSuggestions.Collector
         }
         protected override void OnExecute()
         {
-            if (context.NormalizedStatement != null && context.QueryPlan != null)
+            if (context.PersistedData.NormalizedStatement != null && context.QueryPlan != null)
             {
+                var normalizedStatement = context.PersistedData.NormalizedStatement;
                 HashSet<long> indices = new HashSet<long>();
                 FillAllIndices(indices, context.QueryPlan);
                 foreach (var indexId in indices)
@@ -31,18 +32,11 @@ namespace IndexSuggestions.Collector
                         index = new Index() { ID = indexId };
                         indicesRepository.Create(index);
                     }
-                    var statementsRepository = repositories.GetNormalizedStatementsRepository();
-                    var statement = statementsRepository.GetByStatementFingerprint(context.NormalizedStatementFingerprint, true);
-                    if (statement == null)
-                    {
-                        statement = new NormalizedStatement() { Statement = context.NormalizedStatement, StatementFingerprint = context.NormalizedStatementFingerprint };
-                        statementsRepository.Create(statement);
-                    }
                     var usageRepository = repositories.GetNormalizedStatementIndexUsagesRepository();
-                    var usage = usageRepository.Get(statement.ID, index.ID, context.Entry.Timestamp.Date, true);
+                    var usage = usageRepository.Get(normalizedStatement.ID, index.ID, context.Entry.Timestamp.Date, true);
                     if (usage == null)
                     {
-                        usage = new NormalizedStatementIndexUsage() { Date = context.Entry.Timestamp.Date, IndexID = index.ID, NormalizedStatementID = statement.ID };
+                        usage = new NormalizedStatementIndexUsage() { Date = context.Entry.Timestamp.Date, IndexID = index.ID, NormalizedStatementID = normalizedStatement.ID };
                         usageRepository.Create(usage);
                     }
                     usage.Count += 1;

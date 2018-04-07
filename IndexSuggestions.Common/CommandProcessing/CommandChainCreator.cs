@@ -7,7 +7,7 @@ namespace IndexSuggestions.Common.CommandProcessing
     public class CommandChainCreator
     {
         private IChainableCommand lastCommand;
-        public IChainableCommand FirstCommand { get; private set; }
+        public IExecutableCommand FirstCommand { get; private set; }
 
         public void Add(IChainableCommand command)
         {
@@ -21,6 +21,11 @@ namespace IndexSuggestions.Common.CommandProcessing
                 lastCommand.SetSuccessor(command);
                 lastCommand = command;
             }
+        }
+
+        public IChainableCommand AsChainableCommand()
+        {
+            return new ActionCommand(() => FirstCommand?.Execute());
         }
     }
 }
