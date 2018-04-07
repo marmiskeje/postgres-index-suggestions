@@ -29,6 +29,7 @@ namespace IndexSuggestions.Collector
             chain.Add(new IgnoreOwnLogEntriesCommand(context));
             chain.Add(commandFactory.LoadQueryPlanToContextCommand(context));
             chain.Add(commandFactory.NormalizeStatementCommand(log, context));
+            chain.Add(new ComputeNormalizedStatementFingerprintCommand(context));
             chain.Add(new SaveStatementIndexUsageCommand(context, repositoriesFactory));
             return chain.FirstCommand;
         }

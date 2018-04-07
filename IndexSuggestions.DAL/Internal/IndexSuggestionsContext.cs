@@ -60,7 +60,7 @@ namespace IndexSuggestions.DAL
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<NormalizedStatement>().HasIndex(x => x.Statement).IsUnique();
+            modelBuilder.Entity<NormalizedStatement>().HasIndex(x => x.StatementFingerprint).IsUnique();
             modelBuilder.Entity<NormalizedStatementIndexUsage>().HasOne(x => x.Index).WithMany(x => x.NormalizedStatementIndexUsages);
             modelBuilder.Entity<NormalizedStatementIndexUsage>().HasOne(x => x.NormalizedStatement).WithMany(x => x.NormalizedStatementIndexUsages);
             modelBuilder.Entity<SettingProperty>().HasIndex(x => x.Key).IsUnique();

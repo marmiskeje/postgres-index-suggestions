@@ -82,11 +82,12 @@ namespace IndexSuggestions.Collector.Postgres
                     Match match = null;
                     if (
                         ((match = statementRegex.Match(input)) != null && match.Success)
-                        |
+                        ||
                         ((match = statementRegex2.Match(input)) != null && match.Success)
                         )
                     {
-                        result.Statement = match.Value.Substring(match.Value.LastIndexOf(":") + 1).Trim();
+                        var statementSubString = match.Value.Substring(match.Value.IndexOf("duration:") + 9);
+                        result.Statement = statementSubString.Substring(statementSubString.IndexOf(":") + 1).Trim();
                         if ((match = durationRegex.Match(match.Value)) != null && match.Success)
                         {
                             var durationStr = match.Value.Replace("ms", "").Substring(9).Trim();

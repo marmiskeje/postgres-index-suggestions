@@ -8,6 +8,7 @@ namespace IndexSuggestions.Collector.Contracts
     {
         public LoggedEntry Entry { get; set; }
         public string NormalizedStatement { get; set; }
+        public string NormalizedStatementFingerprint { get; set; }
         public QueryPlanNode QueryPlan { get; set; }
     }
 }

@@ -8,6 +8,7 @@ namespace IndexSuggestions.DAL.Contracts
 {
     public class Index : IEntity<long>
     {
+        [Key, DatabaseGenerated(DatabaseGeneratedOption.None)]
         public long ID { get; set; }
         public List<NormalizedStatementIndexUsage> NormalizedStatementIndexUsages { get; set; }
     }

@@ -10,8 +10,10 @@ namespace IndexSuggestions.DAL.Contracts
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long ID { get; set; }
-        [MaxLength(4000)]
+        [MaxLength(8000)]
         public string Statement { get; set; }
+        [MaxLength(100)]
+        public string StatementFingerprint { get; set; }
         public List<NormalizedStatementIndexUsage> NormalizedStatementIndexUsages { get; set; }
     }
 }

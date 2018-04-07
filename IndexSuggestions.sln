@@ -25,9 +25,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IndexSuggestions.Common.NLo
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DBMS", "DBMS", "{0826B15D-0B30-4453-B989-3FE829D0AA7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IndexSuggestions.DBMS.Contracts", "IndexSuggestions.DBMS.Contracts\IndexSuggestions.DBMS.Contracts.csproj", "{29CC463F-7958-47ED-B4DB-6329253C7B81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IndexSuggestions.DBMS.Contracts", "IndexSuggestions.DBMS.Contracts\IndexSuggestions.DBMS.Contracts.csproj", "{29CC463F-7958-47ED-B4DB-6329253C7B81}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IndexSuggestions.DBMS.Postgres", "IndexSuggestions.DBMS.Postgres\IndexSuggestions.DBMS.Postgres.csproj", "{63F44CC8-2F16-4E10-BAE9-8B5D085DED88}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IndexSuggestions.DBMS.Postgres", "IndexSuggestions.DBMS.Postgres\IndexSuggestions.DBMS.Postgres.csproj", "{63F44CC8-2F16-4E10-BAE9-8B5D085DED88}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

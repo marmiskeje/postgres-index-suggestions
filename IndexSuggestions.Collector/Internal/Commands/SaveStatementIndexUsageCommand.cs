@@ -32,10 +32,10 @@ namespace IndexSuggestions.Collector
                         indicesRepository.Create(index);
                     }
                     var statementsRepository = repositories.GetNormalizedStatementsRepository();
-                    var statement = statementsRepository.GetByStatement(context.NormalizedStatement, true);
+                    var statement = statementsRepository.GetByStatementFingerprint(context.NormalizedStatementFingerprint, true);
                     if (statement == null)
                     {
-                        statement = new NormalizedStatement() { Statement = context.NormalizedStatement };
+                        statement = new NormalizedStatement() { Statement = context.NormalizedStatement, StatementFingerprint = context.NormalizedStatementFingerprint };
                         statementsRepository.Create(statement);
                     }
                     var usageRepository = repositories.GetNormalizedStatementIndexUsagesRepository();

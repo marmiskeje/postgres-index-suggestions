@@ -5,6 +5,11 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Prefer32Bit>false</Prefer32Bit>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="2.1.0-preview1-final" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="2.1.0-preview1-final" />
@@ -19,6 +24,12 @@
     <ProjectReference Include="..\IndexSuggestions.Common\IndexSuggestions.Common.csproj" />
     <ProjectReference Include="..\IndexSuggestions.DAL.Contracts\IndexSuggestions.DAL.Contracts.csproj" />
     <ProjectReference Include="..\IndexSuggestions.DAL\IndexSuggestions.DAL.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="gudusoft.gsqlparser">
+      <HintPath>..\gudusoft.gsqlparser.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

@@ -98,6 +98,7 @@ namespace IndexSuggestions.Collector.Postgres
         } 
         #endregion
         private readonly Dictionary<string, LoggedEntryGroup> groups = new Dictionary<string, LoggedEntryGroup>();
+        private readonly LinkedList<LoggedEntry> lastEntriesCache = new LinkedList<LoggedEntry>();
         private readonly List<LoggedEntry> fullEntries = new List<LoggedEntry>();
         private readonly object lockObject = new object();
         private readonly Timer timer;
@@ -124,11 +125,33 @@ namespace IndexSuggestions.Collector.Postgres
                 foreach (var entry in entries)
                 {
                     var key = CreateUniqueKey(entry);
+                    #region fix for pgAdmin and duration logging :( LocalTransactionId
+                    // Problem is that when query is executed in pgAdmin, no local transaction id is logged. Example of logged transaction id: 4/0 (backend/local id)
+                    // But we need local transaction id because multiple queries can have the same backend id. Fix: try to find sibling log entry
+                    if (entry.VirtualTransactionIdentifier.EndsWith("0")) 
+                    {
+                        var almostUniqueKey = CreateUniqueKeyWithoutLocalTransactionId(entry);
+                        foreach (var item in lastEntriesCache)
+                        {
+                            var itemKey = CreateUniqueKeyWithoutLocalTransactionId(item);
+                            if (almostUniqueKey == itemKey && item.SessionLineNumber == entry.SessionLineNumber - 1)
+                            {
+                                key = CreateUniqueKey(item);
+                                break;
+                            }
+                        }
+                    }
+                    #endregion
                     if (!groups.ContainsKey(key))
                     {
                         groups.Add(key, new LoggedEntryGroup());
                     }
                     groups[key].Add(entry);
+                    if (lastEntriesCache.Count >= 5)
+                    {
+                        lastEntriesCache.RemoveLast();
+                    }
+                    lastEntriesCache.AddFirst(entry);
                 }
             }
         }
@@ -136,6 +159,16 @@ namespace IndexSuggestions.Collector.Postgres
         private string CreateUniqueKey(LoggedEntry entry)
         {
             return $"{entry.ApplicationName}_{entry.ProcessID}_{entry.RemoteHostAndPort}_{entry.SessionID}_{entry.Timestamp}_{entry.UserName}_{entry.VirtualTransactionIdentifier}";
+        }
+
+        private string CreateUniqueKeyWithoutLocalTransactionId(LoggedEntry entry)
+        {
+            string backendTransactionId = entry.VirtualTransactionIdentifier ?? string.Empty;
+            if (backendTransactionId.Contains("/"))
+            {
+                backendTransactionId = backendTransactionId.Substring(0, backendTransactionId.IndexOf("/") + 1);
+            }
+            return $"{entry.ApplicationName}_{entry.ProcessID}_{entry.RemoteHostAndPort}_{entry.SessionID}_{entry.Timestamp}_{entry.UserName}_{backendTransactionId}";
         }
 
         private void Timer_Job(object obj)

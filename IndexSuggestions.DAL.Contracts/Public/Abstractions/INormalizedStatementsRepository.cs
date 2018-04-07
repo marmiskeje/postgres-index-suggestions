@@ -6,6 +6,6 @@ namespace IndexSuggestions.DAL.Contracts
 {
     public interface INormalizedStatementsRepository : IBaseRepository<long, NormalizedStatement>
     {
-        NormalizedStatement GetByStatement(string statement, bool useCache = false);
+        NormalizedStatement GetByStatementFingerprint(string fingerprint, bool useCache = false);
     }
 }

@@ -1,4 +1,5 @@
-﻿using IndexSuggestions.Collector.Contracts;
+﻿using gudusoft.gsqlparser;
+using IndexSuggestions.Collector.Contracts;
 using IndexSuggestions.Common.CommandProcessing;
 using IndexSuggestions.Common.Logging;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace IndexSuggestions.Collector.Postgres
 {
@@ -45,7 +47,27 @@ namespace IndexSuggestions.Collector.Postgres
             else
             {
                 context.NormalizedStatement = context.Entry.Statement;
+                TGSqlParser parser = new TGSqlParser(EDbVendor.dbvpostgresql);
+                parser.sqltext = context.Entry.Statement;
+                int counter = 0;
+                if (parser.parse() == 0)
+                {
+                    foreach (TCustomSqlStatement s in parser.sqlstatements)
+                    {
+                        foreach (TSourceToken t in s.sourcetokenlist)
+                        {
+                            if (t.tokentype == ETokenType.ttnumber || t.tokentype == ETokenType.ttsqstring)
+                            {
+                                counter++;
+                                t.astext = @"$" + counter.ToString();
+                            }
+                        }
+                        context.NormalizedStatement = s.String;
+                        break;
+                    }
+                }
             }
+            context.NormalizedStatement = context.NormalizedStatement.ToUpper();
         }
     }
 }
