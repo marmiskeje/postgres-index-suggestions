@@ -25,6 +25,11 @@ namespace IndexSuggestions.Collector
                 entity = new NormalizedWorkloadStatement() { NormalizedStatementID = context.PersistedData.NormalizedStatement.ID, WorkloadID = context.PersistedData.Workload.ID, ExecutionsCount = 0 };
                 repository.Create(entity);
             }
+            if (!entity.RepresentativeStatementDuration.HasValue || context.Entry.Duration > entity.RepresentativeStatementDuration.Value)
+            {
+                entity.RepresentativeStatement = context.Entry.Statement;
+                entity.RepresentativeStatementDuration = context.Entry.Duration;
+            }
             entity.ExecutionsCount += 1;
             repository.Update(entity);
         }

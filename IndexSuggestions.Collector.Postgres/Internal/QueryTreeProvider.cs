@@ -95,8 +95,14 @@ namespace IndexSuggestions.Collector.Postgres
                     toAdd.TypeId = v.SelectToken("vartype").Value<long>();
                     toAdd.Type = Convert(EnumParsingSupport.ConvertUsingAttributeOrDefault<PostgresDbType, PostgresDbTypeIdentificationAttribute, long>(toAdd.TypeId, x => x.OID));
                     var attno = v.SelectToken("varoattno").Value<long>();
-                    var attribute = repositories.GetRelationAttributesRepository().Get(toAdd.RelationID.Value, attno);
-                    toAdd.AttributeName = attribute.Name;
+                    if (toAdd.RelationID.HasValue)
+                    {
+                        var attribute = repositories.GetRelationAttributesRepository().Get(toAdd.RelationID.Value, attno);
+                        if (attribute != null)
+                        {
+                            toAdd.AttributeName = attribute.Name;
+                        } 
+                    }
                     predicate.Operands.Add(toAdd);
                 }
                 result.Add(predicate);

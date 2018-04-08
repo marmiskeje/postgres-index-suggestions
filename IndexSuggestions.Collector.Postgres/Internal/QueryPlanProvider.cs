@@ -8,6 +8,7 @@ namespace IndexSuggestions.Collector.Postgres
 {
     class QueryPlanProvider
     {
+#warning treba skontrolovat, preco nie je uplne korektne pre zlozite CTE
         public QueryPlanNode Provide(JObject jObject)
         {
             QueryPlanNode root = new QueryPlanNode();

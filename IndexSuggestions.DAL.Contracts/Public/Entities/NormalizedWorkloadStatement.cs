@@ -15,5 +15,7 @@ namespace IndexSuggestions.DAL.Contracts
         public long WorkloadID { get; set; }
         public Workload Workload { get; set; }
         public long ExecutionsCount { get; set; }
+        public string RepresentativeStatement { get; set; }
+        public TimeSpan? RepresentativeStatementDuration { get; set; }
     }
 }
