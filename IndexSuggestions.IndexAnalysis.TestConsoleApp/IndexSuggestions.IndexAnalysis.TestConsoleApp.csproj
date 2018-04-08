@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IndexSuggestions.DAL.Contracts\IndexSuggestions.DAL.Contracts.csproj" />
+    <ProjectReference Include="..\IndexSuggestions.DAL\IndexSuggestions.DAL.csproj" />
+    <ProjectReference Include="..\IndexSuggestions.IndexAnalysis\IndexSuggestions.IndexAnalysis.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="dalsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="dbmssettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
 namespace IndexSuggestions.DAL
 {
@@ -22,6 +23,23 @@ namespace IndexSuggestions.DAL
                     return context.NormalizedWorkloadStatements.Where(x => x.NormalizedStatementID == statementId && x.WorkloadID == workloadId).SingleOrDefault();
                 }
             }, $"{statementId}{workloadId}", useCache);
+        }
+
+        public IList<NormalizedWorkloadStatement> GetAllByWorkloadId(long workloadId)
+        {
+            List<NormalizedWorkloadStatement> result = null;
+            using (var context = CreateContextFunc())
+            {
+                result = context.NormalizedWorkloadStatements.Where(x => x.WorkloadID == workloadId).Include(x => x.NormalizedStatement).ToList();
+            }
+            result.ForEach(x =>
+            {
+                if (x.NormalizedStatement.StatementDefinitionData != null)
+                {
+                    x.NormalizedStatement.StatementDefinition = JsonSerializationUtility.Deserialize<StatementDefinition>(x.NormalizedStatement.StatementDefinitionData);
+                }
+            });
+            return result;
         }
 
         protected override ISet<string> GetAllCacheKeys(long key, NormalizedWorkloadStatement entity)
