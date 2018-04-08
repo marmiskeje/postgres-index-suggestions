@@ -1,18 +1,49 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 
 namespace IndexSuggestions.Collector.Postgres
 {
     internal static class EnumParsingSupport
     {
-        public static T ConvertFromNumericOrDefault<T>(int n) where T : struct
+        public static bool TryConvertUsingAttribute<TEnum, TAttribute, TAttributeValue>(TAttributeValue val, Func<TAttribute, TAttributeValue> attrPropertySelector, out TEnum result)
+            where TEnum : struct
+            where TAttribute : Attribute
         {
-            if (Enum.IsDefined(typeof(T), n))
+            // todo - cache
+            result = default(TEnum);
+            if (!EqualityComparer<TAttributeValue>.Default.Equals(val, default(TAttributeValue)))
             {
-                return (T)Enum.ToObject(typeof(T), n);
+                foreach (var n in Enum.GetNames(typeof(TEnum)))
+                {
+                    FieldInfo field = typeof(TEnum).GetField(n);
+                    var attr = field.GetCustomAttribute<TAttribute>();
+                    if (attr != null && attrPropertySelector(attr).Equals(val))
+                    {
+                        result = (TEnum)Enum.Parse(typeof(TEnum), n);
+                        return true;
+                    }
+                }
             }
-            return default(T);
+            return false;
+        }
+
+        public static TEnum ConvertUsingAttributeOrDefault<TEnum, TAttribute, TAttributeValue>(TAttributeValue val, Func<TAttribute, TAttributeValue> attrPropertySelector)
+            where TEnum : struct
+            where TAttribute : Attribute
+        {
+            TEnum result = default(TEnum);
+            TryConvertUsingAttribute(val, attrPropertySelector, out result);
+            return result;
+        }
+        public static TEnum ConvertFromNumericOrDefault<TEnum>(int n) where TEnum : struct
+        {
+            if (Enum.IsDefined(typeof(TEnum), n))
+            {
+                return (TEnum)Enum.ToObject(typeof(TEnum), n);
+            }
+            return default(TEnum);
         }
     }
 }

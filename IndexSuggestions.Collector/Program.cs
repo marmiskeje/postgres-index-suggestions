@@ -37,7 +37,7 @@ namespace IndexSuggestions.Collector
             var continuousFileProcessor = new ContinuousFileProcessor(log, collectorConfiguration.LogProcessing, logProcessor, logEntryGroupBox);
             var logProcessingService = new LogProcessingService(collectorConfiguration.LogProcessing, oneFileProcessor, continuousFileProcessor);
             var queue = new CommandProcessingQueue<IExecutableCommand>(log, "ProcessingQueue");
-            var commandFactory = new Postgres.LogEntryProcessingCommandFactory();
+            var commandFactory = new Postgres.LogEntryProcessingCommandFactory(DBMS.Postgres.RepositoriesFactory.Instance);
             var repositoriesFactory = RepositoriesFactory.Instance;
             var lastProcessedEvidence = new LastProcessedLogEntryEvidence(log, repositoriesFactory.GetSettingPropertiesRepository());
             var chainFactory = new LogEntryProcessingChainFactory(log, commandFactory, repositoriesFactory, lastProcessedEvidence);

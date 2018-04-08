@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data;
 using System.Text;
 
 namespace IndexSuggestions.DAL.Contracts
@@ -26,6 +27,8 @@ namespace IndexSuggestions.DAL.Contracts
     public class StatementDefinition
     {
         public StatementCommandType CommandType { get; set; }
+        public List<StatementRelation> Relations { get; set; }
+        public List<StatementPredicate> Predicates { get; set; }
     }
 
     public enum StatementCommandType
@@ -36,5 +39,26 @@ namespace IndexSuggestions.DAL.Contracts
         Update = 3,
         Delete = 4,
         Utility = 5
+    }
+
+    public class StatementRelation
+    {
+        public long ID { get; set; }
+
+    }
+
+    public class StatementPredicate
+    {
+        public long OperatorID { get; set; }
+        public List<StatementPredicateOperand> Operands { get; set; }
+    }
+
+    public class StatementPredicateOperand
+    {
+        public DbType Type { get; set; }
+        public long TypeId { get; set; }
+        public long? RelationID { get; set; }
+        public string AttributeName { get; set; }
+        public dynamic ConstValue { get; set; }
     }
 }

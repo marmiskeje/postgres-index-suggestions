@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\IndexSuggestions.Collector.Contracts\IndexSuggestions.Collector.Contracts.csproj" />
+    <ProjectReference Include="..\IndexSuggestions.DBMS.Contracts\IndexSuggestions.DBMS.Contracts.csproj" />
   </ItemGroup>
 
   <ItemGroup>

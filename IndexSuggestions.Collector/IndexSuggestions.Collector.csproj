@@ -24,6 +24,8 @@
     <ProjectReference Include="..\IndexSuggestions.Common\IndexSuggestions.Common.csproj" />
     <ProjectReference Include="..\IndexSuggestions.DAL.Contracts\IndexSuggestions.DAL.Contracts.csproj" />
     <ProjectReference Include="..\IndexSuggestions.DAL\IndexSuggestions.DAL.csproj" />
+    <ProjectReference Include="..\IndexSuggestions.DBMS.Contracts\IndexSuggestions.DBMS.Contracts.csproj" />
+    <ProjectReference Include="..\IndexSuggestions.DBMS.Postgres\IndexSuggestions.DBMS.Postgres.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -37,6 +39,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="dalsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="dbmssettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
