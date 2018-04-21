@@ -17,10 +17,10 @@ namespace IndexSuggestions.IndexAnalysis
             return Task.Run(() =>
             {
                 var workloadStatements = dalRepositories.GetNormalizedWorkloadStatementsRepository().GetAllByWorkloadId(workloadId);
-                var workloadSelects = workloadStatements.Where(x => x.NormalizedStatement.StatementDefinition != null && x.NormalizedStatement.StatementDefinition.CommandType == DAL.Contracts.StatementCommandType.Select);
+                //var workloadSelects = workloadStatements.Where(x => x.NormalizedStatement.StatementDefinition != null && x.NormalizedStatement.StatementDefinition.CommandType == DAL.Contracts.StatementCommandType.Select);
                 // aplikuj najskor workload filtrovanie na pocet vykonani !!!
                 // key: relationId, value set of attributes
-                Dictionary<long, HashSet<string>> relationWithPredicateAttributes = new Dictionary<long, HashSet<string>>();
+                /*Dictionary<long, HashSet<string>> relationWithPredicateAttributes = new Dictionary<long, HashSet<string>>();
                 foreach (var s in workloadSelects)
                 {
                     foreach (var p in s.NormalizedStatement.StatementDefinition.Predicates)
@@ -41,7 +41,7 @@ namespace IndexSuggestions.IndexAnalysis
                             }
                         }
                     }
-                }
+                }*/
                 // vygeneruj vsetky kombinacie (1prvkove az n)
                 // potom pridaj atributy zo selektu, orderby, etc. pre covering index
             });

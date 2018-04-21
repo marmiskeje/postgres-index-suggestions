@@ -7,13 +7,32 @@ namespace IndexSuggestions.Collector.Contracts
 {
     public class QueryTreeData
     {
-        public QueryCommandType QueryCommandType { get; set; }
-        public List<QueryTreeRelation> Relations { get; private set; }
-        public List<QueryTreePredicate> Predicates { get; private set; }
+        public QueryCommandType CommandType { get; set; }
+        public List<QueryData> IndependentQueries { get; private set; }
         public QueryTreeData()
         {
-            Relations = new List<QueryTreeRelation>();
-            Predicates = new List<QueryTreePredicate>();
+            IndependentQueries = new List<QueryData>();
+        }
+    }
+    public class QueryData
+    {
+        public QueryCommandType CommandType { get; set; }
+        public ISet<QueryTreeRelation> Relations { get; private set; }
+        public ISet<QueryTreeAttribute> ProjectionAttributes { get; private set; }
+        public IList<QueryTreeExpression> WhereExpressions { get; private set; }
+        public IList<QueryTreeExpression> JoinExpressions { get; private set; }
+        public IList<QueryTreeExpression> HavingExpressions { get; private set; }
+        public IList<QueryTreeExpression> OrderByExpressions { get; private set; }
+        public IList<QueryTreeExpression> GroupByExpressions { get; private set; }
+        public QueryData()
+        {
+            Relations = new HashSet<QueryTreeRelation>();
+            ProjectionAttributes = new HashSet<QueryTreeAttribute>();
+            WhereExpressions = new List<QueryTreeExpression>();
+            JoinExpressions = new List<QueryTreeExpression>();
+            HavingExpressions = new List<QueryTreeExpression>();
+            OrderByExpressions = new List<QueryTreeExpression>();
+            GroupByExpressions = new List<QueryTreeExpression>();
         }
     }
     public enum QueryCommandType
@@ -28,7 +47,7 @@ namespace IndexSuggestions.Collector.Contracts
 
     public class QueryTreeRelation
     {
-        public long ID { get; set; }
+        public uint ID { get; set; }
 
         public override int GetHashCode()
         {
@@ -46,22 +65,90 @@ namespace IndexSuggestions.Collector.Contracts
         }
     }
 
-    public class QueryTreePredicate
+    public class QueryTreeAttribute
     {
-        public long OperatorID { get; set; }
-        public List<QueryTreePredicateOperand> Operands { get; private set; }
-        public QueryTreePredicate()
+        public int AttributeNumber { get; set; }
+        public uint RelationID { get; set; }
+
+        public override int GetHashCode()
         {
-            Operands = new List<QueryTreePredicateOperand>();
+            return $"{RelationID}_{AttributeNumber}".GetHashCode();
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || !(obj is QueryTreeAttribute))
+            {
+                return false;
+            }
+            QueryTreeAttribute tmp = (QueryTreeAttribute)obj;
+            return RelationID.Equals(tmp.RelationID) && AttributeNumber.Equals(tmp.AttributeNumber);
         }
     }
 
-    public class QueryTreePredicateOperand
+    public abstract class QueryTreeExpression
     {
-        public DbType Type { get; set; }
-        public long TypeId { get; set; }
-        public long? RelationID { get; set; }
-        public string AttributeName { get; set; }
-        public dynamic ConstValue { get; set; }
+    }
+
+    public class QueryTreeFunctionExpression : QueryTreeExpression
+    {
+        public uint ResultTypeID { get; set; }
+        public DbType ResultDbType { get; set; }
+        public List<QueryTreeExpression> Arguments { get; private set; }
+        public QueryTreeFunctionExpression()
+        {
+            Arguments = new List<QueryTreeExpression>();
+        }
+    }
+
+    public class QueryTreeUnknownExpression : QueryTreeExpression
+    {
+    }
+
+    public class QueryTreeAttributeExpression : QueryTreeExpression
+    {
+        public uint RelationID { get; set; }
+        public int AttributeNumber { get; set; }
+        public uint TypeID { get; set; }
+        public DbType DbType { get; set; }
+    }
+
+    public class QueryTreeConstExpression : QueryTreeExpression
+    {
+        public uint TypeID { get; set; }
+        public DbType DbType { get; set; }
+    }
+    public class QueryTreeBooleanExpression : QueryTreeExpression
+    {
+        public string Operator { get; set; }
+        public List<QueryTreeExpression> Arguments { get; private set; }
+        public QueryTreeBooleanExpression()
+        {
+            Arguments = new List<QueryTreeExpression>();
+        }
+    }
+    public class QueryTreeOperatorExpression : QueryTreeExpression
+    {
+        public uint ResultTypeID { get; set; }
+        public DbType ResultDbType { get; set; }
+        public uint OperatorID { get; set; }
+        public List<QueryTreeExpression> Arguments { get; private set; }
+        public QueryTreeOperatorExpression()
+        {
+            Arguments = new List<QueryTreeExpression>();
+        }
+    }
+
+    public class QueryTreeNullTestExpression : QueryTreeExpression
+    {
+        public QueryTreeNullTestType TestType { get; set; }
+        public QueryTreeExpression Argument { get; set; }
+    }
+
+    public enum QueryTreeNullTestType
+    {
+        Unkown = 0,
+        IsNull = 1,
+        IsNotNull = 2
     }
 }

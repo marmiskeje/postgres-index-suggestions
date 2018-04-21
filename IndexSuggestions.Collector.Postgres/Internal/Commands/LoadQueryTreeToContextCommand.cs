@@ -20,7 +20,7 @@ namespace IndexSuggestions.Collector.Postgres
         {
             if (context.QueryTree != null)
             {
-                context.InnerContext.QueryTree = new QueryTreeProvider(repositories).Provide(context.QueryTree);
+                context.InnerContext.QueryTree = new QueryTreeProvider().Provide(context.QueryTree);
             }
         }
     }
