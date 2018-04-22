@@ -4,8 +4,8 @@ using System.Text;
 
 namespace IndexSuggestions.DBMS.Contracts
 {
-    public interface IRelationAttributesRepository
+    public interface IIndicesRepository
     {
-        IRelationAttribute Get(uint relationID, int attributeNumber);
+        IEnumerable<IIndex> GetAll();
     }
 }

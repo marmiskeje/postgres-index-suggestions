@@ -6,7 +6,7 @@ namespace IndexSuggestions.IndexAnalysis.TestConsoleApp
     {
         static void Main(string[] args)
         {
-            var designer = new IndexDesigner(DAL.RepositoriesFactory.Instance);
+            var designer = new IndexDesigner(DAL.RepositoriesFactory.Instance, DBMS.Postgres.RepositoriesFactory.Instance);
             var task = designer.Run(1);
             task.Wait();
             Console.WriteLine("Done. Press any key to continue.");

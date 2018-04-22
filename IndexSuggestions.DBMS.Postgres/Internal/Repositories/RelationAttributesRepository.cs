@@ -1,45 +1,40 @@
 ﻿using IndexSuggestions.DBMS.Contracts;
-using Npgsql;
+using System.Linq;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 
 namespace IndexSuggestions.DBMS.Postgres
 {
-    internal class RelationAttributesRepository : IRelationAttributesRepository
+    internal class RelationAttributesRepository : BaseRepository, IRelationAttributesRepository
     {
-        protected String ConnectionString { get; private set; }
-        public RelationAttributesRepository(string connectionString)
+        private const string ALL_CACHE_KEY = "ALL";
+        public RelationAttributesRepository(string connectionString) : base(connectionString)
         {
-            ConnectionString = connectionString;
+            
         }
-        public RelationAttribute Get(long relationID, long position)
+        public IRelationAttribute Get(uint relationID, int attributeNumber)
         {
-            // TODO - cache all and use cache for data retrieval
-            RelationAttribute result = null;
-            using (NpgsqlConnection connection = new NpgsqlConnection(ConnectionString))
+            string attributeKey = $"{relationID}_{attributeNumber}";
+            var cacheKey = CreateCacheKeyForThisType(ALL_CACHE_KEY);
+            Dictionary<string, RelationAttribute> all = null;
+            IRelationAttribute result = null;
+            if (!Cache.TryGetValue(cacheKey, out all) || !all.ContainsKey(attributeKey))
             {
-                connection.Open();
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText = "SELECT attrelid, attname, atttypid, attnum FROM pg_catalog.pg_attribute WHERE attrelid = @relationID and attnum = @position";
-                    command.CommandType = CommandType.Text;
-                    command.Parameters.Add(new NpgsqlParameter("@relationID", relationID));
-                    command.Parameters.Add(new NpgsqlParameter("@position", position));
-                    using (var reader = command.ExecuteReader())
-                    {
-                        if (reader.Read())
-                        {
-                            result = new RelationAttribute();
-                            result.Name = SqlReaderSupport.GetValueOrDefault<string>(reader["attname"]);
-                            result.Position = position;
-                            result.RelationID = relationID;
-                        }
-                    }
-                }
+                all = GetAll();
+                Cache.Save(cacheKey, all, TimeSpan.FromMinutes(10));
+            }
+            if (all.ContainsKey(attributeKey))
+            {
+                result = all[attributeKey];
             }
             return result;
+        }
+
+        private Dictionary<string, RelationAttribute> GetAll()
+        {
+            string query = "SELECT attrelid, attname, atttypid, attnum FROM pg_catalog.pg_attribute";
+            return ExecuteQuery<RelationAttribute>(query, null).ToDictionary(x => $"{x.RelationID}_{x.AttributeNumber}");
         }
     }
 }

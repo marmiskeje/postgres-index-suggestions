@@ -64,6 +64,7 @@ namespace IndexSuggestions.DAL
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<NormalizedStatement>().HasIndex(x => x.StatementFingerprint).IsUnique();
+            modelBuilder.Entity<NormalizedStatement>().HasIndex(x => x.CommandType).HasFilter("CommandType IS NOT NULL");
             modelBuilder.Entity<NormalizedStatementIndexUsage>().HasOne(x => x.Index).WithMany(x => x.NormalizedStatementIndexUsages);
             modelBuilder.Entity<NormalizedStatementIndexUsage>().HasOne(x => x.NormalizedStatement).WithMany(x => x.NormalizedStatementIndexUsages);
             modelBuilder.Entity<NormalizedWorkloadStatement>().HasOne(x => x.Workload).WithMany(x => x.NormalizedWorkloadStatements);

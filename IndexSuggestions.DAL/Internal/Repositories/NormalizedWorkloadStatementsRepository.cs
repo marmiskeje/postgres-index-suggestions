@@ -25,12 +25,22 @@ namespace IndexSuggestions.DAL
             }, $"{statementId}{workloadId}", useCache);
         }
 
-        public IList<NormalizedWorkloadStatement> GetAllByWorkloadId(long workloadId)
+        public IList<NormalizedWorkloadStatement> GetAllByWorkloadId(long workloadId, NormalizedWorkloadStatementFilter filter)
         {
             List<NormalizedWorkloadStatement> result = null;
+            filter = filter ?? new NormalizedWorkloadStatementFilter();
             using (var context = CreateContextFunc())
             {
-                result = context.NormalizedWorkloadStatements.Where(x => x.WorkloadID == workloadId).Include(x => x.NormalizedStatement).ToList();
+                var query = context.NormalizedWorkloadStatements.Include(x => x.NormalizedStatement).Where(x => x.WorkloadID == workloadId);
+                if (filter.CommandType.HasValue)
+                {
+                    query = query.Where(x => x.NormalizedStatement.CommandType == filter.CommandType.Value);
+                }
+                if (filter.MinExecutionsCount.HasValue)
+                {
+                    query = query.Where(x => x.ExecutionsCount >= filter.MinExecutionsCount.Value);
+                }
+                result = query.ToList();
             }
             result.ForEach(x =>
             {

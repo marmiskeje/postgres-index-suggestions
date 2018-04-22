@@ -1,0 +1,741 @@
+﻿{
+  "CommandType": 1,
+  "IndependentQueries": [
+    {
+      "CommandType": 1,
+      "Relations": [
+        { "ID": 25116 },
+        { "ID": 25211 },
+        { "ID": 25126 },
+        { "ID": 25187 },
+        { "ID": 25195 }
+      ],
+      "ProjectionAttributes": [
+        {
+          "AttributeNumber": 1,
+          "RelationID": 25116
+        },
+        {
+          "AttributeNumber": 1,
+          "RelationID": 25211
+        },
+        {
+          "AttributeNumber": 2,
+          "RelationID": 25211
+        },
+        {
+          "AttributeNumber": 3,
+          "RelationID": 25211
+        },
+        {
+          "AttributeNumber": 4,
+          "RelationID": 25211
+        }
+      ],
+      "WhereExpressions": [
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+          "ResultTypeID": 16,
+          "ResultDbType": 3,
+          "OperatorID": 419,
+          "Arguments": [
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+              "RelationID": 25116,
+              "AttributeNumber": 1,
+              "TypeID": 20,
+              "DbType": 12
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+              "TypeID": 23,
+              "DbType": 11
+            }
+          ]
+        },
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryBooleanExpression, IndexSuggestions.DAL.Contracts",
+          "Operator": "and",
+          "Arguments": [
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+              "ResultTypeID": 16,
+              "ResultDbType": 3,
+              "OperatorID": 419,
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25116,
+                  "AttributeNumber": 1,
+                  "TypeID": 20,
+                  "DbType": 12
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+                  "TypeID": 23,
+                  "DbType": 11
+                }
+              ]
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+              "ResultTypeID": 16,
+              "ResultDbType": 3,
+              "OperatorID": 430,
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25126,
+                  "AttributeNumber": 1,
+                  "TypeID": 20,
+                  "DbType": 12
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+                  "TypeID": 23,
+                  "DbType": 11
+                }
+              ]
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryBooleanExpression, IndexSuggestions.DAL.Contracts",
+              "Operator": "and",
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryBooleanExpression, IndexSuggestions.DAL.Contracts",
+                  "Operator": "and",
+                  "Arguments": [
+                    {
+                      "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+                      "ResultTypeID": 16,
+                      "ResultDbType": 3,
+                      "OperatorID": 430,
+                      "Arguments": [
+                        {
+                          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                          "RelationID": 25116,
+                          "AttributeNumber": 1,
+                          "TypeID": 20,
+                          "DbType": 12
+                        },
+                        {
+                          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+                          "TypeID": 23,
+                          "DbType": 11
+                        }
+                      ]
+                    },
+                    {
+                      "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+                      "ResultTypeID": 16,
+                      "ResultDbType": 3,
+                      "OperatorID": 420,
+                      "Arguments": [
+                        {
+                          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                          "RelationID": 25116,
+                          "AttributeNumber": 1,
+                          "TypeID": 20,
+                          "DbType": 12
+                        },
+                        {
+                          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+                          "TypeID": 23,
+                          "DbType": 11
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+                  "ResultTypeID": 0,
+                  "ResultDbType": 0,
+                  "OperatorID": 98,
+                  "Arguments": [
+                    {
+                      "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                      "RelationID": 25116,
+                      "AttributeNumber": 3,
+                      "TypeID": 25,
+                      "DbType": 16
+                    },
+                    { "$type": "IndexSuggestions.DAL.Contracts.StatementQueryUnknownExpression, IndexSuggestions.DAL.Contracts" }
+                  ]
+                }
+              ]
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+              "ResultTypeID": 16,
+              "ResultDbType": 3,
+              "OperatorID": 417,
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25126,
+                  "AttributeNumber": 1,
+                  "TypeID": 20,
+                  "DbType": 12
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+                  "TypeID": 23,
+                  "DbType": 11
+                }
+              ]
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+              "ResultTypeID": 16,
+              "ResultDbType": 3,
+              "OperatorID": 415,
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25116,
+                  "AttributeNumber": 1,
+                  "TypeID": 20,
+                  "DbType": 12
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25126,
+                  "AttributeNumber": 1,
+                  "TypeID": 20,
+                  "DbType": 12
+                }
+              ]
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryNullTestExpression, IndexSuggestions.DAL.Contracts",
+              "TestType": 2,
+              "Argument": {
+                "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                "RelationID": 25116,
+                "AttributeNumber": 1,
+                "TypeID": 20,
+                "DbType": 12
+              }
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+              "ResultTypeID": 16,
+              "ResultDbType": 3,
+              "OperatorID": 419,
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25116,
+                  "AttributeNumber": 1,
+                  "TypeID": 20,
+                  "DbType": 12
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+                  "TypeID": 23,
+                  "DbType": 11
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "JoinExpressions": [
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+          "ResultTypeID": 16,
+          "ResultDbType": 3,
+          "OperatorID": 410,
+          "Arguments": [
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+              "RelationID": 25211,
+              "AttributeNumber": 2,
+              "TypeID": 20,
+              "DbType": 12
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+              "RelationID": 25116,
+              "AttributeNumber": 1,
+              "TypeID": 20,
+              "DbType": 12
+            }
+          ]
+        },
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+          "ResultTypeID": 16,
+          "ResultDbType": 3,
+          "OperatorID": 410,
+          "Arguments": [
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+              "RelationID": 25126,
+              "AttributeNumber": 2,
+              "TypeID": 20,
+              "DbType": 12
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+              "RelationID": 25116,
+              "AttributeNumber": 1,
+              "TypeID": 20,
+              "DbType": 12
+            }
+          ]
+        },
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryBooleanExpression, IndexSuggestions.DAL.Contracts",
+          "Operator": "and",
+          "Arguments": [
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+              "ResultTypeID": 16,
+              "ResultDbType": 3,
+              "OperatorID": 410,
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25187,
+                  "AttributeNumber": 2,
+                  "TypeID": 20,
+                  "DbType": 12
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25116,
+                  "AttributeNumber": 1,
+                  "TypeID": 20,
+                  "DbType": 12
+                }
+              ]
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+              "ResultTypeID": 16,
+              "ResultDbType": 3,
+              "OperatorID": 1093,
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25187,
+                  "AttributeNumber": 3,
+                  "TypeID": 1082,
+                  "DbType": 5
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+                  "TypeID": 1082,
+                  "DbType": 5
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryBooleanExpression, IndexSuggestions.DAL.Contracts",
+          "Operator": "and",
+          "Arguments": [
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+              "ResultTypeID": 16,
+              "ResultDbType": 3,
+              "OperatorID": 410,
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25195,
+                  "AttributeNumber": 2,
+                  "TypeID": 20,
+                  "DbType": 12
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25116,
+                  "AttributeNumber": 1,
+                  "TypeID": 20,
+                  "DbType": 12
+                }
+              ]
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+              "ResultTypeID": 16,
+              "ResultDbType": 3,
+              "OperatorID": 1097,
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25195,
+                  "AttributeNumber": 3,
+                  "TypeID": 1082,
+                  "DbType": 5
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+                  "TypeID": 1082,
+                  "DbType": 5
+                }
+              ]
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+              "ResultTypeID": 16,
+              "ResultDbType": 3,
+              "OperatorID": 419,
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25195,
+                  "AttributeNumber": 2,
+                  "TypeID": 20,
+                  "DbType": 12
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+                  "TypeID": 23,
+                  "DbType": 11
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+          "ResultTypeID": 16,
+          "ResultDbType": 3,
+          "OperatorID": 410,
+          "Arguments": [
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+              "RelationID": 25116,
+              "AttributeNumber": 1,
+              "TypeID": 20,
+              "DbType": 12
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+              "RelationID": 25116,
+              "AttributeNumber": 1,
+              "TypeID": 20,
+              "DbType": 12
+            }
+          ]
+        },
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+          "ResultTypeID": 16,
+          "ResultDbType": 3,
+          "OperatorID": 410,
+          "Arguments": [
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+              "RelationID": 25116,
+              "AttributeNumber": 1,
+              "TypeID": 20,
+              "DbType": 12
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+              "RelationID": 25116,
+              "AttributeNumber": 1,
+              "TypeID": 20,
+              "DbType": 12
+            }
+          ]
+        }
+      ],
+      "HavingExpressions": [
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryBooleanExpression, IndexSuggestions.DAL.Contracts",
+          "Operator": "and",
+          "Arguments": [
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+              "ResultTypeID": 16,
+              "ResultDbType": 3,
+              "OperatorID": 419,
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25116,
+                  "AttributeNumber": 1,
+                  "TypeID": 20,
+                  "DbType": 12
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+                  "TypeID": 23,
+                  "DbType": 11
+                }
+              ]
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryNullTestExpression, IndexSuggestions.DAL.Contracts",
+              "TestType": 2,
+              "Argument": {
+                "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                "RelationID": 25116,
+                "AttributeNumber": 2,
+                "TypeID": 1043,
+                "DbType": 16
+              }
+            }
+          ]
+        }
+      ],
+      "OrderByExpressions": [
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+          "RelationID": 25116,
+          "AttributeNumber": 2,
+          "TypeID": 1043,
+          "DbType": 16
+        },
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+          "RelationID": 25116,
+          "AttributeNumber": 1,
+          "TypeID": 20,
+          "DbType": 12
+        },
+        { "$type": "IndexSuggestions.DAL.Contracts.StatementQueryUnknownExpression, IndexSuggestions.DAL.Contracts" }
+      ],
+      "GroupByExpressions": [
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+          "RelationID": 25116,
+          "AttributeNumber": 1,
+          "TypeID": 20,
+          "DbType": 12
+        }
+      ]
+    },
+    {
+      "CommandType": 1,
+      "Relations": [
+        { "ID": 25203 },
+        { "ID": 25116 }
+      ],
+      "ProjectionAttributes": [
+        {
+          "AttributeNumber": 4,
+          "RelationID": 25203
+        }
+      ],
+      "WhereExpressions": [
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+          "ResultTypeID": 16,
+          "ResultDbType": 3,
+          "OperatorID": 415,
+          "Arguments": [
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+              "RelationID": 25203,
+              "AttributeNumber": 1,
+              "TypeID": 20,
+              "DbType": 12
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+              "RelationID": 25116,
+              "AttributeNumber": 1,
+              "TypeID": 20,
+              "DbType": 12
+            }
+          ]
+        }
+      ],
+      "JoinExpressions": [],
+      "HavingExpressions": [],
+      "OrderByExpressions": [],
+      "GroupByExpressions": []
+    },
+    {
+      "CommandType": 1,
+      "Relations": [
+        { "ID": 25116 },
+        { "ID": 25126 }
+      ],
+      "ProjectionAttributes": [
+        {
+          "AttributeNumber": 1,
+          "RelationID": 25116
+        },
+        {
+          "AttributeNumber": 1,
+          "RelationID": 25126
+        }
+      ],
+      "WhereExpressions": [ { "$type": "IndexSuggestions.DAL.Contracts.StatementQueryUnknownExpression, IndexSuggestions.DAL.Contracts" } ],
+      "JoinExpressions": [],
+      "HavingExpressions": [],
+      "OrderByExpressions": [],
+      "GroupByExpressions": []
+    },
+    {
+      "CommandType": 1,
+      "Relations": [ { "ID": 25116 } ],
+      "ProjectionAttributes": [
+        {
+          "AttributeNumber": 1,
+          "RelationID": 25116
+        }
+      ],
+      "WhereExpressions": [],
+      "JoinExpressions": [],
+      "HavingExpressions": [],
+      "OrderByExpressions": [],
+      "GroupByExpressions": []
+    },
+    {
+      "CommandType": 1,
+      "Relations": [
+        { "ID": 25116 },
+        { "ID": 25126 }
+      ],
+      "ProjectionAttributes": [
+        {
+          "AttributeNumber": 1,
+          "RelationID": 25116
+        },
+        {
+          "AttributeNumber": 1,
+          "RelationID": 25126
+        }
+      ],
+      "WhereExpressions": [],
+      "JoinExpressions": [
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+          "ResultTypeID": 16,
+          "ResultDbType": 3,
+          "OperatorID": 96,
+          "Arguments": [
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+              "TypeID": 23,
+              "DbType": 11
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+              "TypeID": 23,
+              "DbType": 11
+            }
+          ]
+        }
+      ],
+      "HavingExpressions": [],
+      "OrderByExpressions": [],
+      "GroupByExpressions": []
+    },
+    {
+      "CommandType": 1,
+      "Relations": [
+        { "ID": 25116 },
+        { "ID": 25126 }
+      ],
+      "ProjectionAttributes": [
+        {
+          "AttributeNumber": 1,
+          "RelationID": 25116
+        }
+      ],
+      "WhereExpressions": [],
+      "JoinExpressions": [
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryBooleanExpression, IndexSuggestions.DAL.Contracts",
+          "Operator": "and",
+          "Arguments": [
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+              "ResultTypeID": 16,
+              "ResultDbType": 3,
+              "OperatorID": 419,
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25126,
+                  "AttributeNumber": 1,
+                  "TypeID": 20,
+                  "DbType": 12
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+                  "TypeID": 23,
+                  "DbType": 11
+                }
+              ]
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+              "ResultTypeID": 16,
+              "ResultDbType": 3,
+              "OperatorID": 419,
+              "Arguments": [
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+                  "RelationID": 25116,
+                  "AttributeNumber": 1,
+                  "TypeID": 20,
+                  "DbType": 12
+                },
+                {
+                  "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+                  "TypeID": 23,
+                  "DbType": 11
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "HavingExpressions": [],
+      "OrderByExpressions": [],
+      "GroupByExpressions": []
+    },
+    {
+      "CommandType": 1,
+      "Relations": [ { "ID": 25126 } ],
+      "ProjectionAttributes": [
+        {
+          "AttributeNumber": 3,
+          "RelationID": 25126
+        },
+        {
+          "AttributeNumber": 1,
+          "RelationID": 25126
+        }
+      ],
+      "WhereExpressions": [
+        {
+          "$type": "IndexSuggestions.DAL.Contracts.StatementQueryOperatorExpression, IndexSuggestions.DAL.Contracts",
+          "ResultTypeID": 16,
+          "ResultDbType": 3,
+          "OperatorID": 419,
+          "Arguments": [
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryAttributeExpression, IndexSuggestions.DAL.Contracts",
+              "RelationID": 25126,
+              "AttributeNumber": 1,
+              "TypeID": 20,
+              "DbType": 12
+            },
+            {
+              "$type": "IndexSuggestions.DAL.Contracts.StatementQueryConstExpression, IndexSuggestions.DAL.Contracts",
+              "TypeID": 23,
+              "DbType": 11
+            }
+          ]
+        }
+      ],
+      "JoinExpressions": [],
+      "HavingExpressions": [],
+      "OrderByExpressions": [],
+      "GroupByExpressions": []
+    }
+  ]
+}
