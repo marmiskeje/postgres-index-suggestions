@@ -88,6 +88,10 @@ namespace IndexSuggestions.Collector.Postgres
                     {
                         var statementSubString = match.Value.Substring(match.Value.IndexOf("duration:") + 9);
                         result.Statement = statementSubString.Substring(statementSubString.IndexOf(":") + 1).Trim();
+                        if (result.Statement.EndsWith(";"))
+                        {
+                            result.Statement = result.Statement.Substring(0, result.Statement.Length - 1); // for normalization statement ending and not ending with ; should be same
+                        }
                         if ((match = durationRegex.Match(match.Value)) != null && match.Success)
                         {
                             var durationStr = match.Value.Replace("ms", "").Substring(9).Trim();
