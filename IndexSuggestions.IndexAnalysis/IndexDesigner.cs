@@ -274,6 +274,7 @@ namespace IndexSuggestions.IndexAnalysis
                 }
                 // Pre kazde normalizovane query bude znamy prinos kazdeho (relevantneho*) indexu (tj. kazdy index vytvorime samostatne a zistime prinos pre kazde query).
                 // *relevantny index je taky, ktory je nad relaciou, ktora je v query a atributmi, kde aspon jeden je v query
+                // Toto nie je dobre. Ak je v query WHERE A = 1 OR B = 1 a my mame index iba pre A, moze sa pouzit radsej sekvencny prechod!!
                 var virtualIndicesRepository = dbmsRepositories.GetVirtualIndicesRepository();
                 foreach (var kv in possibleIndices)
                 {
