@@ -10,7 +10,22 @@ namespace IndexSuggestions.Collector.Postgres
 {
     class LoadDebugTreeToContextCommand : ChainableCommand
     {
+        #region private class EscapeCharacterReplacement
+        private class EscapeCharacterReplacement
+        {
+            public string EscapeCharacter { get; }
+            public string ProcessingReplacement { get; }
+            public string RealValue { get; }
+            public EscapeCharacterReplacement(string escapeCharacter, string processingReplacement, string realValue)
+            {
+                EscapeCharacter = escapeCharacter;
+                ProcessingReplacement = processingReplacement;
+                RealValue = realValue;
+            }
+        } 
+        #endregion
         private static readonly Regex ATTRIBUTES_WITHOUT_VALUES_REGEX = new Regex(@":[a-z|A-Z]*? :");
+        private static readonly List<EscapeCharacterReplacement> COLUMN_NAME_ESCAPE_CHARACTER_REPLACEMENTS = new List<EscapeCharacterReplacement>();
 
         private readonly Func<string> getInputFunc;
         private readonly Action<JObject> setOutputAction;
@@ -18,6 +33,7 @@ namespace IndexSuggestions.Collector.Postgres
         {
             this.getInputFunc = getInputFunc;
             this.setOutputAction = setOutputAction;
+            COLUMN_NAME_ESCAPE_CHARACTER_REPLACEMENTS.Add(new EscapeCharacterReplacement(@"\ ", "@WHITE_SPACE", " "));
         }
 
         private static string ConvertArrayToJsonProperty(string input)
@@ -55,6 +71,10 @@ namespace IndexSuggestions.Collector.Postgres
                 return;
             }
             string parseTreeStr = inputParseTreeStr.Replace("\r\n", " ").Replace("\n", " ").Replace("\t", " ").Trim();
+            foreach (var item in COLUMN_NAME_ESCAPE_CHARACTER_REPLACEMENTS)
+            {
+                parseTreeStr = parseTreeStr.Replace(item.EscapeCharacter, item.ProcessingReplacement);
+            }
             while (parseTreeStr.Contains("  "))
             {
                 parseTreeStr = parseTreeStr.Replace("  ", " ");
@@ -172,6 +192,10 @@ namespace IndexSuggestions.Collector.Postgres
                 inputEntries[i] = input;
             }
             string json = String.Join(" ", inputEntries);
+            foreach (var item in COLUMN_NAME_ESCAPE_CHARACTER_REPLACEMENTS)
+            {
+                json = json.Replace(item.ProcessingReplacement, item.RealValue);
+            }
             json = json.Substring(0, json.Length - 2); // remove ending ", "
             var result = JObject.Parse(json);
 #if DEBUG
