@@ -4,9 +4,10 @@ using System.Text;
 
 namespace IndexSuggestions.Collector
 {
-    internal interface ILastProcessedLogEntryEvidence : IDisposable
+    internal interface ILastProcessedLogEntryEvidence
     {
         DateTime Provide();
         void Publish(DateTime date);
+        void PersistCurrentState();
     }
 }

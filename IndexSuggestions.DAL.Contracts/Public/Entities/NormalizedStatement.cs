@@ -21,8 +21,9 @@ namespace IndexSuggestions.DAL.Contracts
         [NotMapped]
         public StatementDefinition StatementDefinition { get; set; }
         public StatementQueryCommandType? CommandType { get; set; }
-        public List<NormalizedStatementIndexUsage> NormalizedStatementIndexUsages { get; set; }
+        public List<NormalizedStatementIndexStatistics> NormalizedStatementIndexStatistics { get; set; }
         public List<NormalizedWorkloadStatement> NormalizedWorkloadStatements { get; set; }
+        public List<NormalizedStatementStatistics> NormalizedStatementStatistics { get; set; }
     }
 
     public class StatementDefinition

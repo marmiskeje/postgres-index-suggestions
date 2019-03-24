@@ -19,7 +19,7 @@ namespace IndexSuggestions.Collector.Postgres
                 root.TotalCost = planNode.SelectToken("total_cost").Value<decimal>();
                 if (planNode.SelectToken("indexid") != null)
                 {
-                    root.IndexId = planNode.SelectToken("indexid").Value<long>();
+                    root.IndexId = planNode.SelectToken("indexid").Value<uint>();
                 }
                 var left = planNode.SelectToken("lefttree");
                 LoadNode(root, left);
@@ -39,7 +39,7 @@ namespace IndexSuggestions.Collector.Postgres
                 node.TotalCost = planNode.SelectToken("total_cost").Value<decimal>();
                 if (planNode.SelectToken("indexid") != null)
                 {
-                    node.IndexId = planNode.SelectToken("indexid").Value<long>();
+                    node.IndexId = planNode.SelectToken("indexid").Value<uint>();
                 }
                 var left = planNode.SelectToken("lefttree");
                 LoadNode(node, left);

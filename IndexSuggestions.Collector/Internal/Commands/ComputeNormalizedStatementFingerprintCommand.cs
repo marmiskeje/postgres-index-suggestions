@@ -18,7 +18,8 @@ namespace IndexSuggestions.Collector
         {
             using (SHA512 sha = new SHA512Managed())
             {
-                context.NormalizedStatementFingerprint = Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(context.NormalizedStatement)));
+                var hash = sha.ComputeHash(Encoding.UTF8.GetBytes(context.StatementData.NormalizedStatement));
+                context.StatementData.NormalizedStatementFingerprint = Convert.ToBase64String(hash);
             }
         }
     }

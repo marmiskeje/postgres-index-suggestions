@@ -1,4 +1,5 @@
-﻿using IndexSuggestions.Collector.Contracts;
+﻿/*
+using IndexSuggestions.Collector.Contracts;
 using IndexSuggestions.Common.CommandProcessing;
 using IndexSuggestions.DAL.Contracts;
 using System;
@@ -70,3 +71,4 @@ namespace IndexSuggestions.Collector
         }
     }
 }
+*/

@@ -8,7 +8,7 @@ namespace IndexSuggestions.Collector.Contracts
     {
         public decimal StartupCost { get; set; }
         public decimal TotalCost { get; set; }
-        public long? IndexId { get; set; }
+        public uint? IndexId { get; set; }
 
         public List<QueryPlanNode> Plans { get; private set; }
 

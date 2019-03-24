@@ -10,13 +10,11 @@ namespace IndexSuggestions.Collector
     internal class LastProcessedLogEntryEvidence : ILastProcessedLogEntryEvidence
     {
         private readonly object lockObject = new object();
-        private readonly Timer timer;
         private readonly ILog log;
         private readonly ISettingPropertiesRepository settingsRepository;
         private DateTime previous = DateTime.MinValue;
         private DateTime last = DateTime.MinValue;
         private SettingProperty lastSetting;
-        private bool isDisposed = false;
 
         public LastProcessedLogEntryEvidence(ILog log, ISettingPropertiesRepository settingsRepository)
         {
@@ -24,28 +22,17 @@ namespace IndexSuggestions.Collector
             this.settingsRepository = settingsRepository;
             lastSetting = this.settingsRepository.Get(SettingPropertyKeys.LAST_PROCESSED_LOG_ENTRY_TIMESTAMP);
             last = lastSetting.DateTimeValue.HasValue ? lastSetting.DateTimeValue.Value : DateTime.MinValue;
-            timer = new Timer(5000);
-            timer.Elapsed += (x,y) => TimerJob();
-            timer.Start();
         }
 
-        private void TimerJob()
+        public void PersistCurrentState()
         {
-            try
+            DateTime dateToSave = DateTime.MinValue;
+            lock (lockObject)
             {
-                lock (lockObject)
-                {
-                    if (last != previous)
-                    {
-                        lastSetting.DateTimeValue = last;
-                        settingsRepository.Update(lastSetting); 
-                    }
-                }
+                dateToSave = last;
             }
-            catch (Exception ex)
-            {
-                log.Write(ex);
-            }
+            lastSetting.DateTimeValue = dateToSave;
+            settingsRepository.Update(lastSetting);
         }
 
         public DateTime Provide()
@@ -63,30 +50,6 @@ namespace IndexSuggestions.Collector
                 previous = last;
                 last = date;
             }
-        }
-
-        private void Dispose(bool isDisposing)
-        {
-            if (!isDisposed)
-            {
-                if (isDisposing)
-                {
-                    timer.Stop();
-                    TimerJob();
-                }
-                isDisposed = true;
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        ~LastProcessedLogEntryEvidence()
-        {
-            Dispose(false);
         }
     }
 }

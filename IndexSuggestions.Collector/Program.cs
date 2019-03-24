@@ -24,6 +24,7 @@ namespace IndexSuggestions.Collector
         /// <param name="args"></param>
         static void Main(string[] args)
         {
+            Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
             var configuration = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();
@@ -37,10 +38,15 @@ namespace IndexSuggestions.Collector
             var continuousFileProcessor = new ContinuousFileProcessor(log, collectorConfiguration.LogProcessing, logProcessor, logEntryGroupBox);
             var logProcessingService = new LogProcessingService(collectorConfiguration.LogProcessing, oneFileProcessor, continuousFileProcessor);
             var queue = new CommandProcessingQueue<IExecutableCommand>(log, "ProcessingQueue");
-            var commandFactory = new Postgres.LogEntryProcessingCommandFactory(DBMS.Postgres.RepositoriesFactory.Instance);
-            var repositoriesFactory = RepositoriesFactory.Instance;
-            var lastProcessedEvidence = new LastProcessedLogEntryEvidence(log, repositoriesFactory.GetSettingPropertiesRepository());
-            var chainFactory = new LogEntryProcessingChainFactory(log, commandFactory, repositoriesFactory, lastProcessedEvidence);
+            var dateTimeSelectors = DateTimeSelectorsProvider.Instance;
+            var statementDataAccumulator = new StatementDataAccumulator(dateTimeSelectors);
+            var postgresRepositories = DBMS.Postgres.RepositoriesFactory.Instance;
+            var dalRepositories = RepositoriesFactory.Instance;
+            var lastProcessedEvidence = new LastProcessedLogEntryEvidence(log, dalRepositories.GetSettingPropertiesRepository());
+            var generalCommands = new GeneralProcessingCommandFactory(log, collectorConfiguration, statementDataAccumulator, postgresRepositories,
+                                                                      dalRepositories, lastProcessedEvidence);
+            var externalCommands = new Postgres.LogEntryProcessingCommandFactory(DBMS.Postgres.RepositoriesFactory.Instance);
+            var chainFactory = new LogEntryProcessingChainFactory(log, generalCommands, externalCommands, dalRepositories, statementDataAccumulator);
             var logEntryProcessingService = new LogEntryProcessingService(logEntryGroupBox, queue, chainFactory, lastProcessedEvidence);
 
             logProcessingService.Start();
@@ -49,10 +55,9 @@ namespace IndexSuggestions.Collector
             Console.ReadLine();
             logProcessingService.Dispose();
             continuousFileProcessor.Dispose();
-            queue.Dispose();
             logEntryGroupBox.Dispose();
             logEntryProcessingService.Dispose();
-            lastProcessedEvidence.Dispose();
+            queue.Dispose();
         }
     }
 }

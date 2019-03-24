@@ -4,16 +4,19 @@ using System.Text;
 
 namespace IndexSuggestions.Common.CommandProcessing
 {
+    /// <summary>
+    /// Returns whether successor call should be allowed.
+    /// </summary>
     public class ActionCommand : ChainableCommand
     {
-        private readonly Action action;
-        public ActionCommand(Action action)
+        private readonly Func<bool> action;
+        public ActionCommand(Func<bool> action)
         {
             this.action = action;
         }
         protected override void OnExecute()
         {
-            action();
+            IsEnabledSuccessorCall = action();
         }
     }
 }

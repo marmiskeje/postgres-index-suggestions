@@ -28,7 +28,11 @@ namespace IndexSuggestions.Collector
             {
                 try
                 {
-                    GroupBox.Publish(LogProcessor.ProcessLine(line, eof));
+                    var entries = LogProcessor.ProcessLine(line, eof);
+                    if (entries.Count > 0)
+                    {
+                        GroupBox.Publish(entries); 
+                    }
                 }
                 catch (Exception ex)
                 {

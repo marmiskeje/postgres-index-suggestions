@@ -32,16 +32,6 @@ namespace IndexSuggestions.DAL
             return context;
         }
 
-        public IIndicesRepository GetIndicesRepository()
-        {
-            return new IndicesRepository(CreateContext);
-        }
-
-        public INormalizedStatementIndexUsagesRepository GetNormalizedStatementIndexUsagesRepository()
-        {
-            return new NormalizedStatementIndexUsagesRepository(CreateContext);
-        }
-
         public INormalizedStatementsRepository GetNormalizedStatementsRepository()
         {
             return new NormalizedStatementsRepository(CreateContext);
@@ -60,6 +50,16 @@ namespace IndexSuggestions.DAL
         public INormalizedWorkloadStatementsRepository GetNormalizedWorkloadStatementsRepository()
         {
             return new NormalizedWorkloadStatementsRepository(CreateContext);
+        }
+
+        public INormalizedStatementStatisticsRepository GetNormalizedStatementStatisticsRepository()
+        {
+            return new NormalizedStatementStatisticsRepository(CreateContext);
+        }
+
+        public INormalizedStatementIndexStatisticsRepository GetNormalizedStatementIndexStatisticsRepository()
+        {
+            return new NormalizedStatementIndexStatisticsRepository(CreateContext);
         }
     }
 }

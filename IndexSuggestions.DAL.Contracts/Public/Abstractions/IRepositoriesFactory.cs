@@ -6,11 +6,11 @@ namespace IndexSuggestions.DAL.Contracts
 {
     public interface IRepositoriesFactory
     {
-        IIndicesRepository GetIndicesRepository();
-        INormalizedStatementIndexUsagesRepository GetNormalizedStatementIndexUsagesRepository();
         INormalizedStatementsRepository GetNormalizedStatementsRepository();
         ISettingPropertiesRepository GetSettingPropertiesRepository();
         IWorkloadsRepository GetWorkloadsRepository();
         INormalizedWorkloadStatementsRepository GetNormalizedWorkloadStatementsRepository();
+        INormalizedStatementStatisticsRepository GetNormalizedStatementStatisticsRepository();
+        INormalizedStatementIndexStatisticsRepository GetNormalizedStatementIndexStatisticsRepository();
     }
 }

@@ -7,18 +7,18 @@ using System.Text;
 
 namespace IndexSuggestions.Collector
 {
-    internal class SaveStatementDefinitionIfNotExistsCommand : ChainableCommand
+    internal class PublishNormalizedStatementDefinitionCommand : ChainableCommand
     {
         private readonly LogEntryProcessingContext context;
-        private readonly IRepositoriesFactory repositories;
-        public SaveStatementDefinitionIfNotExistsCommand(LogEntryProcessingContext context, IRepositoriesFactory repositories)
+        private readonly IStatementDataAccumulator statementDataAccumulator;
+        public PublishNormalizedStatementDefinitionCommand(LogEntryProcessingContext context, IStatementDataAccumulator statementDataAccumulator)
         {
             this.context = context;
-            this.repositories = repositories;
+            this.statementDataAccumulator = statementDataAccumulator;
         }
         protected override void OnExecute()
         {
-            if (context.PersistedData.NormalizedStatement.StatementDefinition == null)
+            if (context.QueryTree != null)
             {
                 StatementDefinition definition = new StatementDefinition();
                 definition.CommandType = Convert(context.QueryTree.CommandType);
@@ -56,10 +56,7 @@ namespace IndexSuggestions.Collector
                     }
                     definition.IndependentQueries.Add(toAdd);
                 }
-                context.PersistedData.NormalizedStatement.CommandType = definition.CommandType;
-                context.PersistedData.NormalizedStatement.StatementDefinition = definition;
-                var statements = repositories.GetNormalizedStatementsRepository();
-                statements.Update(context.PersistedData.NormalizedStatement);
+                statementDataAccumulator.PublishNormalizedStatementDefinition(context.StatementData.NormalizedStatementFingerprint, definition);
             }
         }
 

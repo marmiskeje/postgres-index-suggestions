@@ -21,7 +21,7 @@ namespace IndexSuggestions.Collector.Postgres
             this.configuration = configuration;
         }
 
-        public IEnumerable<LoggedEntry> ProcessLine(string line, bool eof)
+        public IReadOnlyList<LoggedEntry> ProcessLine(string line, bool eof)
         {
             List<LoggedEntry> result = new List<LoggedEntry>();
             if (!String.IsNullOrEmpty(line))

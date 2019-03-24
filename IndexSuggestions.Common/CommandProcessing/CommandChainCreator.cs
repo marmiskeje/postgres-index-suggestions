@@ -25,7 +25,7 @@ namespace IndexSuggestions.Common.CommandProcessing
 
         public IChainableCommand AsChainableCommand()
         {
-            return new ActionCommand(() => FirstCommand?.Execute());
+            return new ActionCommand(() => { FirstCommand?.Execute(); return true; });
         }
     }
 }

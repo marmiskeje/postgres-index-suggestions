@@ -22,52 +22,36 @@ namespace IndexSuggestions.Collector.Postgres
         }
         protected override void OnExecute()
         {
-            if (!System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
+            string result = null;
+            result = context.Entry.Statement;
+            TGSqlParser parser = new TGSqlParser(EDbVendor.dbvpostgresql);
+            parser.sqltext = context.Entry.Statement;
+            int counter = 0;
+            if (parser.parse() == 0)
             {
-                string file = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Scripts/NormalizeStatement.rb");
-                using (var process = new Process())
+                foreach (TCustomSqlStatement s in parser.sqlstatements)
                 {
-                    process.StartInfo = new ProcessStartInfo("ruby") { Arguments = file, UseShellExecute = false, CreateNoWindow = true, RedirectStandardOutput = true, RedirectStandardError = true, RedirectStandardInput = true };
-                    process.Start();
-                    process.StandardInput.WriteLine(context.Entry.Statement);
-                    context.NormalizedStatement = process.StandardOutput.ReadToEnd();
-                    process.WaitForExit(5000);
-                    var error = process.StandardError.ReadLine();
-                    if (!process.HasExited)
+                    foreach (TSourceToken t in s.sourcetokenlist)
                     {
-                        process.Kill();
+                        if (t.tokentype == ETokenType.ttnumber || t.tokentype == ETokenType.ttsqstring)
+                        {
+                            counter++;
+                            t.astext = @"$" + counter.ToString();
+                        }
                     }
-                    if (process.ExitCode != 0)
-                    {
-                        log.Write(SeverityType.Error, error);
-                        this.IsEnabledSuccessorCall = false;
-                    }
+                    result = s.String;
+                    break;
                 }
             }
             else
             {
-                context.NormalizedStatement = context.Entry.Statement;
-                TGSqlParser parser = new TGSqlParser(EDbVendor.dbvpostgresql);
-                parser.sqltext = context.Entry.Statement;
-                int counter = 0;
-                if (parser.parse() == 0)
-                {
-                    foreach (TCustomSqlStatement s in parser.sqlstatements)
-                    {
-                        foreach (TSourceToken t in s.sourcetokenlist)
-                        {
-                            if (t.tokentype == ETokenType.ttnumber || t.tokentype == ETokenType.ttsqstring)
-                            {
-                                counter++;
-                                t.astext = @"$" + counter.ToString();
-                            }
-                        }
-                        context.NormalizedStatement = s.String;
-                        break;
-                    }
-                }
+                log.Write(SeverityType.Error, parser.Errormessage);
+                this.IsEnabledSuccessorCall = false;
             }
-            context.NormalizedStatement = context.NormalizedStatement.ToUpper();
+            if (!String.IsNullOrEmpty(result))
+            {
+                context.StatementData.NormalizedStatement = result.Trim().ToUpper();
+            }
         }
     }
 }

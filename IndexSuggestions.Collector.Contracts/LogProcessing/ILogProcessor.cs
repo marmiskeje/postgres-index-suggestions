@@ -6,6 +6,6 @@ namespace IndexSuggestions.Collector.Contracts
 {
     public interface ILogProcessor
     {
-        IEnumerable<LoggedEntry> ProcessLine(string line, bool eof);
+        IReadOnlyList<LoggedEntry> ProcessLine(string line, bool eof);
     }
 }

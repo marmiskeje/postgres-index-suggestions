@@ -27,13 +27,16 @@ namespace IndexSuggestions.Collector
                 files.Add(new FileInfo(f));
             }
             files.Sort((x, y) => x.CreationTime.CompareTo(y.CreationTime));
-            FileInfo lastFile = null;
-            foreach (var file in files)
+
+            for (int i = 0; i < files.Count - 1; i++)
             {
-                oneFileProcessor.ProcessFile(file);
-                lastFile = file;
+                oneFileProcessor.ProcessFile(files[i]);
             }
-            continuousFileProcessor.ChangeCurrentFile(lastFile.FullName);
+            if (files.Count > 0)
+            {
+                FileInfo lastFile = files[files.Count - 1];
+                continuousFileProcessor.ChangeCurrentFile(lastFile.FullName); 
+            }
             // enable
             fileSystemWatcher = new FileSystemWatcher(configuration.Directory, configuration.FilenameFilter);
             fileSystemWatcher.IncludeSubdirectories = false;

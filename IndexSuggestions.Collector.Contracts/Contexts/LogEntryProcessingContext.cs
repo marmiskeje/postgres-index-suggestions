@@ -1,5 +1,4 @@
-﻿using IndexSuggestions.DAL.Contracts;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -8,20 +7,47 @@ namespace IndexSuggestions.Collector.Contracts
     public class LogEntryProcessingContext
     {
         public LoggedEntry Entry { get; set; }
-        public string NormalizedStatement { get; set; }
-        public string NormalizedStatementFingerprint { get; set; }
+        public uint DatabaseID { get; set; }
+        public LogEntryStatementData StatementData { get; private set; }
         public QueryPlanNode QueryPlan { get; set; }
         public QueryTreeData QueryTree { get; set; }
-        public LogEntryProcessingContextPersistedData PersistedData { get; private set; }
         public LogEntryProcessingContext()
         {
-            PersistedData = new LogEntryProcessingContextPersistedData();
+            StatementData = new LogEntryStatementData();
         }
     }
 
-    public class LogEntryProcessingContextPersistedData
+    public class LogEntryStatementData
     {
-        public NormalizedStatement NormalizedStatement { get; set; }
-        public Workload Workload { get; set; }
+        public string NormalizedStatement { get; set; }
+        public string NormalizedStatementFingerprint { get; set; }
+    }
+
+    public class LogEntryStatementStatisticsData
+    {
+        public string NormalizedStatementFingerprint { get; set; }
+        public string Statement { get; set; }
+        public uint DatabaseID { get; set; }
+        public string UserName { get; set; }
+        public string ApplicationName { get; set; }
+        public DateTime ExecutionDate { get; set; }
+        public TimeSpan Duration { get; set; }
+    }
+
+    public class LogEntryStatementIndexStatisticsData
+    {
+        public string NormalizedStatementFingerprint { get; set; }
+        public uint DatabaseID { get; set; }
+        public uint IndexID { get; set; }
+        public DateTime ExecutionDate { get; set; }
+        public decimal TotalCost { get; set; }
+    }
+    public class LogEntryStatementRelationStatisticsData
+    {
+        public string NormalizedStatementFingerprint { get; set; }
+        public uint DatabaseID { get; set; }
+        public uint RelationID { get; set; }
+        public DateTime ExecutionDate { get; set; }
+        public decimal TotalConst { get; set; }
     }
 }

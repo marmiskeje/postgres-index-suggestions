@@ -15,6 +15,7 @@ namespace IndexSuggestions.Collector
         private readonly ILastProcessedLogEntryEvidence lastProcessedEvidence;
         private readonly Timer timer;
         private bool isDisposed = false;
+        private DateTime lastStatePersistenceDate = DateTime.Now;
         public LogEntryProcessingService(ILogEntryGroupBox groupBox, ICommandProcessingQueue<IExecutableCommand> queue, ILogEntryProcessingChainFactory chainFactory,
                                          ILastProcessedLogEntryEvidence lastProcessedEvidence)
         {
@@ -36,13 +37,25 @@ namespace IndexSuggestions.Collector
                 {
                     LogEntryProcessingContext context = new LogEntryProcessingContext();
                     context.Entry = entry;
-                    queue.Enqueue(chainFactory.StatementProcessingChain(context)); 
+                    queue.Enqueue(chainFactory.LogEntryProcessingChain(context));
+                    lastProcessedEvidence.Publish(entry.Timestamp);
                 }
                 else
                 {
-
+                    // already processed
                 }
             }
+            DateTime now = DateTime.Now;
+            if ((now - lastStatePersistenceDate).TotalSeconds >= 60)
+            {
+                InitiatePersistence();
+                lastStatePersistenceDate = now;
+            }
+        }
+
+        private void InitiatePersistence()
+        {
+            queue.Enqueue(chainFactory.LogEntryPersistenceChain());
         }
 
         public void Start()
@@ -53,6 +66,7 @@ namespace IndexSuggestions.Collector
         public void Stop()
         {
             this.timer.Stop();
+            InitiatePersistence();
         }
 
         private void Dispose(bool isDisposing)

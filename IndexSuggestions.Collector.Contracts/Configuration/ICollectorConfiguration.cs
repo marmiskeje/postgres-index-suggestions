@@ -7,5 +7,6 @@ namespace IndexSuggestions.Collector.Contracts
     public interface ICollectorConfiguration
     {
         ILogProcessingConfiguration LogProcessing { get; }
+        IExternalSqlNormalizationConfiguration ExternalSqlNormalization { get; }
     }
 }

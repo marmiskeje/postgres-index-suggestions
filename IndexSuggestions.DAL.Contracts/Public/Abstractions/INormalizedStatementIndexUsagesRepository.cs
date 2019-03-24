@@ -4,9 +4,9 @@ using System.Text;
 
 namespace IndexSuggestions.DAL.Contracts
 {
-    public interface INormalizedStatementIndexUsagesRepository : IBaseRepository<long, NormalizedStatementIndexUsage>
+    public interface INormalizedStatementIndexStatisticsRepository : IBaseRepository<long, NormalizedStatementIndexStatistics>
     {
-        NormalizedStatementIndexUsage Get(long statementId, long indexId, DateTime date, bool useCache = false);
+        NormalizedStatementIndexStatistics GetByUniqueKey(NormalizedStatementIndexStatisticsUniqueKey key);
 
     }
 }

@@ -20,6 +20,7 @@ namespace IndexSuggestions.DBMS.Postgres
             Dapper.SqlMapper.SetTypeMap(typeof(Index), new DapperColumnAttributeTypeMapper<Index>());
             Dapper.SqlMapper.SetTypeMap(typeof(ExplainResult), new DapperColumnAttributeTypeMapper<ExplainResult>());
             Dapper.SqlMapper.SetTypeMap(typeof(VirtualIndex), new DapperColumnAttributeTypeMapper<VirtualIndex>());
+            Dapper.SqlMapper.SetTypeMap(typeof(Database), new DapperColumnAttributeTypeMapper<Database>());
         }
 
         private RepositoriesFactory()
@@ -68,6 +69,11 @@ namespace IndexSuggestions.DBMS.Postgres
         public IVirtualIndicesRepository GetVirtualIndicesRepository()
         {
             return new VirtualIndicesRepository(settings.DBConnection.ConnectionString);
+        }
+
+        public IDatabasesRepository GetDatabasesRepository()
+        {
+            return new DatabasesRepository(settings.DBConnection.ConnectionString);
         }
     }
 }
