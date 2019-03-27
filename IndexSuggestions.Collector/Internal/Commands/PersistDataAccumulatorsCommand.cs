@@ -47,6 +47,14 @@ namespace IndexSuggestions.Collector
                             PersistStatementIndexStatistics(newStat);
                         }
                     }
+                    if (state.StatementRelationStatistics.ContainsKey(newStatement.StatementFingerprint))
+                    {
+                        foreach (var newStat in state.StatementRelationStatistics[newStatement.StatementFingerprint])
+                        {
+                            newStat.NormalizedStatementID = newStatement.ID;
+                            PersistStatementRelationStatistics(newStat);
+                        }
+                    }
                 }
                 processedLogEntryEvidence.PersistCurrentState();
                 scope.Complete();
@@ -114,6 +122,28 @@ namespace IndexSuggestions.Collector
             else
             {
                 NormalizedStatementIndexStatisticsMergeUtility.ApplySample(oldStatistics, newStatistics);
+                repository.Update(oldStatistics);
+            }
+        }
+
+        private void PersistStatementRelationStatistics(NormalizedStatementRelationStatistics newStatistics)
+        {
+            var repository = repositories.GetNormalizedStatementRelationStatisticsRepository();
+            var uniqueKey = new NormalizedStatementRelationStatisticsUniqueKey()
+            {
+                DatabaseID = newStatistics.DatabaseID,
+                Date = newStatistics.Date,
+                RelationID = newStatistics.RelationID,
+                NormalizedStatementID = newStatistics.NormalizedStatementID
+            };
+            var oldStatistics = repository.GetByUniqueKey(uniqueKey);
+            if (oldStatistics == null)
+            {
+                repository.Create(newStatistics);
+            }
+            else
+            {
+                NormalizedStatementRelationStatisticsMergeUtility.ApplySample(oldStatistics, newStatistics);
                 repository.Update(oldStatistics);
             }
         }

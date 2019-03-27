@@ -13,6 +13,7 @@ namespace IndexSuggestions.Collector
         void PublishNormalizedStatementStatistics(LogEntryStatementStatisticsData statementStatisticsData);
         void PublishNormalizedStatementDefinition(string fingerprint, StatementDefinition statementDefinition);
         void PublishNormalizedStatementIndexStatistics(LogEntryStatementIndexStatisticsData indexStatisticsData);
+        void PublishNormalizedStatementRelationStatistics(LogEntryStatementRelationStatisticsData relationStatisticsData);
 
         StatementDataAccumulatorState ProvideState();
         void ClearState();
@@ -23,5 +24,6 @@ namespace IndexSuggestions.Collector
         public Dictionary<string, NormalizedStatement> Statements { get; } = new Dictionary<string, NormalizedStatement>();
         public Dictionary<string, List<NormalizedStatementStatistics>> StatementStatistics { get; } = new Dictionary<string, List<NormalizedStatementStatistics>>();
         public Dictionary<string, List<NormalizedStatementIndexStatistics>> StatementIndexStatistics { get; } = new Dictionary<string, List<NormalizedStatementIndexStatistics>>();
+        public Dictionary<string, List<NormalizedStatementRelationStatistics>> StatementRelationStatistics { get; } = new Dictionary<string, List<NormalizedStatementRelationStatistics>>();
     }
 }

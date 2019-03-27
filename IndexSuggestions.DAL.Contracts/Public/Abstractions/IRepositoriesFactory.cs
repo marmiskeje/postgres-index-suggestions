@@ -12,5 +12,6 @@ namespace IndexSuggestions.DAL.Contracts
         INormalizedWorkloadStatementsRepository GetNormalizedWorkloadStatementsRepository();
         INormalizedStatementStatisticsRepository GetNormalizedStatementStatisticsRepository();
         INormalizedStatementIndexStatisticsRepository GetNormalizedStatementIndexStatisticsRepository();
+        INormalizedStatementRelationStatisticsRepository GetNormalizedStatementRelationStatisticsRepository();
     }
 }

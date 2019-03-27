@@ -12,7 +12,13 @@ namespace IndexSuggestions.Collector
         private readonly Dictionary<string, NormalizedStatement> statements = new Dictionary<string, NormalizedStatement>();
         private readonly Dictionary<string, NormalizedStatementStatisticsSampler> statementStatistics = new Dictionary<string, NormalizedStatementStatisticsSampler>();
         private readonly Dictionary<string, NormalizedStatementIndexStatisticsSampler> statementIndexStatistics = new Dictionary<string, NormalizedStatementIndexStatisticsSampler>();
+        private readonly Dictionary<string, NormalizedStatementRelationStatisticsSampler> statementRelationStatistics = new Dictionary<string, NormalizedStatementRelationStatisticsSampler>();
         private readonly IDateTimeSelectorsProvider dateTimeSelectors;
+
+        public StatementDataAccumulator()
+        {
+        }
+
         public StatementDataAccumulator(IDateTimeSelectorsProvider dateTimeSelectors)
         {
             this.dateTimeSelectors = dateTimeSelectors;
@@ -25,6 +31,7 @@ namespace IndexSuggestions.Collector
                 statements.Clear();
                 statementStatistics.Clear();
                 statementIndexStatistics.Clear();
+                statementRelationStatistics.Clear();
             }
         }
 
@@ -53,6 +60,11 @@ namespace IndexSuggestions.Collector
                 {
                     var stats = new List<NormalizedStatementIndexStatistics>(s.Value.ProvideSamples());
                     result.StatementIndexStatistics.Add(s.Key, stats);
+                }
+                foreach (var s in statementRelationStatistics)
+                {
+                    var stats = new List<NormalizedStatementRelationStatistics>(s.Value.ProvideSamples());
+                    result.StatementRelationStatistics.Add(s.Key, stats);
                 }
             }
             return result;
@@ -106,6 +118,37 @@ namespace IndexSuggestions.Collector
                 lock (String.Intern(key))
                 {
                     statementIndexStatistics[key].AddSample(sample);
+                }
+            }
+        }
+
+        public void PublishNormalizedStatementRelationStatistics(LogEntryStatementRelationStatisticsData relationStatisticsData)
+        {
+            var key = relationStatisticsData.NormalizedStatementFingerprint;
+            var sample = new NormalizedStatementRelationStatistics()
+            {
+                AvgTotalCost = relationStatisticsData.TotalCost,
+                DatabaseID = relationStatisticsData.DatabaseID,
+                Date = relationStatisticsData.ExecutionDate,
+                RelationID = relationStatisticsData.RelationID,
+                MaxTotalCost = relationStatisticsData.TotalCost,
+                MinTotalCost = relationStatisticsData.TotalCost,
+                TotalScansCount = 1
+            };
+            bool addSample = true;
+            lock (lockObject)
+            {
+                if (!statementRelationStatistics.ContainsKey(key))
+                {
+                    statementRelationStatistics.Add(key, new NormalizedStatementRelationStatisticsSampler(dateTimeSelectors.MinuteSelector, sample));
+                    addSample = false;
+                }
+            }
+            if (addSample)
+            {
+                lock (String.Intern(key))
+                {
+                    statementRelationStatistics[key].AddSample(sample);
                 }
             }
         }

@@ -77,7 +77,7 @@ namespace IndexSuggestions.Collector
             CommandChainCreator queryPlanProcessingChain = new CommandChainCreator();
             queryPlanProcessingChain.Add(externalCommands.LoadQueryPlanToContextCommand(context));
             queryPlanProcessingChain.Add(generalCommands.PublishNormalizedStatementIndexStatisticsCommand(context));
-            //queryPlanProcessingChain.Add(generalCommands.PublishNormalizedStatementRelationStatisticsCommand(context));
+            queryPlanProcessingChain.Add(generalCommands.PublishNormalizedStatementRelationStatisticsCommand(context));
             parallelSteps.AddParallelStep(queryPlanProcessingChain.AsChainableCommand());
 
             chain.Add(parallelSteps.CreateParallelCommand());

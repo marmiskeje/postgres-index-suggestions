@@ -7,11 +7,11 @@ using System.Text;
 
 namespace IndexSuggestions.Collector
 {
-    class PublishNormalizedStatementIndexStatisticsCommand : ChainableCommand
+    class PublishNormalizedStatementRelationStatisticsCommand : ChainableCommand
     {
         private readonly LogEntryProcessingContext context;
         private readonly IStatementDataAccumulator statementDataAccumulator;
-        public PublishNormalizedStatementIndexStatisticsCommand(LogEntryProcessingContext context, IStatementDataAccumulator statementDataAccumulator)
+        public PublishNormalizedStatementRelationStatisticsCommand(LogEntryProcessingContext context, IStatementDataAccumulator statementDataAccumulator)
         {
             this.context = context;
             this.statementDataAccumulator = statementDataAccumulator;
@@ -20,20 +20,20 @@ namespace IndexSuggestions.Collector
         {
             if (context.QueryPlan != null)
             {
-                PublishIndexStatistics(context.QueryPlan);
+                PublishRelationStatistics(context.QueryPlan);
             }
         }
 
-        private void PublishIndexStatistics(QueryPlanNode plan)
+        private void PublishRelationStatistics(QueryPlanNode plan)
         {
             switch (plan.ScanOperation)
             {
-                case AnyIndexScanOperation indexScan:
-                    statementDataAccumulator.PublishNormalizedStatementIndexStatistics(new LogEntryStatementIndexStatisticsData()
+                case RelationSequenceScanOperation relationSeqScan:
+                    statementDataAccumulator.PublishNormalizedStatementRelationStatistics(new LogEntryStatementRelationStatisticsData()
                     {
                         DatabaseID = context.DatabaseID,
                         ExecutionDate = context.Entry.Timestamp,
-                        IndexID = indexScan.IndexId,
+                        RelationID = relationSeqScan.RelationId,
                         NormalizedStatementFingerprint = context.StatementData.NormalizedStatementFingerprint,
                         TotalCost = plan.TotalCost
                     });
@@ -41,7 +41,7 @@ namespace IndexSuggestions.Collector
             }
             foreach (var item in plan.Plans)
             {
-                PublishIndexStatistics(item);
+                PublishRelationStatistics(item);
             }
         }
     }

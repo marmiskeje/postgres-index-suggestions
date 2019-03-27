@@ -48,6 +48,6 @@ namespace IndexSuggestions.Collector.Contracts
         public uint DatabaseID { get; set; }
         public uint RelationID { get; set; }
         public DateTime ExecutionDate { get; set; }
-        public decimal TotalConst { get; set; }
+        public decimal TotalCost { get; set; }
     }
 }

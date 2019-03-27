@@ -72,5 +72,10 @@ namespace IndexSuggestions.Collector
         {
             return new PublishNormalizedStatementIndexStatisticsCommand(context, statementDataAccumulator);
         }
+
+        public IChainableCommand PublishNormalizedStatementRelationStatisticsCommand(LogEntryProcessingContext context)
+        {
+            return new PublishNormalizedStatementRelationStatisticsCommand(context, statementDataAccumulator);
+        }
     }
 }

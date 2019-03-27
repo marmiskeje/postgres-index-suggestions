@@ -17,5 +17,6 @@ namespace IndexSuggestions.Collector
         IChainableCommand PersistDataAccumulatorsCommand();
         IChainableCommand PublishNormalizedStatementDefinitionCommand(LogEntryProcessingContext context);
         IChainableCommand PublishNormalizedStatementIndexStatisticsCommand(LogEntryProcessingContext context);
+        IChainableCommand PublishNormalizedStatementRelationStatisticsCommand(LogEntryProcessingContext context);
     }
 }

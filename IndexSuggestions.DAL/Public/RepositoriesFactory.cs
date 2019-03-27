@@ -61,5 +61,10 @@ namespace IndexSuggestions.DAL
         {
             return new NormalizedStatementIndexStatisticsRepository(CreateContext);
         }
+
+        public INormalizedStatementRelationStatisticsRepository GetNormalizedStatementRelationStatisticsRepository()
+        {
+            return new NormalizedStatementRelationStatisticsRepository(CreateContext);
+        }
     }
 }
