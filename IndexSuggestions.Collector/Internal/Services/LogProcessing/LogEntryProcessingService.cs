@@ -9,6 +9,8 @@ namespace IndexSuggestions.Collector
 {
     class LogEntryProcessingService : ILogEntryProcessingService
     {
+        private const int PERSISTENCE_THRESHOLD_ENTRIES_COUNT = 1000;
+        private const int PERSISTENCE_THRESHOLD_ELAPSED_SECONDS = 60;
         private readonly ILogEntryGroupBox groupBox;
         private readonly ILogEntryProcessingChainFactory chainFactory;
         private readonly ICommandProcessingQueue<IExecutableCommand> queue;
@@ -16,6 +18,7 @@ namespace IndexSuggestions.Collector
         private readonly Timer timer;
         private bool isDisposed = false;
         private DateTime lastStatePersistenceDate = DateTime.Now;
+        private int entriesCounter = 0;
         public LogEntryProcessingService(ILogEntryGroupBox groupBox, ICommandProcessingQueue<IExecutableCommand> queue, ILogEntryProcessingChainFactory chainFactory,
                                          ILastProcessedLogEntryEvidence lastProcessedEvidence)
         {
@@ -39,6 +42,7 @@ namespace IndexSuggestions.Collector
                     context.Entry = entry;
                     queue.Enqueue(chainFactory.LogEntryProcessingChain(context));
                     lastProcessedEvidence.Publish(entry.Timestamp);
+                    entriesCounter++;
                 }
                 else
                 {
@@ -46,9 +50,10 @@ namespace IndexSuggestions.Collector
                 }
             }
             DateTime now = DateTime.Now;
-            if ((now - lastStatePersistenceDate).TotalSeconds >= 60)
+            if (entriesCounter >= PERSISTENCE_THRESHOLD_ENTRIES_COUNT || (now - lastStatePersistenceDate).TotalSeconds >= PERSISTENCE_THRESHOLD_ELAPSED_SECONDS)
             {
                 InitiatePersistence();
+                entriesCounter = 0;
                 lastStatePersistenceDate = now;
             }
         }
