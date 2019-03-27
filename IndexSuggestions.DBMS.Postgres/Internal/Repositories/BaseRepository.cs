@@ -15,6 +15,8 @@ namespace IndexSuggestions.DBMS.Postgres
         }
         protected string ConnectionString { get; private set; }
         protected int DefaultCommandTimeout { get; private set; }
+        protected TimeSpan ShortCacheExpiration { get; } = TimeSpan.FromMinutes(5);
+        protected TimeSpan MediumCacheExpiration { get; } = TimeSpan.FromMinutes(10);
         public BaseRepository(string connectionString) : this(connectionString, 60)
         {
 

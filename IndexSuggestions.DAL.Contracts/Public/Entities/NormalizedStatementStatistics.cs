@@ -15,7 +15,6 @@ namespace IndexSuggestions.DAL.Contracts
         public long NormalizedStatementID { get; set; }
         public NormalizedStatement NormalizedStatement { get; set; }
         public uint DatabaseID { get; set; }
-#warning TODO - radsej pouzivat user id a zaviest vlastny ciselnik pre aplikacie (application id), aby sa znizila duplicita dat
         public string UserName { get; set; }
         public string ApplicationName { get; set; }
         public DateTime Date { get; set; }

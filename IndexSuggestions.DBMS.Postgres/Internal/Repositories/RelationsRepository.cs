@@ -23,7 +23,7 @@ namespace IndexSuggestions.DBMS.Postgres
             if (!Cache.TryGetValue(cacheKey, out all) || !all.ContainsKey(attributeKey))
             {
                 all = GetAll();
-                Cache.Save(cacheKey, all, TimeSpan.FromMinutes(10));
+                Cache.Save(cacheKey, all, MediumCacheExpiration);
             }
             if (all.ContainsKey(attributeKey))
             {

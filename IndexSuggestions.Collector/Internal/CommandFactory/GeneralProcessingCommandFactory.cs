@@ -45,7 +45,7 @@ namespace IndexSuggestions.Collector
 
         public IChainableCommand LoadDatabaseInfoForLogEntryCommand(LogEntryProcessingContext context)
         {
-            return new LoadDatabaseInfoForLogEntryCommand(context, dbmsRepositories.GetDatabasesRepository());
+            return new LoadDatabaseInfoForLogEntryCommand(log, context, dbmsRepositories.GetDatabasesRepository());
         }
 
         public IChainableCommand PersistDataAccumulatorsCommand()
