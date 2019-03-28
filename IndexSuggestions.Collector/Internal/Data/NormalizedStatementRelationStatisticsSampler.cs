@@ -11,7 +11,10 @@ namespace IndexSuggestions.Collector
         public NormalizedStatementRelationStatisticsSampler(IDateTimeSelector dateTimeSelector, NormalizedStatementRelationStatistics cumulativeData)
         {
             this.dateTimeSelector = dateTimeSelector;
-            AddSample(cumulativeData);
+            if (cumulativeData != null)
+            {
+                AddSample(cumulativeData); 
+            }
         }
         protected override void ApplySampling(NormalizedStatementRelationStatistics cumulativeData, NormalizedStatementRelationStatistics newSample)
         {
@@ -22,6 +25,11 @@ namespace IndexSuggestions.Collector
         {
             string dateKey = String.Format("{0:u}", dateTimeSelector.Select(data.Date));
             return $"{data.DatabaseID}_{data.RelationID}_{dateKey}";
+        }
+
+        protected override void InitializeCumulativeData(NormalizedStatementRelationStatistics cumulativeData)
+        {
+            cumulativeData.Date = dateTimeSelector.Select(cumulativeData.Date);
         }
     }
 }

@@ -13,15 +13,15 @@ namespace IndexSuggestions.Collector
         private readonly Dictionary<string, NormalizedStatementStatisticsSampler> statementStatistics = new Dictionary<string, NormalizedStatementStatisticsSampler>();
         private readonly Dictionary<string, NormalizedStatementIndexStatisticsSampler> statementIndexStatistics = new Dictionary<string, NormalizedStatementIndexStatisticsSampler>();
         private readonly Dictionary<string, NormalizedStatementRelationStatisticsSampler> statementRelationStatistics = new Dictionary<string, NormalizedStatementRelationStatisticsSampler>();
-        private readonly IDateTimeSelectorsProvider dateTimeSelectors;
+        private readonly IDateTimeSelector dateTimeSelector;
 
         public StatementDataAccumulator()
         {
         }
 
-        public StatementDataAccumulator(IDateTimeSelectorsProvider dateTimeSelectors)
+        public StatementDataAccumulator(IDateTimeSelector dateTimeSelector)
         {
-            this.dateTimeSelectors = dateTimeSelectors;
+            this.dateTimeSelector = dateTimeSelector;
         }
 
         public void ClearState()
@@ -97,6 +97,7 @@ namespace IndexSuggestions.Collector
             var sample = new NormalizedStatementIndexStatistics()
             {
                 AvgTotalCost = indexStatisticsData.TotalCost,
+                CreatedDate = DateTime.Now,
                 DatabaseID = indexStatisticsData.DatabaseID,
                 Date = indexStatisticsData.ExecutionDate,
                 IndexID = indexStatisticsData.IndexID,
@@ -109,7 +110,7 @@ namespace IndexSuggestions.Collector
             {
                 if (!statementIndexStatistics.ContainsKey(key))
                 {
-                    statementIndexStatistics.Add(key, new NormalizedStatementIndexStatisticsSampler(dateTimeSelectors.MinuteSelector, sample));
+                    statementIndexStatistics.Add(key, new NormalizedStatementIndexStatisticsSampler(dateTimeSelector, sample));
                     addSample = false;
                 }
             }
@@ -128,6 +129,7 @@ namespace IndexSuggestions.Collector
             var sample = new NormalizedStatementRelationStatistics()
             {
                 AvgTotalCost = relationStatisticsData.TotalCost,
+                CreatedDate = DateTime.Now,
                 DatabaseID = relationStatisticsData.DatabaseID,
                 Date = relationStatisticsData.ExecutionDate,
                 RelationID = relationStatisticsData.RelationID,
@@ -140,7 +142,7 @@ namespace IndexSuggestions.Collector
             {
                 if (!statementRelationStatistics.ContainsKey(key))
                 {
-                    statementRelationStatistics.Add(key, new NormalizedStatementRelationStatisticsSampler(dateTimeSelectors.MinuteSelector, sample));
+                    statementRelationStatistics.Add(key, new NormalizedStatementRelationStatisticsSampler(dateTimeSelector, sample));
                     addSample = false;
                 }
             }
@@ -160,6 +162,7 @@ namespace IndexSuggestions.Collector
             {
                 ApplicationName = statementStatisticsData.ApplicationName,
                 AvgDuration = statementStatisticsData.Duration,
+                CreatedDate = DateTime.Now,
                 DatabaseID = statementStatisticsData.DatabaseID,
                 Date = statementStatisticsData.ExecutionDate,
                 MaxDuration = statementStatisticsData.Duration,
@@ -173,7 +176,7 @@ namespace IndexSuggestions.Collector
             {
                 if (!statementStatistics.ContainsKey(key))
                 {
-                    statementStatistics.Add(key, new NormalizedStatementStatisticsSampler(dateTimeSelectors.MinuteSelector, sample));
+                    statementStatistics.Add(key, new NormalizedStatementStatisticsSampler(dateTimeSelector, sample));
                     addSample = false;
                 }
             }

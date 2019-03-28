@@ -13,6 +13,17 @@ namespace IndexSuggestions.DAL
             
         }
 
+        public IReadOnlyDictionary<long, List<NormalizedStatementStatistics>> GetAllGroupedByStatement(DateTime createdFrom, DateTime createdTo)
+        {
+            using (var context = CreateContextFunc())
+            {
+                return context.NormalizedStatementStatistics
+                    .Where(x => x.CreatedDate >= createdFrom && x.CreatedDate <= createdTo)
+                    .GroupBy(x => x.NormalizedStatementID)
+                    .ToDictionary(x => x.Key, x => x.ToList());
+            }
+        }
+
         public NormalizedStatementStatistics GetByUniqueKey(NormalizedStatementStatisticsUniqueKey key)
         {
             using (var context = CreateContextFunc())

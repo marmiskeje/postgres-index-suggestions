@@ -18,6 +18,7 @@ namespace IndexSuggestions.DAL.Contracts
         public string UserName { get; set; }
         public string ApplicationName { get; set; }
         public DateTime Date { get; set; }
+        public DateTime CreatedDate { get; set; }
         public long TotalExecutionsCount { get; set; }
 #warning Tu este navrhujem, aby si mohol pouzivatel nastavit zber nielen per db, ale aj per command (Select, insert, update, ...) - aby sa dali ignorovat inserty, etc.
         public string RepresentativeStatement { get; set; }

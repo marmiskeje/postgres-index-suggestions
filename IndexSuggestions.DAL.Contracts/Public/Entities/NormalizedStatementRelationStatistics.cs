@@ -15,6 +15,7 @@ namespace IndexSuggestions.DAL.Contracts
         public uint DatabaseID { get; set; }
         public uint RelationID { get; set; }
         public DateTime Date { get; set; }
+        public DateTime CreatedDate { get; set; }
         public long TotalScansCount { get; set; }
         public decimal MinTotalCost { get; set; }
         public decimal MaxTotalCost { get; set; }

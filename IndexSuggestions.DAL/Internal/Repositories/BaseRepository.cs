@@ -89,6 +89,21 @@ namespace IndexSuggestions.DAL
             }
         }
 
+        public void Remove(TEntity entity)
+        {
+            using (var context = CreateContextFunc())
+            {
+                context.Entry(entity).State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+                context.SaveChanges();
+                var cacheKeys = GetAllCacheKeys(entity.ID, entity);
+                foreach (var cacheKey in cacheKeys)
+                {
+                    string cacheKeyToUse = CreateCacheKeyForThisType(cacheKey);
+                    Cache.Remove(cacheKeyToUse);
+                }
+            }
+        }
+
         protected virtual TEntity GetByIdLoadFromDb(TKey id)
         {
             using (var context = CreateContextFunc())

@@ -8,7 +8,7 @@ namespace IndexSuggestions.Collector
     {
         private readonly Dictionary<string, TData> samples = new Dictionary<string, TData>();
         protected abstract string CreateKey(TData data);
-
+        protected abstract void InitializeCumulativeData(TData cumulativeData);
         protected abstract void ApplySampling(TData cumulativeData, TData newSample);
 
         public void AddSample(TData data)
@@ -19,6 +19,7 @@ namespace IndexSuggestions.Collector
             {
                 if (!samples.ContainsKey(key))
                 {
+                    InitializeCumulativeData(data);
                     samples.Add(key, data);
                     doUpdate = false;
                 }

@@ -39,7 +39,7 @@ namespace IndexSuggestions.Collector
             var logProcessingService = new LogProcessingService(collectorConfiguration.LogProcessing, oneFileProcessor, continuousFileProcessor);
             var queue = new CommandProcessingQueue<IExecutableCommand>(log, "ProcessingQueue");
             var dateTimeSelectors = DateTimeSelectorsProvider.Instance;
-            var statementDataAccumulator = new StatementDataAccumulator(dateTimeSelectors);
+            var statementDataAccumulator = new StatementDataAccumulator(dateTimeSelectors.MinuteSelector);
             var postgresRepositories = DBMS.Postgres.RepositoriesFactory.Instance;
             var dalRepositories = RepositoriesFactory.Instance;
             var lastProcessedEvidence = new LastProcessedLogEntryEvidence(log, dalRepositories.GetSettingPropertiesRepository());
@@ -49,10 +49,31 @@ namespace IndexSuggestions.Collector
             var chainFactory = new LogEntryProcessingChainFactory(log, generalCommands, externalCommands, dalRepositories, statementDataAccumulator);
             var logEntryProcessingService = new LogEntryProcessingService(logEntryGroupBox, queue, chainFactory, lastProcessedEvidence);
 
+            var mergeStatisticsCommands = new MergeStatisticsCommandFactory(dalRepositories);
+            var mergeStatisticsChainFactory = new MergeStatisticsChainFactory(mergeStatisticsCommands);
+            Dictionary<TimeSpan, IExecutableCommand> regularTasks = new Dictionary<TimeSpan, IExecutableCommand>();
+            regularTasks.Add(new TimeSpan(1,0,0), new ActionCommand(() =>
+            {
+                DateTime now = DateTime.Now;
+                var context = new MergeNormalizedStatementStatisticsContext() { CreatedDateFrom = now.AddDays(-7), CreatedDateTo = now.AddDays(-9), DateTimeSelector = dateTimeSelectors.HourSelector };
+                mergeStatisticsChainFactory.MergeStatisticsChain(context).Execute();
+                return true;
+            }));
+            regularTasks.Add(new TimeSpan(2, 0, 0), new ActionCommand(() =>
+            {
+                DateTime now = DateTime.Now;
+                var context = new MergeNormalizedStatementStatisticsContext() { CreatedDateFrom = now.AddDays(-14), CreatedDateTo = now.AddDays(-16), DateTimeSelector = dateTimeSelectors.DaySelector };
+                mergeStatisticsChainFactory.MergeStatisticsChain(context).Execute();
+                return true;
+            }));
+            var taskScheduler = new RegularTaskScheduler(queue, regularTasks);
+
             logProcessingService.Start();
             logEntryProcessingService.Start();
+            taskScheduler.Start();
             Console.WriteLine("Collector is running. Pres any key to exit...");
             Console.ReadLine();
+            taskScheduler.Dispose();
             logProcessingService.Dispose();
             continuousFileProcessor.Dispose();
             logEntryGroupBox.Dispose();

@@ -9,8 +9,13 @@ namespace IndexSuggestions.Collector
 {
     class LogEntryProcessingService : ILogEntryProcessingService
     {
+#if DEBUG
+        private const int PERSISTENCE_THRESHOLD_ENTRIES_COUNT = 50;
+        private const int PERSISTENCE_THRESHOLD_ELAPSED_SECONDS = 2;
+#else
         private const int PERSISTENCE_THRESHOLD_ENTRIES_COUNT = 1000;
         private const int PERSISTENCE_THRESHOLD_ELAPSED_SECONDS = 60;
+#endif
         private readonly ILogEntryGroupBox groupBox;
         private readonly ILogEntryProcessingChainFactory chainFactory;
         private readonly ICommandProcessingQueue<IExecutableCommand> queue;
