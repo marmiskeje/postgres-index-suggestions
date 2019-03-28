@@ -18,4 +18,12 @@ namespace IndexSuggestions.Collector
     {
 
     }
+    internal class MergeNormalizedStatementRelationStatisticsContext : MergeStatisticsContext<long, NormalizedStatementRelationStatistics>
+    {
+
+    }
+    internal class MergeNormalizedStatementIndexStatisticsContext : MergeStatisticsContext<long, NormalizedStatementIndexStatistics>
+    {
+
+    }
 }

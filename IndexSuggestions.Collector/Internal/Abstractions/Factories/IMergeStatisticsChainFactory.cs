@@ -8,5 +8,7 @@ namespace IndexSuggestions.Collector
     internal interface IMergeStatisticsChainFactory
     {
         IExecutableCommand MergeStatisticsChain(MergeNormalizedStatementStatisticsContext context);
+        IExecutableCommand MergeStatisticsChain(MergeNormalizedStatementRelationStatisticsContext context);
+        IExecutableCommand MergeStatisticsChain(MergeNormalizedStatementIndexStatisticsContext context);
     }
 }

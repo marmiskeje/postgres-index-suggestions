@@ -57,6 +57,10 @@ namespace IndexSuggestions.Collector
                 DateTime now = DateTime.Now;
                 var context = new MergeNormalizedStatementStatisticsContext() { CreatedDateFrom = now.AddDays(-7), CreatedDateTo = now.AddDays(-9), DateTimeSelector = dateTimeSelectors.HourSelector };
                 mergeStatisticsChainFactory.MergeStatisticsChain(context).Execute();
+                var context2 = new MergeNormalizedStatementRelationStatisticsContext() { CreatedDateFrom = now.AddDays(-7), CreatedDateTo = now.AddDays(-9), DateTimeSelector = dateTimeSelectors.HourSelector };
+                mergeStatisticsChainFactory.MergeStatisticsChain(context2).Execute();
+                var context3 = new MergeNormalizedStatementIndexStatisticsContext() { CreatedDateFrom = now.AddDays(-7), CreatedDateTo = now.AddDays(-9), DateTimeSelector = dateTimeSelectors.HourSelector };
+                mergeStatisticsChainFactory.MergeStatisticsChain(context3).Execute();
                 return true;
             }));
             regularTasks.Add(new TimeSpan(2, 0, 0), new ActionCommand(() =>
@@ -64,6 +68,10 @@ namespace IndexSuggestions.Collector
                 DateTime now = DateTime.Now;
                 var context = new MergeNormalizedStatementStatisticsContext() { CreatedDateFrom = now.AddDays(-14), CreatedDateTo = now.AddDays(-16), DateTimeSelector = dateTimeSelectors.DaySelector };
                 mergeStatisticsChainFactory.MergeStatisticsChain(context).Execute();
+                var context2 = new MergeNormalizedStatementRelationStatisticsContext() { CreatedDateFrom = now.AddDays(-14), CreatedDateTo = now.AddDays(-16), DateTimeSelector = dateTimeSelectors.DaySelector };
+                mergeStatisticsChainFactory.MergeStatisticsChain(context2).Execute();
+                var context3 = new MergeNormalizedStatementIndexStatisticsContext() { CreatedDateFrom = now.AddDays(-14), CreatedDateTo = now.AddDays(-16), DateTimeSelector = dateTimeSelectors.DaySelector };
+                mergeStatisticsChainFactory.MergeStatisticsChain(context3).Execute();
                 return true;
             }));
             var taskScheduler = new RegularTaskScheduler(queue, regularTasks);

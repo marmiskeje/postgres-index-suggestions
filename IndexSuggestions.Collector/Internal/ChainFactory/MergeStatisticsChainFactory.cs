@@ -20,5 +20,23 @@ namespace IndexSuggestions.Collector
             chain.Add(commands.SaveMergedStatisticsCommand(context));
             return chain.FirstCommand;
         }
+
+        public IExecutableCommand MergeStatisticsChain(MergeNormalizedStatementRelationStatisticsContext context)
+        {
+            CommandChainCreator chain = new CommandChainCreator();
+            chain.Add(commands.LoadStatisticsForMergeCommand(context));
+            chain.Add(commands.MergeStatisticsCommand(context));
+            chain.Add(commands.SaveMergedStatisticsCommand(context));
+            return chain.FirstCommand;
+        }
+
+        public IExecutableCommand MergeStatisticsChain(MergeNormalizedStatementIndexStatisticsContext context)
+        {
+            CommandChainCreator chain = new CommandChainCreator();
+            chain.Add(commands.LoadStatisticsForMergeCommand(context));
+            chain.Add(commands.MergeStatisticsCommand(context));
+            chain.Add(commands.SaveMergedStatisticsCommand(context));
+            return chain.FirstCommand;
+        }
     }
 }
