@@ -26,6 +26,11 @@ namespace IndexSuggestions.DBMS.Postgres
             return result;
         }
 
+        public IEnumerable<IDatabase> GetAll()
+        {
+            return GetAllById().Values;
+        }
+
         public IDatabase GetByName(string databaseName)
         {
             string attributeKey = $"{databaseName}";

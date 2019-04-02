@@ -6,7 +6,7 @@ using IndexSuggestions.DAL.Contracts;
 
 namespace IndexSuggestions.Collector
 {
-    internal class StatementDataAccumulator : IStatementDataAccumulator
+    internal class StatementsProcessingDataAccumulator : IStatementsProcessingDataAccumulator
     {
         private readonly object lockObject = new object();
         private readonly Dictionary<string, NormalizedStatement> statements = new Dictionary<string, NormalizedStatement>();
@@ -15,11 +15,7 @@ namespace IndexSuggestions.Collector
         private readonly Dictionary<string, NormalizedStatementRelationStatisticsSampler> statementRelationStatistics = new Dictionary<string, NormalizedStatementRelationStatisticsSampler>();
         private readonly IDateTimeSelector dateTimeSelector;
 
-        public StatementDataAccumulator()
-        {
-        }
-
-        public StatementDataAccumulator(IDateTimeSelector dateTimeSelector)
+        public StatementsProcessingDataAccumulator(IDateTimeSelector dateTimeSelector)
         {
             this.dateTimeSelector = dateTimeSelector;
         }
@@ -42,9 +38,9 @@ namespace IndexSuggestions.Collector
             return result;
         }
 
-        public StatementDataAccumulatorState ProvideState()
+        public StatementsProcessingDataAccumulatorState ProvideState()
         {
-            var result = new StatementDataAccumulatorState();
+            var result = new StatementsProcessingDataAccumulatorState();
             lock (lockObject)
             {
                 foreach (var s in statements)
@@ -105,21 +101,16 @@ namespace IndexSuggestions.Collector
                 MinTotalCost = indexStatisticsData.TotalCost,
                 TotalIndexScanCount = 1
             };
-            bool addSample = true;
             lock (lockObject)
             {
                 if (!statementIndexStatistics.ContainsKey(key))
                 {
-                    statementIndexStatistics.Add(key, new NormalizedStatementIndexStatisticsSampler(dateTimeSelector, sample));
-                    addSample = false;
+                    statementIndexStatistics.Add(key, new NormalizedStatementIndexStatisticsSampler(dateTimeSelector, null));
                 }
             }
-            if (addSample)
+            lock (String.Intern(key))
             {
-                lock (String.Intern(key))
-                {
-                    statementIndexStatistics[key].AddSample(sample);
-                }
+                statementIndexStatistics[key].AddSample(sample);
             }
         }
 
@@ -137,21 +128,16 @@ namespace IndexSuggestions.Collector
                 MinTotalCost = relationStatisticsData.TotalCost,
                 TotalScansCount = 1
             };
-            bool addSample = true;
             lock (lockObject)
             {
                 if (!statementRelationStatistics.ContainsKey(key))
                 {
-                    statementRelationStatistics.Add(key, new NormalizedStatementRelationStatisticsSampler(dateTimeSelector, sample));
-                    addSample = false;
+                    statementRelationStatistics.Add(key, new NormalizedStatementRelationStatisticsSampler(dateTimeSelector, null));
                 }
             }
-            if (addSample)
+            lock (String.Intern(key))
             {
-                lock (String.Intern(key))
-                {
-                    statementRelationStatistics[key].AddSample(sample);
-                }
+                statementRelationStatistics[key].AddSample(sample);
             }
         }
 
@@ -171,21 +157,16 @@ namespace IndexSuggestions.Collector
                 TotalExecutionsCount = 1,
                 UserName = statementStatisticsData.UserName
             };
-            bool addSample = true;
             lock (lockObject)
             {
                 if (!statementStatistics.ContainsKey(key))
                 {
-                    statementStatistics.Add(key, new NormalizedStatementStatisticsSampler(dateTimeSelector, sample));
-                    addSample = false;
+                    statementStatistics.Add(key, new NormalizedStatementStatisticsSampler(dateTimeSelector, null));
                 }
             }
-            if (addSample)
+            lock (String.Intern(key))
             {
-                lock (String.Intern(key))
-                {
-                    statementStatistics[key].AddSample(sample);
-                }
+                statementStatistics[key].AddSample(sample);
             }
         }
     }

@@ -3,9 +3,34 @@ using System;
 using System.Collections.Generic;
 using Dapper;
 using IndexSuggestions.Common.Cache;
+using static Dapper.SqlMapper;
+using IndexSuggestions.DBMS.Contracts;
 
 namespace IndexSuggestions.DBMS.Postgres
 {
+    internal interface IDataReader
+    {
+        IEnumerable<T> Read<T>();
+        T ReadSingle<T>();
+    }
+
+    internal class DataReader : IDataReader
+    {
+        private readonly GridReader reader;
+        public DataReader(GridReader reader)
+        {
+            this.reader = reader;
+        }
+        public IEnumerable<T> Read<T>()
+        {
+            return reader.Read<T>();
+        }
+        public T ReadSingle<T>()
+        {
+            return reader.ReadSingle<T>();
+        }
+    }
+
     internal abstract class BaseRepository
     {
         protected Type ThisType { get; private set; }
@@ -30,7 +55,26 @@ namespace IndexSuggestions.DBMS.Postgres
 
         protected virtual NpgsqlConnection CreateConnection()
         {
-            return new NpgsqlConnection(ConnectionString);
+            var connectionStringToUse = ConnectionString;
+            if (!String.IsNullOrEmpty(DatabaseScope.Current))
+            {
+                var connectionStringBuilder = new NpgsqlConnectionStringBuilder(connectionStringToUse);
+                connectionStringBuilder.Database = DatabaseScope.Current;
+                connectionStringToUse = connectionStringBuilder.ConnectionString;
+            }
+            return new NpgsqlConnection(connectionStringToUse);
+        }
+
+        protected void ExecuteQueryMulti(string queryText, object parametersContainer, Action<IDataReader> readerAction, int? commandTimeout = null)
+        {
+            int commandTimeoutToUse = commandTimeout ?? DefaultCommandTimeout;
+            using (var connection = CreateConnection())
+            {
+                using (var reader = connection.QueryMultiple(queryText, parametersContainer, commandTimeout: commandTimeoutToUse, commandType: System.Data.CommandType.Text))
+                {
+                    readerAction(new DataReader(reader));
+                }
+            }
         }
 
         protected IEnumerable<T> ExecuteQuery<T>(string queryText, object parametersContainer, int? commandTimeout = null)

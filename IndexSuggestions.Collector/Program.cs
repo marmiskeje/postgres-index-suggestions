@@ -1,4 +1,5 @@
 ﻿using IndexSuggestions.Collector.Contracts;
+using IndexSuggestions.Common.Cache;
 using IndexSuggestions.Common.CommandProcessing;
 using IndexSuggestions.Common.Logging;
 using IndexSuggestions.DAL;
@@ -37,17 +38,22 @@ namespace IndexSuggestions.Collector
             var oneFileProcessor = new FileProcessor(log, collectorConfiguration.LogProcessing, logProcessor, logEntryGroupBox);
             var continuousFileProcessor = new ContinuousFileProcessor(log, collectorConfiguration.LogProcessing, logProcessor, logEntryGroupBox);
             var logProcessingService = new LogProcessingService(collectorConfiguration.LogProcessing, oneFileProcessor, continuousFileProcessor);
-            var queue = new CommandProcessingQueue<IExecutableCommand>(log, "ProcessingQueue");
+            var logEntriesProcessingQueue = new CommandProcessingQueue<IExecutableCommand>(log, "LogEntriesProcessingQueue");
             var dateTimeSelectors = DateTimeSelectorsProvider.Instance;
-            var statementDataAccumulator = new StatementDataAccumulator(dateTimeSelectors.MinuteSelector);
+            var statementDataAccumulator = new StatementsProcessingDataAccumulator(dateTimeSelectors.MinuteSelector);
             var postgresRepositories = DBMS.Postgres.RepositoriesFactory.Instance;
             var dalRepositories = RepositoriesFactory.Instance;
             var lastProcessedEvidence = new LastProcessedLogEntryEvidence(log, dalRepositories.GetSettingPropertiesRepository());
             var generalCommands = new GeneralProcessingCommandFactory(log, collectorConfiguration, statementDataAccumulator, postgresRepositories,
                                                                       dalRepositories, lastProcessedEvidence);
-            var externalCommands = new Postgres.LogEntryProcessingCommandFactory(DBMS.Postgres.RepositoriesFactory.Instance);
+            var externalCommands = new Postgres.LogEntryProcessingCommandFactory(postgresRepositories);
             var chainFactory = new LogEntryProcessingChainFactory(log, generalCommands, externalCommands, dalRepositories, statementDataAccumulator);
-            var logEntryProcessingService = new LogEntryProcessingService(logEntryGroupBox, queue, chainFactory, lastProcessedEvidence);
+            var logEntryProcessingService = new LogEntryProcessingService(logEntryGroupBox, logEntriesProcessingQueue, chainFactory, lastProcessedEvidence);
+            var statisticsProcessingQueue = new CommandProcessingQueue<IExecutableCommand>(log, "StatisticsProcessingQueue");
+            var statisticsDataAccumulator = new StatisticsProcessingDataAccumulator(dateTimeSelectors.MinuteSelector, CacheProvider.Instance.MemoryCache);
+            var statisticsCommands = new StatisticsProcessingCommandFactory(log, statisticsDataAccumulator, postgresRepositories, dalRepositories);
+            var statisticsChainFactory = new StatisticsProcessingChainFactory(statisticsCommands);
+            var statisticsCollectorService = new StatisticsCollectorService(statisticsProcessingQueue, statisticsChainFactory);
 
             var mergeStatisticsCommands = new MergeStatisticsCommandFactory(dalRepositories);
             var mergeStatisticsChainFactory = new MergeStatisticsChainFactory(mergeStatisticsCommands);
@@ -74,11 +80,12 @@ namespace IndexSuggestions.Collector
                 mergeStatisticsChainFactory.MergeStatisticsChain(context3).Execute();
                 return true;
             }));
-            var taskScheduler = new RegularTaskScheduler(queue, regularTasks);
+            var taskScheduler = new RegularTaskScheduler(statisticsProcessingQueue, regularTasks);
 
-            logProcessingService.Start();
-            logEntryProcessingService.Start();
-            taskScheduler.Start();
+            statisticsCollectorService.Start();
+            //logProcessingService.Start();
+            //logEntryProcessingService.Start();
+            //taskScheduler.Start();
             Console.WriteLine("Collector is running. Pres any key to exit...");
             Console.ReadLine();
             taskScheduler.Dispose();
@@ -86,7 +93,9 @@ namespace IndexSuggestions.Collector
             continuousFileProcessor.Dispose();
             logEntryGroupBox.Dispose();
             logEntryProcessingService.Dispose();
-            queue.Dispose();
+            statisticsCollectorService.Dispose();
+            logEntriesProcessingQueue.Dispose();
+            statisticsProcessingQueue.Dispose();
         }
     }
 }

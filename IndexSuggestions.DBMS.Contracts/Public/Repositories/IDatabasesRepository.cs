@@ -8,5 +8,6 @@ namespace IndexSuggestions.DBMS.Contracts
     {
         IDatabase Get(uint databaseID);
         IDatabase GetByName(string name);
+        IEnumerable<IDatabase> GetAll();
     }
 }

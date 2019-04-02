@@ -21,6 +21,11 @@ namespace IndexSuggestions.DBMS.Postgres
             Dapper.SqlMapper.SetTypeMap(typeof(ExplainResult), new DapperColumnAttributeTypeMapper<ExplainResult>());
             Dapper.SqlMapper.SetTypeMap(typeof(VirtualIndex), new DapperColumnAttributeTypeMapper<VirtualIndex>());
             Dapper.SqlMapper.SetTypeMap(typeof(Database), new DapperColumnAttributeTypeMapper<Database>());
+            Dapper.SqlMapper.SetTypeMap(typeof(DatabaseStatistics), new DapperColumnAttributeTypeMapper<DatabaseStatistics>());
+            Dapper.SqlMapper.SetTypeMap(typeof(IndexStatistics), new DapperColumnAttributeTypeMapper<IndexStatistics>());
+            Dapper.SqlMapper.SetTypeMap(typeof(RelationStatistics), new DapperColumnAttributeTypeMapper<RelationStatistics>());
+            Dapper.SqlMapper.SetTypeMap(typeof(StoredProcedureStatistics), new DapperColumnAttributeTypeMapper<StoredProcedureStatistics>());
+            Dapper.SqlMapper.SetTypeMap(typeof(TotalDatabaseCollectionInfo), new DapperColumnAttributeTypeMapper<TotalDatabaseCollectionInfo>());
         }
 
         private RepositoriesFactory()
@@ -74,6 +79,11 @@ namespace IndexSuggestions.DBMS.Postgres
         public IDatabasesRepository GetDatabasesRepository()
         {
             return new DatabasesRepository(settings.DBConnection.ConnectionString);
+        }
+
+        public ITotalDatabaseStatisticsRepository GetTotalDatabaseStatisticsRepository()
+        {
+            return new TotalDatabaseStatisticsRepository(settings.DBConnection.ConnectionString);
         }
     }
 }

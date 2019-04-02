@@ -31,7 +31,7 @@ namespace IndexSuggestions.DBMS.Postgres
             }
             return result;
         }
-
+#warning pozor, toto je iba per aktualna databaza, treba prerobit, aj na ostatnych miestach
         private Dictionary<string, Relation> GetAll()
         {
             string query = @"

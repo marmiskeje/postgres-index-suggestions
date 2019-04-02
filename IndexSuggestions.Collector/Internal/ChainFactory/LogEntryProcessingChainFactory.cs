@@ -14,10 +14,10 @@ namespace IndexSuggestions.Collector
         private readonly IGeneralProcessingCommandFactory generalCommands;
         private readonly ILogEntryProcessingCommandFactory externalCommands;
         private readonly IRepositoriesFactory repositoriesFactory;
-        private readonly IStatementDataAccumulator statementDataAccumulator;
+        private readonly IStatementsProcessingDataAccumulator statementDataAccumulator;
         public LogEntryProcessingChainFactory(ILog log, IGeneralProcessingCommandFactory generalCommands,
                                               ILogEntryProcessingCommandFactory externalCommands, IRepositoriesFactory repositoriesFactory,
-                                              IStatementDataAccumulator statementDataAccumulator)
+                                              IStatementsProcessingDataAccumulator statementDataAccumulator)
         {
             this.log = log;
             this.generalCommands = generalCommands;

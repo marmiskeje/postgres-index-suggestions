@@ -66,5 +66,20 @@ namespace IndexSuggestions.DAL
         {
             return new NormalizedStatementRelationStatisticsRepository(CreateContext);
         }
+
+        public ITotalRelationStatisticsRepository GetTotalRelationStatisticsRepository()
+        {
+            return new TotalRelationStatisticsRepository(CreateContext);
+        }
+
+        public ITotalIndexStatisticsRepository GetTotalIndexStatisticsRepository()
+        {
+            return new TotalIndexStatisticsRepository(CreateContext);
+        }
+
+        public ITotalStoredProcedureStatisticsRepository GetTotalStoredProcedureStatisticsRepository()
+        {
+            return new TotalStoredProcedureStatisticsRepository(CreateContext);
+        }
     }
 }

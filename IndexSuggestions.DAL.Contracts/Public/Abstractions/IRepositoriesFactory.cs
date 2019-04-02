@@ -13,5 +13,8 @@ namespace IndexSuggestions.DAL.Contracts
         INormalizedStatementStatisticsRepository GetNormalizedStatementStatisticsRepository();
         INormalizedStatementIndexStatisticsRepository GetNormalizedStatementIndexStatisticsRepository();
         INormalizedStatementRelationStatisticsRepository GetNormalizedStatementRelationStatisticsRepository();
+        ITotalRelationStatisticsRepository GetTotalRelationStatisticsRepository();
+        ITotalIndexStatisticsRepository GetTotalIndexStatisticsRepository();
+        ITotalStoredProcedureStatisticsRepository GetTotalStoredProcedureStatisticsRepository();
     }
 }

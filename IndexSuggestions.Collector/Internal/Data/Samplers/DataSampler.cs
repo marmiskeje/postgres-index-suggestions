@@ -6,7 +6,7 @@ namespace IndexSuggestions.Collector
 {
     internal abstract class DataSampler<TData>
     {
-        private readonly Dictionary<string, TData> samples = new Dictionary<string, TData>();
+        private readonly Dictionary<string, TData> cumulativeSamples = new Dictionary<string, TData>();
         protected abstract string CreateKey(TData data);
         protected abstract void InitializeCumulativeData(TData cumulativeData);
         protected abstract void ApplySampling(TData cumulativeData, TData newSample);
@@ -15,12 +15,12 @@ namespace IndexSuggestions.Collector
         {
             var key = CreateKey(data);
             bool doUpdate = true;
-            lock (samples)
+            lock (cumulativeSamples)
             {
-                if (!samples.ContainsKey(key))
+                if (!cumulativeSamples.ContainsKey(key))
                 {
                     InitializeCumulativeData(data);
-                    samples.Add(key, data);
+                    cumulativeSamples.Add(key, data);
                     doUpdate = false;
                 }
             }
@@ -28,14 +28,14 @@ namespace IndexSuggestions.Collector
             {
                 lock (String.Intern(key))
                 {
-                    ApplySampling(samples[key], data);
+                    ApplySampling(cumulativeSamples[key], data);
                 }
             }
         }
 
         public IReadOnlyCollection<TData> ProvideSamples()
         {
-            return samples.Values;
+            return cumulativeSamples.Values;
         }
     }
 }

@@ -10,8 +10,8 @@ namespace IndexSuggestions.Collector
     class PublishNormalizedStatementIndexStatisticsCommand : ChainableCommand
     {
         private readonly LogEntryProcessingContext context;
-        private readonly IStatementDataAccumulator statementDataAccumulator;
-        public PublishNormalizedStatementIndexStatisticsCommand(LogEntryProcessingContext context, IStatementDataAccumulator statementDataAccumulator)
+        private readonly IStatementsProcessingDataAccumulator statementDataAccumulator;
+        public PublishNormalizedStatementIndexStatisticsCommand(LogEntryProcessingContext context, IStatementsProcessingDataAccumulator statementDataAccumulator)
         {
             this.context = context;
             this.statementDataAccumulator = statementDataAccumulator;

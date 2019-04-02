@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Caching.Memory;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -37,9 +38,7 @@ namespace IndexSuggestions.Common.Cache
 
         private void SaveToCachePrivate<T>(String key, T item, TimeSpan expiration)
         {
-            var entry = cache.CreateEntry(key);
-            entry.AbsoluteExpiration = DateTimeOffset.Now.Add(expiration);
-            entry.Value = item;
+            cache.Set<T>(key, item, expiration);
         }
     }
 }

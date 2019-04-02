@@ -6,7 +6,7 @@ using System.Text;
 
 namespace IndexSuggestions.Collector
 {
-    internal interface IStatementDataAccumulator
+    internal interface IStatementsProcessingDataAccumulator
     {
         NormalizedStatement ProvideNormalizedStatement(string fingerprint);
         void PublishNormalizedStatement(LogEntryStatementData statementData);
@@ -15,11 +15,11 @@ namespace IndexSuggestions.Collector
         void PublishNormalizedStatementIndexStatistics(LogEntryStatementIndexStatisticsData indexStatisticsData);
         void PublishNormalizedStatementRelationStatistics(LogEntryStatementRelationStatisticsData relationStatisticsData);
 
-        StatementDataAccumulatorState ProvideState();
+        StatementsProcessingDataAccumulatorState ProvideState();
         void ClearState();
     }
 
-    internal class StatementDataAccumulatorState
+    internal class StatementsProcessingDataAccumulatorState
     {
         public Dictionary<string, NormalizedStatement> Statements { get; } = new Dictionary<string, NormalizedStatement>();
         public Dictionary<string, List<NormalizedStatementStatistics>> StatementStatistics { get; } = new Dictionary<string, List<NormalizedStatementStatistics>>();

@@ -12,11 +12,11 @@ namespace IndexSuggestions.Collector
     {
         private readonly ILog log;
         private readonly ICollectorConfiguration configuration;
-        private readonly IStatementDataAccumulator statementDataAccumulator;
+        private readonly IStatementsProcessingDataAccumulator statementDataAccumulator;
         private readonly DBMS.Contracts.IRepositoriesFactory dbmsRepositories;
         private readonly IRepositoriesFactory dalRepositories;
         private readonly ILastProcessedLogEntryEvidence processedLogEntryEvidence;
-        public GeneralProcessingCommandFactory(ILog log, ICollectorConfiguration configuration, IStatementDataAccumulator statementDataAccumulator,
+        public GeneralProcessingCommandFactory(ILog log, ICollectorConfiguration configuration, IStatementsProcessingDataAccumulator statementDataAccumulator,
                                                DBMS.Contracts.IRepositoriesFactory dbmsRepositories, IRepositoriesFactory dalRepositories,
                                                ILastProcessedLogEntryEvidence processedLogEntryEvidence)
         {
@@ -50,7 +50,7 @@ namespace IndexSuggestions.Collector
 
         public IChainableCommand PersistDataAccumulatorsCommand()
         {
-            return new PersistDataAccumulatorsCommand(statementDataAccumulator, dalRepositories, processedLogEntryEvidence);
+            return new PersistLogEntryDataAccumulatorsCommand(statementDataAccumulator, dalRepositories, processedLogEntryEvidence);
         }
 
         public IChainableCommand PublishNormalizedStatementCommand(LogEntryProcessingContext context)

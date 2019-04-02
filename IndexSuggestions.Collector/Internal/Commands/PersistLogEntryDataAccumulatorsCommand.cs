@@ -7,12 +7,12 @@ using System.Transactions;
 
 namespace IndexSuggestions.Collector
 {
-    internal class PersistDataAccumulatorsCommand : ChainableCommand
+    internal class PersistLogEntryDataAccumulatorsCommand : ChainableCommand
     {
-        private readonly IStatementDataAccumulator statementDataAccumulator;
+        private readonly IStatementsProcessingDataAccumulator statementDataAccumulator;
         private readonly IRepositoriesFactory repositories;
         private readonly ILastProcessedLogEntryEvidence processedLogEntryEvidence;
-        public PersistDataAccumulatorsCommand(IStatementDataAccumulator statementDataAccumulator, IRepositoriesFactory repositories,
+        public PersistLogEntryDataAccumulatorsCommand(IStatementsProcessingDataAccumulator statementDataAccumulator, IRepositoriesFactory repositories,
                                               ILastProcessedLogEntryEvidence processedLogEntryEvidence)
         {
             this.statementDataAccumulator = statementDataAccumulator;

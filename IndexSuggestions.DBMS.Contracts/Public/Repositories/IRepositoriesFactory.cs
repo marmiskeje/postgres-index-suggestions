@@ -12,5 +12,6 @@ namespace IndexSuggestions.DBMS.Contracts
         IExplainRepository GetExplainRepository();
         IVirtualIndicesRepository GetVirtualIndicesRepository();
         IDatabasesRepository GetDatabasesRepository();
+        ITotalDatabaseStatisticsRepository GetTotalDatabaseStatisticsRepository();
     }
 }

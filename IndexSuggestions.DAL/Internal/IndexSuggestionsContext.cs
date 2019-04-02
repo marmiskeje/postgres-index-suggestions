@@ -19,6 +19,9 @@ namespace IndexSuggestions.DAL
         public DbSet<NormalizedStatementStatistics> NormalizedStatementStatistics { get; set; }
         public DbSet<NormalizedStatementIndexStatistics> NormalizedStatementIndexStatistics { get; set; }
         public DbSet<NormalizedStatementRelationStatistics> NormalizedStatementRelationStatistics { get; set; }
+        public DbSet<TotalRelationStatistics> TotalRelationStatistics { get; set; }
+        public DbSet<TotalIndexStatistics> TotalIndexStatistics { get; set; }
+        public DbSet<TotalStoredProcedureStatistics> TotalStoredProcedureStatistics { get; set; }
 
         public IndexSuggestionsContext(string providerName, string connectionString) : base()
         {
@@ -76,6 +79,12 @@ namespace IndexSuggestions.DAL
             modelBuilder.Entity<NormalizedStatementIndexStatistics>().HasOne(x => x.NormalizedStatement).WithMany(x => x.NormalizedStatementIndexStatistics);
             modelBuilder.Entity<NormalizedStatementRelationStatistics>().HasIndex(x => new { x.DatabaseID, x.NormalizedStatementID, x.RelationID, x.Date }).IsUnique();
             modelBuilder.Entity<NormalizedStatementRelationStatistics>().HasOne(x => x.NormalizedStatement).WithMany(x => x.NormalizedStatementRelationStatistics);
+            modelBuilder.Entity<TotalRelationStatistics>().HasIndex(x => new { x.DatabaseID, x.RelationID, x.Date }).IsUnique();
+            modelBuilder.Entity<TotalRelationStatistics>().HasIndex(x => x.RelationID);
+            modelBuilder.Entity<TotalIndexStatistics>().HasIndex(x => new { x.DatabaseID, x.RelationID, x.IndexID, x.Date }).IsUnique();
+            modelBuilder.Entity<TotalIndexStatistics>().HasIndex(x => x.IndexID);
+            modelBuilder.Entity<TotalStoredProcedureStatistics>().HasIndex(x => new { x.DatabaseID, x.ProcedureID, x.Date }).IsUnique();
+            modelBuilder.Entity<TotalStoredProcedureStatistics>().HasIndex(x => x.ProcedureID);
             modelBuilder.Entity<SettingProperty>().HasIndex(x => x.Key).IsUnique();
             modelBuilder.Entity<SettingProperty>().SeedData(new SettingProperty() { ID = 1, Key = SettingPropertyKeys.LAST_PROCESSED_LOG_ENTRY_TIMESTAMP });
             modelBuilder.Entity<SettingProperty>().SeedData(new SettingProperty() { ID = 2, Key = SettingPropertyKeys.ACTIVE_WORKLOAD, IntValue = 1 });
