@@ -83,9 +83,9 @@ namespace IndexSuggestions.Collector
             var taskScheduler = new RegularTaskScheduler(statisticsProcessingQueue, regularTasks);
 
             statisticsCollectorService.Start();
-            //logProcessingService.Start();
-            //logEntryProcessingService.Start();
-            //taskScheduler.Start();
+            logProcessingService.Start();
+            logEntryProcessingService.Start();
+            taskScheduler.Start();
             Console.WriteLine("Collector is running. Pres any key to exit...");
             Console.ReadLine();
             taskScheduler.Dispose();

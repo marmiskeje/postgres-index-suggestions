@@ -26,6 +26,8 @@ namespace IndexSuggestions.DBMS.Postgres
             Dapper.SqlMapper.SetTypeMap(typeof(RelationStatistics), new DapperColumnAttributeTypeMapper<RelationStatistics>());
             Dapper.SqlMapper.SetTypeMap(typeof(StoredProcedureStatistics), new DapperColumnAttributeTypeMapper<StoredProcedureStatistics>());
             Dapper.SqlMapper.SetTypeMap(typeof(TotalDatabaseCollectionInfo), new DapperColumnAttributeTypeMapper<TotalDatabaseCollectionInfo>());
+            Dapper.SqlMapper.SetTypeMap(typeof(View), new DapperColumnAttributeTypeMapper<View>());
+            Dapper.SqlMapper.SetTypeMap(typeof(StoredProcedure), new DapperColumnAttributeTypeMapper<StoredProcedure>());
         }
 
         private RepositoriesFactory()
@@ -84,6 +86,21 @@ namespace IndexSuggestions.DBMS.Postgres
         public ITotalDatabaseStatisticsRepository GetTotalDatabaseStatisticsRepository()
         {
             return new TotalDatabaseStatisticsRepository(settings.DBConnection.ConnectionString);
+        }
+
+        public IViewsRepository GetViewsRepository()
+        {
+            return new ViewsRepository(settings.DBConnection.ConnectionString);
+        }
+
+        public IDatabaseDependencyObjectsRepository GetDatabaseDependencyObjectsRepository()
+        {
+            return new DatabaseDependencyObjectsRepository(settings.DBConnection.ConnectionString);
+        }
+
+        public IStoredProceduresRepository GetStoredProceduresRepository()
+        {
+            return new StoredProceduresRepository(settings.DBConnection.ConnectionString);
         }
     }
 }
