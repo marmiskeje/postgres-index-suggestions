@@ -12,15 +12,17 @@ namespace IndexSuggestions.Collector
     {
         private readonly ILog log;
         private readonly IGeneralProcessingCommandFactory generalCommands;
+        private readonly IStatisticsProcessingCommandFactory statisticsProcessingCommands;
         private readonly ILogEntryProcessingCommandFactory externalCommands;
         private readonly IRepositoriesFactory repositoriesFactory;
         private readonly IStatementsProcessingDataAccumulator statementDataAccumulator;
-        public LogEntryProcessingChainFactory(ILog log, IGeneralProcessingCommandFactory generalCommands,
+        public LogEntryProcessingChainFactory(ILog log, IGeneralProcessingCommandFactory generalCommands, IStatisticsProcessingCommandFactory statisticsProcessingCommands,
                                               ILogEntryProcessingCommandFactory externalCommands, IRepositoriesFactory repositoriesFactory,
                                               IStatementsProcessingDataAccumulator statementDataAccumulator)
         {
             this.log = log;
             this.generalCommands = generalCommands;
+            this.statisticsProcessingCommands = statisticsProcessingCommands;
             this.externalCommands = externalCommands;
             this.repositoriesFactory = repositoriesFactory;
             this.statementDataAccumulator = statementDataAccumulator;
@@ -84,10 +86,19 @@ namespace IndexSuggestions.Collector
             return chain.AsChainableCommand();
         }
 
+        private IChainableCommand CreateViewStatisticsProcessingChain(LogEntryProcessingContext context)
+        {
+            CommandChainCreator chain = new CommandChainCreator();
+            chain.Add(statisticsProcessingCommands.EnqueueCommand());
+            chain.Add(statisticsProcessingCommands.PublishTotalViewStatisticsCommand(context));
+            return chain.AsChainableCommand();
+        }
+
         public IExecutableCommand LogEntryProcessingChain(LogEntryProcessingContext context)
         {
             ParallelCommandStepsCreator parallelSteps = new ParallelCommandStepsCreator();
             parallelSteps.AddParallelStep(CreateStatementProcessingChain(context));
+            parallelSteps.AddParallelStep(CreateViewStatisticsProcessingChain(context));
 
             CommandChainCreator chain = new CommandChainCreator();
             chain.Add(generalCommands.LoadDatabaseInfoForLogEntryCommand(context));

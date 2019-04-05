@@ -6,6 +6,6 @@ namespace IndexSuggestions.DBMS.Contracts
 {
     public interface IStoredProceduresRepository
     {
-        IEnumerable<IStoredProcedure> GetAll();
+        IEnumerable<IStoredProcedure> GetAllNonSystemProcedures();
     }
 }

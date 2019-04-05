@@ -1,6 +1,6 @@
 ﻿
 {
   "DBConnection": {
-    "ConnectionString": "Server=localhost;Port=5432;Database=test;User Id=postgres;Password = postgres.pass;Application Name=IndexSuggestions;"
+    "ConnectionString": "Server=104.199.86.56;Port=5432;Database=test;User Id=postgres;Password = postgres.pass;Application Name=IndexSuggestions;"
   }
 }

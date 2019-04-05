@@ -76,8 +76,8 @@ namespace IndexSuggestions.Collector
                     oldStatement.CommandType = newStatement.CommandType;
                     oldStatement.StatementDefinition = newStatement.StatementDefinition;
                     repository.Update(oldStatement);
-                    newStatement.ID = oldStatement.ID;
                 }
+                newStatement.ID = oldStatement.ID;
             }
         }
 

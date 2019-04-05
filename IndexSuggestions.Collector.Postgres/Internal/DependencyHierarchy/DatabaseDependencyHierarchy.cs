@@ -9,6 +9,6 @@ namespace IndexSuggestions.Collector.Postgres
     {
         public ISet<IDependencyHierarchyObject> Views { get; } = new HashSet<IDependencyHierarchyObject>();
 
-        public ISet<IStoredProcedureHierarchyObject> StoredProcedures { get; } = new HashSet<IStoredProcedureHierarchyObject>();
+        public ISet<IDependencyHierarchyObject> StoredProcedures { get; } = new HashSet<IDependencyHierarchyObject>();
     }
 }

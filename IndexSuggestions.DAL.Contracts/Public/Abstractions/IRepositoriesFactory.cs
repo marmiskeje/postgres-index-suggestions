@@ -16,5 +16,6 @@ namespace IndexSuggestions.DAL.Contracts
         ITotalRelationStatisticsRepository GetTotalRelationStatisticsRepository();
         ITotalIndexStatisticsRepository GetTotalIndexStatisticsRepository();
         ITotalStoredProcedureStatisticsRepository GetTotalStoredProcedureStatisticsRepository();
+        ITotalViewStatisticsRepository GetTotalViewStatisticsRepository();
     }
 }

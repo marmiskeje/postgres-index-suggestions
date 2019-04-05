@@ -25,8 +25,8 @@ namespace IndexSuggestions.Collector.Postgres
         public IDatabaseDependencyHierarchy Build()
         {
             DatabaseDependencyHierarchy hierarchy = new DatabaseDependencyHierarchy();
-            var allViews = viewsRepository.GetAll();
-            var allProcedures = proceduresRepository.GetAll().Where(x => x.SchemaName == "test");
+            var allViews = viewsRepository.GetAllNonSystemViews();
+            var allProcedures = proceduresRepository.GetAllNonSystemProcedures();
             foreach (var view in allViews)
             {
                 var toAdd = BuildDependencyObject(allViews, allProcedures, new HashSet<IDependencyHierarchyObject>(),
@@ -39,7 +39,7 @@ namespace IndexSuggestions.Collector.Postgres
             foreach (var proc in allProcedures)
             {
                 var toAdd = BuildDependencyObject(allViews, allProcedures, new HashSet<IDependencyHierarchyObject>(),
-                                    new HashSet<IDependencyHierarchyObject>(), CreateDependencyHierarchyObject(proc)) as IStoredProcedureHierarchyObject;
+                                    new HashSet<IDependencyHierarchyObject>(), CreateDependencyHierarchyObject(proc));
                 if (toAdd != null)
                 {
                     hierarchy.StoredProcedures.Add(toAdd);
@@ -105,31 +105,24 @@ namespace IndexSuggestions.Collector.Postgres
                     {
                         var definition = proc.DatabaseDependencyObject.Definition.ToLower();
                         List<IDatabaseDependencyObject> result = new List<IDatabaseDependencyObject>();
-                        foreach (var v in allLoadedViews)
+                        if (proc.DatabaseDependencyObject.LanguageName.ToLower().Contains("sql"))
                         {
-                            // from viewname or join viewname
-                            var regex = new Regex("[from|join] " + v.SchemaName.ToLower() + @"\." + v.Name.ToLower());
-                            if (regex.IsMatch(definition))
+                            foreach (var v in allLoadedViews)
                             {
-                                result.Add(v);
+                                var regex = new Regex(CreateSearchOccurencePattern(v));
+                                if (regex.IsMatch(definition))
+                                {
+                                    result.Add(v);
+                                }
                             }
-                        }
-                        foreach (var p in allLoadedProcedures)
-                        {
-                            // functionname(,,,) where ,,, is count of arguments - 1
-                            Regex regex = null;
-                            if (p.ArgumentsCount == 0)
+                            foreach (var p in allLoadedProcedures)
                             {
-                                regex = new Regex(p.SchemaName.ToLower() + @"\." + p.Name.ToLower() + @"\(\)");
-                            }
-                            else
-                            {
-                                regex = new Regex(p.SchemaName.ToLower() + @"\." + p.Name.ToLower() + @"\(([^,)]*,){" + (p.ArgumentsCount - 1).ToString() + @"}[^,)]+\)");
-                            }
-                            if (regex.IsMatch(definition))
-                            {
-                                result.Add(p);
-                            }
+                                Regex regex = new Regex(CreateSearchOccurencePattern(p));
+                                if (regex.IsMatch(definition))
+                                {
+                                    result.Add(p);
+                                }
+                            } 
                         }
                         return result;
                     }
@@ -149,21 +142,36 @@ namespace IndexSuggestions.Collector.Postgres
                         Name = view.Name,
                         ObjectType = DependencyHierarchyObjectType.View,
                         SchemaName = view.SchemaName,
-                        DatabaseDependencyObject = view
+                        DatabaseDependencyObject = view,
+                        SearchOccurencePattern = CreateSearchOccurencePattern(view)
                     };
-                case IStoredProcedure procedure:
-                    return new StoredProcedureHierarchyObject<IStoredProcedure>()
+                case IStoredProcedure proc:
+                    return new DependencyHierarchyObject<IStoredProcedure>()
                     {
-                        DatabaseID = procedure.DatabaseID,
-                        ID = procedure.ID,
-                        Name = procedure.Name,
+                        DatabaseID = proc.DatabaseID,
+                        ID = proc.ID,
+                        Name = proc.Name,
                         ObjectType = DependencyHierarchyObjectType.StoredProcedure,
-                        SchemaName = procedure.SchemaName,
-                        ArgumentsCount = procedure.ArgumentsCount,
-                        DatabaseDependencyObject = procedure
+                        SchemaName = proc.SchemaName,
+                        DatabaseDependencyObject = proc,
+                        SearchOccurencePattern = CreateSearchOccurencePattern(proc)
                     };
             }
             throw new NotSupportedException($"obj type {obj?.GetType()} is not supported");
+        }
+
+        private string CreateSearchOccurencePattern(IView view)
+        {
+            // from viewname or join viewname or , viewname
+            return @"(from\s+|join\s+|,\s*){1}" + view.SchemaName.ToLower() + @"\." + view.Name.ToLower() + @"\b";
+        }
+
+        private string CreateSearchOccurencePattern(IStoredProcedure proc)
+        {
+            // functionname(,,,) where ,,, is count of arguments - 1
+            return proc.ArgumentsCount > 0 ?
+                    (proc.SchemaName.ToLower() + @"\." + proc.Name.ToLower() + @"\(([^,)]*,){" + (proc.ArgumentsCount - 1).ToString() + @"}[^,)]+\)") :
+                    (proc.SchemaName.ToLower() + @"\." + proc.Name.ToLower() + @"\(\)");
         }
     }
 }

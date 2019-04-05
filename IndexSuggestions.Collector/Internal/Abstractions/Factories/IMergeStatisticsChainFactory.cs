@@ -10,5 +10,9 @@ namespace IndexSuggestions.Collector
         IExecutableCommand MergeStatisticsChain(MergeNormalizedStatementStatisticsContext context);
         IExecutableCommand MergeStatisticsChain(MergeNormalizedStatementRelationStatisticsContext context);
         IExecutableCommand MergeStatisticsChain(MergeNormalizedStatementIndexStatisticsContext context);
+        IExecutableCommand MergeStatisticsChain(MergeTotalRelationStatisticsContext context);
+        IExecutableCommand MergeStatisticsChain(MergeTotalIndexStatisticsContext context);
+        IExecutableCommand MergeStatisticsChain(MergeTotalStoredProcedureStatisticsContext context);
+        IExecutableCommand MergeStatisticsChain(MergeTotalViewStatisticsContext context);
     }
 }

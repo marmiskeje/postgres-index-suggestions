@@ -22,6 +22,7 @@ namespace IndexSuggestions.DAL
         public DbSet<TotalRelationStatistics> TotalRelationStatistics { get; set; }
         public DbSet<TotalIndexStatistics> TotalIndexStatistics { get; set; }
         public DbSet<TotalStoredProcedureStatistics> TotalStoredProcedureStatistics { get; set; }
+        public DbSet<TotalViewStatistics> TotalViewStatistics { get; set; }
 
         public IndexSuggestionsContext(string providerName, string connectionString) : base()
         {
@@ -85,6 +86,8 @@ namespace IndexSuggestions.DAL
             modelBuilder.Entity<TotalIndexStatistics>().HasIndex(x => x.IndexID);
             modelBuilder.Entity<TotalStoredProcedureStatistics>().HasIndex(x => new { x.DatabaseID, x.ProcedureID, x.Date }).IsUnique();
             modelBuilder.Entity<TotalStoredProcedureStatistics>().HasIndex(x => x.ProcedureID);
+            modelBuilder.Entity<TotalViewStatistics>().HasIndex(x => new { x.DatabaseID, x.ViewID, x.Date }).IsUnique();
+            modelBuilder.Entity<TotalViewStatistics>().HasIndex(x => x.ViewID);
             modelBuilder.Entity<SettingProperty>().HasIndex(x => x.Key).IsUnique();
             modelBuilder.Entity<SettingProperty>().SeedData(new SettingProperty() { ID = 1, Key = SettingPropertyKeys.LAST_PROCESSED_LOG_ENTRY_TIMESTAMP });
             modelBuilder.Entity<SettingProperty>().SeedData(new SettingProperty() { ID = 2, Key = SettingPropertyKeys.ACTIVE_WORKLOAD, IntValue = 1 });

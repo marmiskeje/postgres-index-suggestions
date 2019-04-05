@@ -38,5 +38,41 @@ namespace IndexSuggestions.Collector
             chain.Add(commands.SaveMergedStatisticsCommand(context));
             return chain.FirstCommand;
         }
+
+        public IExecutableCommand MergeStatisticsChain(MergeTotalRelationStatisticsContext context)
+        {
+            CommandChainCreator chain = new CommandChainCreator();
+            chain.Add(commands.LoadStatisticsForMergeCommand(context));
+            chain.Add(commands.MergeStatisticsCommand(context));
+            chain.Add(commands.SaveMergedStatisticsCommand(context));
+            return chain.FirstCommand;
+        }
+
+        public IExecutableCommand MergeStatisticsChain(MergeTotalIndexStatisticsContext context)
+        {
+            CommandChainCreator chain = new CommandChainCreator();
+            chain.Add(commands.LoadStatisticsForMergeCommand(context));
+            chain.Add(commands.MergeStatisticsCommand(context));
+            chain.Add(commands.SaveMergedStatisticsCommand(context));
+            return chain.FirstCommand;
+        }
+
+        public IExecutableCommand MergeStatisticsChain(MergeTotalStoredProcedureStatisticsContext context)
+        {
+            CommandChainCreator chain = new CommandChainCreator();
+            chain.Add(commands.LoadStatisticsForMergeCommand(context));
+            chain.Add(commands.MergeStatisticsCommand(context));
+            chain.Add(commands.SaveMergedStatisticsCommand(context));
+            return chain.FirstCommand;
+        }
+
+        public IExecutableCommand MergeStatisticsChain(MergeTotalViewStatisticsContext context)
+        {
+            CommandChainCreator chain = new CommandChainCreator();
+            chain.Add(commands.LoadStatisticsForMergeCommand(context));
+            chain.Add(commands.MergeStatisticsCommand(context));
+            chain.Add(commands.SaveMergedStatisticsCommand(context));
+            return chain.FirstCommand;
+        }
     }
 }

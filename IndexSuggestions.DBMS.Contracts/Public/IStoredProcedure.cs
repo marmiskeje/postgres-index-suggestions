@@ -11,6 +11,7 @@ namespace IndexSuggestions.DBMS.Contracts
         string Name { get; }
         uint SchemaID { get; }
         string SchemaName { get; }
+        string LanguageName { get; }
         int ArgumentsCount { get; }
         string Definition { get; }
     }

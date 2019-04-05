@@ -26,4 +26,21 @@ namespace IndexSuggestions.Collector
     {
 
     }
+
+    internal class MergeTotalRelationStatisticsContext : MergeStatisticsContext<uint, TotalRelationStatistics>
+    {
+
+    }
+    internal class MergeTotalIndexStatisticsContext : MergeStatisticsContext<uint, TotalIndexStatistics>
+    {
+
+    }
+    internal class MergeTotalStoredProcedureStatisticsContext : MergeStatisticsContext<uint, TotalStoredProcedureStatistics>
+    {
+
+    }
+    internal class MergeTotalViewStatisticsContext : MergeStatisticsContext<uint, TotalViewStatistics>
+    {
+
+    }
 }

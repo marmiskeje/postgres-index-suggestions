@@ -18,6 +18,7 @@ namespace IndexSuggestions.Collector
         private readonly ConcurrentDictionary<uint, TotalRelationStatisticsSampler> relationStatistics = new ConcurrentDictionary<uint, TotalRelationStatisticsSampler>();
         private readonly ConcurrentDictionary<uint, TotalIndexStatisticsSampler> indexStatistics = new ConcurrentDictionary<uint, TotalIndexStatisticsSampler>();
         private readonly ConcurrentDictionary<uint, TotalStoredProcedureStatisticsSampler> procedureStatistics = new ConcurrentDictionary<uint, TotalStoredProcedureStatisticsSampler>();
+        private readonly ConcurrentDictionary<uint, TotalViewStatisticsSampler> viewStatistics = new ConcurrentDictionary<uint, TotalViewStatisticsSampler>();
 
         public StatisticsProcessingDataAccumulator(IDateTimeSelector dateTimeSelector, ICache cache)
         {
@@ -152,11 +153,29 @@ namespace IndexSuggestions.Collector
             }
         }
 
+        public void PublishViewStatistics(StatementViewStatisticsData statistics)
+        {
+            var newSample = new TotalViewStatistics()
+            {
+                CreatedDate = DateTime.Now,
+                DatabaseID = statistics.DatabaseID,
+                Date = statistics.ExecutionDate,
+                RewrittenCount = 1,
+                ViewID = statistics.ViewID
+            };
+            viewStatistics.AddOrUpdate(statistics.ViewID, new TotalViewStatisticsSampler(dateTimeSelector, newSample), (k, v) =>
+            {
+                v.AddSample(newSample);
+                return v;
+            });
+        }
+
         public void ClearState()
         {
             relationStatistics.Clear();
             indexStatistics.Clear();
             procedureStatistics.Clear();
+            viewStatistics.Clear();
         }
 
         public StatisticsProcessingDataAccumulatorState ProvideState()
@@ -176,6 +195,11 @@ namespace IndexSuggestions.Collector
             {
                 var stats = new List<TotalStoredProcedureStatistics>(p.Value.ProvideSamples());
                 result.TotalProceduresStatistics.Add(p.Key, stats);
+            }
+            foreach (var v in viewStatistics)
+            {
+                var stats = new List<TotalViewStatistics>(v.Value.ProvideSamples());
+                result.TotalViewStatistics.Add(v.Key, stats);
             }
             return result;
         }

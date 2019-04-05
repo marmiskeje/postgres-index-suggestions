@@ -18,6 +18,8 @@ namespace IndexSuggestions.DBMS.Postgres
         public uint SchemaID { get; set; }
         [Column("schema_name")]
         public string SchemaName { get; set; }
+        [Column("lang_name")]
+        public string LanguageName { get; set; }
         [Column("proc_args_count")]
         public int ArgumentsCount { get; set; }
         [Column("proc_definition")]

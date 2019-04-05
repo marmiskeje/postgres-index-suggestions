@@ -17,6 +17,7 @@ namespace IndexSuggestions.Collector.Postgres
         public ISet<IDependencyHierarchyObject> Dependencies { get; } = new HashSet<IDependencyHierarchyObject>();
 
         public string SchemaName { get; set; }
+        public string SearchOccurencePattern { get; set; }
         internal TObject DatabaseDependencyObject { get; set; }
 
         public override bool Equals(object obj)
@@ -33,10 +34,5 @@ namespace IndexSuggestions.Collector.Postgres
         {
             return $"{ID}_{DatabaseID}".GetHashCode();
         }
-    }
-
-    internal class StoredProcedureHierarchyObject<TObject> : DependencyHierarchyObject<TObject>, IStoredProcedureHierarchyObject where TObject : IDatabaseDependencyObject
-    {
-        public int ArgumentsCount { get; set; }
     }
 }

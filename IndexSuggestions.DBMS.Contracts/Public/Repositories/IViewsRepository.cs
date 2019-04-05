@@ -6,6 +6,6 @@ namespace IndexSuggestions.DBMS.Contracts
 {
     public interface IViewsRepository
     {
-        IEnumerable<IView> GetAll();
+        IEnumerable<IView> GetAllNonSystemViews();
     }
 }

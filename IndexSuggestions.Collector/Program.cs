@@ -39,47 +39,26 @@ namespace IndexSuggestions.Collector
             var continuousFileProcessor = new ContinuousFileProcessor(log, collectorConfiguration.LogProcessing, logProcessor, logEntryGroupBox);
             var logProcessingService = new LogProcessingService(collectorConfiguration.LogProcessing, oneFileProcessor, continuousFileProcessor);
             var logEntriesProcessingQueue = new CommandProcessingQueue<IExecutableCommand>(log, "LogEntriesProcessingQueue");
+            var statisticsProcessingQueue = new CommandProcessingQueue<IExecutableCommand>(log, "StatisticsProcessingQueue");
             var dateTimeSelectors = DateTimeSelectorsProvider.Instance;
             var statementDataAccumulator = new StatementsProcessingDataAccumulator(dateTimeSelectors.MinuteSelector);
+            var statisticsDataAccumulator = new StatisticsProcessingDataAccumulator(dateTimeSelectors.MinuteSelector, CacheProvider.Instance.MemoryCache);
             var postgresRepositories = DBMS.Postgres.RepositoriesFactory.Instance;
             var dalRepositories = RepositoriesFactory.Instance;
             var lastProcessedEvidence = new LastProcessedLogEntryEvidence(log, dalRepositories.GetSettingPropertiesRepository());
+            var dependencyHierarchyProvider = new DatabaseDependencyHierarchyProvider(log, new Postgres.DatabaseDependencyHierarchyBuilder(log, postgresRepositories), postgresRepositories.GetDatabasesRepository());
             var generalCommands = new GeneralProcessingCommandFactory(log, collectorConfiguration, statementDataAccumulator, postgresRepositories,
                                                                       dalRepositories, lastProcessedEvidence);
             var externalCommands = new Postgres.LogEntryProcessingCommandFactory(postgresRepositories);
-            var chainFactory = new LogEntryProcessingChainFactory(log, generalCommands, externalCommands, dalRepositories, statementDataAccumulator);
-            var logEntryProcessingService = new LogEntryProcessingService(logEntryGroupBox, logEntriesProcessingQueue, chainFactory, lastProcessedEvidence);
-            var statisticsProcessingQueue = new CommandProcessingQueue<IExecutableCommand>(log, "StatisticsProcessingQueue");
-            var statisticsDataAccumulator = new StatisticsProcessingDataAccumulator(dateTimeSelectors.MinuteSelector, CacheProvider.Instance.MemoryCache);
-            var statisticsCommands = new StatisticsProcessingCommandFactory(log, statisticsDataAccumulator, postgresRepositories, dalRepositories);
+            var statisticsCommands = new StatisticsProcessingCommandFactory(log, statisticsProcessingQueue, statisticsDataAccumulator, postgresRepositories, dalRepositories, dependencyHierarchyProvider);
+            var logEntryProcessingChainFactory = new LogEntryProcessingChainFactory(log, generalCommands, statisticsCommands, externalCommands, dalRepositories, statementDataAccumulator);
             var statisticsChainFactory = new StatisticsProcessingChainFactory(statisticsCommands);
+            var logEntryProcessingService = new LogEntryProcessingService(logEntryGroupBox, logEntriesProcessingQueue, logEntryProcessingChainFactory, lastProcessedEvidence);
             var statisticsCollectorService = new StatisticsCollectorService(statisticsProcessingQueue, statisticsChainFactory);
 
             var mergeStatisticsCommands = new MergeStatisticsCommandFactory(dalRepositories);
             var mergeStatisticsChainFactory = new MergeStatisticsChainFactory(mergeStatisticsCommands);
-            Dictionary<TimeSpan, IExecutableCommand> regularTasks = new Dictionary<TimeSpan, IExecutableCommand>();
-            regularTasks.Add(new TimeSpan(1,0,0), new ActionCommand(() =>
-            {
-                DateTime now = DateTime.Now;
-                var context = new MergeNormalizedStatementStatisticsContext() { CreatedDateFrom = now.AddDays(-7), CreatedDateTo = now.AddDays(-9), DateTimeSelector = dateTimeSelectors.HourSelector };
-                mergeStatisticsChainFactory.MergeStatisticsChain(context).Execute();
-                var context2 = new MergeNormalizedStatementRelationStatisticsContext() { CreatedDateFrom = now.AddDays(-7), CreatedDateTo = now.AddDays(-9), DateTimeSelector = dateTimeSelectors.HourSelector };
-                mergeStatisticsChainFactory.MergeStatisticsChain(context2).Execute();
-                var context3 = new MergeNormalizedStatementIndexStatisticsContext() { CreatedDateFrom = now.AddDays(-7), CreatedDateTo = now.AddDays(-9), DateTimeSelector = dateTimeSelectors.HourSelector };
-                mergeStatisticsChainFactory.MergeStatisticsChain(context3).Execute();
-                return true;
-            }));
-            regularTasks.Add(new TimeSpan(2, 0, 0), new ActionCommand(() =>
-            {
-                DateTime now = DateTime.Now;
-                var context = new MergeNormalizedStatementStatisticsContext() { CreatedDateFrom = now.AddDays(-14), CreatedDateTo = now.AddDays(-16), DateTimeSelector = dateTimeSelectors.DaySelector };
-                mergeStatisticsChainFactory.MergeStatisticsChain(context).Execute();
-                var context2 = new MergeNormalizedStatementRelationStatisticsContext() { CreatedDateFrom = now.AddDays(-14), CreatedDateTo = now.AddDays(-16), DateTimeSelector = dateTimeSelectors.DaySelector };
-                mergeStatisticsChainFactory.MergeStatisticsChain(context2).Execute();
-                var context3 = new MergeNormalizedStatementIndexStatisticsContext() { CreatedDateFrom = now.AddDays(-14), CreatedDateTo = now.AddDays(-16), DateTimeSelector = dateTimeSelectors.DaySelector };
-                mergeStatisticsChainFactory.MergeStatisticsChain(context3).Execute();
-                return true;
-            }));
+            var regularTasks = PlanRegularTasks(mergeStatisticsChainFactory, dateTimeSelectors);
             var taskScheduler = new RegularTaskScheduler(statisticsProcessingQueue, regularTasks);
 
             statisticsCollectorService.Start();
@@ -88,6 +67,7 @@ namespace IndexSuggestions.Collector
             taskScheduler.Start();
             Console.WriteLine("Collector is running. Pres any key to exit...");
             Console.ReadLine();
+            dependencyHierarchyProvider.Dispose();
             taskScheduler.Dispose();
             logProcessingService.Dispose();
             continuousFileProcessor.Dispose();
@@ -96,6 +76,78 @@ namespace IndexSuggestions.Collector
             statisticsCollectorService.Dispose();
             logEntriesProcessingQueue.Dispose();
             statisticsProcessingQueue.Dispose();
+        }
+
+        private static Dictionary<TimeSpan, IExecutableCommand> PlanRegularTasks(IMergeStatisticsChainFactory mergeStatisticsChainFactory, IDateTimeSelectorsProvider dateTimeSelectors)
+        {
+            
+            var regularTasks = new Dictionary<TimeSpan, IExecutableCommand>();
+            regularTasks.Add(new TimeSpan(1, 0, 0), new ActionCommand(() =>
+            {
+                DateTime now = DateTime.Now;
+                DateTime from = now.AddDays(-7);
+                DateTime to = now.AddDays(-9);
+                MergeStatistics(from, to, dateTimeSelectors.HourSelector);
+                return true;
+            }));
+            regularTasks.Add(new TimeSpan(2, 0, 0), new ActionCommand(() =>
+            {
+                DateTime now = DateTime.Now;
+                DateTime from = now.AddDays(-14);
+                DateTime to = now.AddDays(-16);
+                MergeStatistics(from, to, dateTimeSelectors.DaySelector);
+                return true;
+            }));
+            #region void MergeStatistics(DateTime from, DateTime to, IDateTimeSelector dateTimeSelector)
+            void MergeStatistics(DateTime from, DateTime to, IDateTimeSelector dateTimeSelector)
+            {
+                ParallelCommandStepsCreator parallelSteps = new ParallelCommandStepsCreator();
+                parallelSteps.AddParallelStep(mergeStatisticsChainFactory.MergeStatisticsChain(new MergeNormalizedStatementStatisticsContext()
+                {
+                    CreatedDateFrom = from,
+                    CreatedDateTo = to,
+                    DateTimeSelector = dateTimeSelector
+                }).AsChainableCommand());
+                parallelSteps.AddParallelStep(mergeStatisticsChainFactory.MergeStatisticsChain(new MergeNormalizedStatementRelationStatisticsContext()
+                {
+                    CreatedDateFrom = from,
+                    CreatedDateTo = to,
+                    DateTimeSelector = dateTimeSelector
+                }).AsChainableCommand());
+                parallelSteps.AddParallelStep(mergeStatisticsChainFactory.MergeStatisticsChain(new MergeNormalizedStatementIndexStatisticsContext()
+                {
+                    CreatedDateFrom = from,
+                    CreatedDateTo = to,
+                    DateTimeSelector = dateTimeSelector
+                }).AsChainableCommand());
+                parallelSteps.AddParallelStep(mergeStatisticsChainFactory.MergeStatisticsChain(new MergeTotalRelationStatisticsContext()
+                {
+                    CreatedDateFrom = from,
+                    CreatedDateTo = to,
+                    DateTimeSelector = dateTimeSelector
+                }).AsChainableCommand());
+                parallelSteps.AddParallelStep(mergeStatisticsChainFactory.MergeStatisticsChain(new MergeTotalIndexStatisticsContext()
+                {
+                    CreatedDateFrom = from,
+                    CreatedDateTo = to,
+                    DateTimeSelector = dateTimeSelector
+                }).AsChainableCommand());
+                parallelSteps.AddParallelStep(mergeStatisticsChainFactory.MergeStatisticsChain(new MergeTotalStoredProcedureStatisticsContext()
+                {
+                    CreatedDateFrom = from,
+                    CreatedDateTo = to,
+                    DateTimeSelector = dateTimeSelector
+                }).AsChainableCommand());
+                parallelSteps.AddParallelStep(mergeStatisticsChainFactory.MergeStatisticsChain(new MergeTotalViewStatisticsContext()
+                {
+                    CreatedDateFrom = from,
+                    CreatedDateTo = to,
+                    DateTimeSelector = dateTimeSelector
+                }).AsChainableCommand());
+                parallelSteps.CreateParallelCommand().Execute();
+            } 
+            #endregion
+            return regularTasks;
         }
     }
 }

@@ -81,5 +81,10 @@ namespace IndexSuggestions.DAL
         {
             return new TotalStoredProcedureStatisticsRepository(CreateContext);
         }
+
+        public ITotalViewStatisticsRepository GetTotalViewStatisticsRepository()
+        {
+            return new TotalViewStatisticsRepository(CreateContext);
+        }
     }
 }

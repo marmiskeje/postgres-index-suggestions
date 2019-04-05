@@ -60,7 +60,7 @@ namespace IndexSuggestions.DBMS.Postgres
         }
         private Dictionary<string, Database> GetAllByName()
         {
-            var cacheKey = CreateCacheKeyForThisType(ALL_BY_ID_CACHE_KEY);
+            var cacheKey = CreateCacheKeyForThisType(ALL_BY_NAME_CACHE_KEY);
             Dictionary<string, Database> all = null;
             string query = @"
                 SELECT d.oid as db_id, d.datname as db_name

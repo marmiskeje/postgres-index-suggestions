@@ -33,6 +33,10 @@ namespace IndexSuggestions.Collector
                 {
                     p.Value.ForEach(x => PersistTotalProcedureStatistics(x));
                 }
+                foreach (var p in state.TotalViewStatistics)
+                {
+                    p.Value.ForEach(x => PersistTotalViewStatistics(x));
+                }
                 scope.Complete();
             }
             statisticsAccumulator.ClearState();
@@ -96,6 +100,27 @@ namespace IndexSuggestions.Collector
             else
             {
                 TotalStoredProcedureStatisticsMergeUtility.ApplySample(oldStatistics, newStatistics);
+                repository.Update(oldStatistics);
+            }
+        }
+
+        private void PersistTotalViewStatistics(TotalViewStatistics newStatistics)
+        {
+            var repository = repositories.GetTotalViewStatisticsRepository();
+            var uniqueKey = new TotalViewStatisticsUniqueKey()
+            {
+                DatabaseID = newStatistics.DatabaseID,
+                Date = newStatistics.Date,
+                ViewID = newStatistics.ViewID
+            };
+            var oldStatistics = repository.GetByUniqueKey(uniqueKey);
+            if (oldStatistics == null)
+            {
+                repository.Create(newStatistics);
+            }
+            else
+            {
+                TotalViewStatisticsMergeUtility.ApplySample(oldStatistics, newStatistics);
                 repository.Update(oldStatistics);
             }
         }

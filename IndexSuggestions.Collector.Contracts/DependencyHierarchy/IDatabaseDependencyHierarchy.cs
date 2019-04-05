@@ -7,6 +7,6 @@ namespace IndexSuggestions.Collector.Contracts
     public interface IDatabaseDependencyHierarchy
     {
         ISet<IDependencyHierarchyObject> Views { get; }
-        ISet<IStoredProcedureHierarchyObject> StoredProcedures { get; }
+        ISet<IDependencyHierarchyObject> StoredProcedures { get; }
     }
 }

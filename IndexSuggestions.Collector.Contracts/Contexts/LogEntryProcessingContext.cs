@@ -4,13 +4,24 @@ using System.Text;
 
 namespace IndexSuggestions.Collector.Contracts
 {
-    public class LogEntryProcessingContext
+    public class LogEntryProcessingContext : IStatementProcessingContext
     {
         public LoggedEntry Entry { get; set; }
         public uint DatabaseID { get; set; }
         public LogEntryStatementData StatementData { get; private set; }
         public QueryPlanNode QueryPlan { get; set; }
         public QueryTreeData QueryTree { get; set; }
+
+        public string Statement
+        {
+            get { return Entry.Statement; }
+        }
+
+        public DateTime ExecutionDate
+        {
+            get { return Entry.Timestamp; }
+        }
+
         public LogEntryProcessingContext()
         {
             StatementData = new LogEntryStatementData();

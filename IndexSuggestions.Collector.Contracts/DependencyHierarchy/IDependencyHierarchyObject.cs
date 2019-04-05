@@ -10,15 +10,10 @@ namespace IndexSuggestions.Collector.Contracts
         uint DatabaseID { get; }
         string SchemaName { get; }
         string Name { get; }
+        string SearchOccurencePattern { get; }
         DependencyHierarchyObjectType ObjectType { get; }
         ISet<IDependencyHierarchyObject> Dependencies { get; }
     }
-
-    public interface IStoredProcedureHierarchyObject : IDependencyHierarchyObject
-    {
-        int ArgumentsCount { get; }
-    }
-
     public enum DependencyHierarchyObjectType
     {
         View = 0,
