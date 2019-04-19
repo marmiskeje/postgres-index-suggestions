@@ -26,5 +26,20 @@ namespace IndexSuggestions.DBMS.Postgres
             string query = "select * from hypopg_reset()";
             Execute(query, null);
         }
+
+        public long GetVirtualIndexSize(uint indexID)
+        {
+            var query = "select * from hypopg_relation_size(@IndexID)";
+            var param = new
+            {
+                IndexID = indexID
+            };
+            return ExecuteQuery<VirtualIndexSize>(query, param).Single().Bytes;
+        }
+
+        public void InitializeEnvironment()
+        {
+            Execute("CREATE EXTENSION IF NOT EXISTS hypopg", null);
+        }
     }
 }

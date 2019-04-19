@@ -1,62 +1,68 @@
 ﻿using IndexSuggestions.DAL.Contracts;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using Microsoft.EntityFrameworkCore;
 
 namespace IndexSuggestions.DAL
 {
-    internal class NormalizedWorkloadStatementsRepository : BaseRepository<long, NormalizedWorkloadStatement>, INormalizedWorkloadStatementsRepository
+    internal class NormalizedWorkloadStatementsRepository : INormalizedWorkloadStatementsRepository
     {
-        public NormalizedWorkloadStatementsRepository(Func<IndexSuggestionsContext> createContextFunc) : base(createContextFunc)
+        private Func<IndexSuggestionsContext> CreateContextFunc { get; }
+        public NormalizedWorkloadStatementsRepository(Func<IndexSuggestionsContext> createContextFunc)
         {
-            
+            CreateContextFunc = createContextFunc;
         }
 
-        public NormalizedWorkloadStatement Get(long statementId, long workloadId, bool useCache = false)
+        public IEnumerable<NormalizedWorkloadStatement> GetWorkloadStatements(Workload workload, DateTime fromInclusive, DateTime toExclusive)
         {
-            return Get(() =>
-            {
-                using (var context = CreateContextFunc())
-                {
-                    return context.NormalizedWorkloadStatements.Where(x => x.NormalizedStatementID == statementId && x.WorkloadID == workloadId).SingleOrDefault();
-                }
-            }, $"{statementId}{workloadId}", useCache);
-        }
-
-        public IList<NormalizedWorkloadStatement> GetAllByWorkloadId(long workloadId, NormalizedWorkloadStatementFilter filter)
-        {
-            List<NormalizedWorkloadStatement> result = null;
-            filter = filter ?? new NormalizedWorkloadStatementFilter();
             using (var context = CreateContextFunc())
             {
-                var query = context.NormalizedWorkloadStatements.Include(x => x.NormalizedStatement).Where(x => x.WorkloadID == workloadId);
-                if (filter.CommandType.HasValue)
+                var query = context.NormalizedStatementStatistics
+                    .Where(x => x.DatabaseID == workload.Definition.DatabaseID)
+                    .Where(x => x.Date >= fromInclusive)
+                    .Where(x => x.Date < toExclusive);
+                if (workload.Definition.Applications.ForbiddenValues.Count > 0)
                 {
-                    query = query.Where(x => x.NormalizedStatement.CommandType == filter.CommandType.Value);
+                    query = query.Where(x => !workload.Definition.Applications.ForbiddenValues.Contains(x.ApplicationName));
                 }
-                if (filter.MinExecutionsCount.HasValue)
+                if (workload.Definition.Users.ForbiddenValues.Count > 0)
                 {
-                    query = query.Where(x => x.ExecutionsCount >= filter.MinExecutionsCount.Value);
+                    query = query.Where(x => !workload.Definition.Users.ForbiddenValues.Contains(x.UserName));
                 }
-                result = query.ToList();
+                if (workload.Definition.QueryThresholds.MinDuration.HasValue)
+                {
+                    query = query.Where(x => x.MaxDuration >= workload.Definition.QueryThresholds.MinDuration.Value
+                        || x.MinDuration >= workload.Definition.QueryThresholds.MinDuration.Value
+                        || x.AvgDuration >= workload.Definition.QueryThresholds.MinDuration.Value);
+                }
+                var groupedQuery = from item in query
+                        group item by item.NormalizedStatementID into g
+                        select new { Key = g.Key, Items = g };
+                if (workload.Definition.QueryThresholds.MinExectutionCount.HasValue)
+                {
+                    groupedQuery = from item in groupedQuery
+                                   where item.Items.Sum(x => x.TotalExecutionsCount) > workload.Definition.QueryThresholds.MinExectutionCount
+                                   select new { Key = item.Key, Items = item.Items };
+                }
+                var groupedResult = groupedQuery.ToDictionary(x => x.Key, x => x.Items.ToHashSet());
+                var reducedGroupedResult = new Dictionary<long, NormalizedStatementStatistics>();
+                foreach (var item in groupedResult)
+                {
+                    var values = item.Value.Where(stat => (workload.Definition.DateTimeSlots.ForbiddenValues.FirstOrDefault(x => x.DayOfWeek == stat.Date.DayOfWeek
+                                    && x.StartTime >= stat.Date.TimeOfDay && stat.Date.TimeOfDay <= x.EndTime) == null));
+                    reducedGroupedResult.Add(item.Key, values.OrderByDescending(x => x.MaxDuration).FirstOrDefault());
+                }
+                var result = from item in reducedGroupedResult
+                             join statement in context.NormalizedStatements on item.Key equals statement.ID
+                             where statement.StatementDefinitionData != null && statement.CommandType == StatementQueryCommandType.Select
+                             select new NormalizedWorkloadStatement() { NormalizedStatement = statement, RepresentativeStatistics = item.Value };
+                foreach (var item in result)
+                {
+                    NormalizedStatementsRepository.FillEntityForGet(item.NormalizedStatement);
+                }
+                return result;
             }
-            result.ForEach(x =>
-            {
-                if (x.NormalizedStatement.StatementDefinitionData != null)
-                {
-                    x.NormalizedStatement.StatementDefinition = JsonSerializationUtility.Deserialize<StatementDefinition>(x.NormalizedStatement.StatementDefinitionData);
-                }
-            });
-            return result;
-        }
-
-        protected override ISet<string> GetAllCacheKeys(long key, NormalizedWorkloadStatement entity)
-        {
-            var result = new HashSet<string>(new[] { $"{entity.NormalizedStatementID}{entity.WorkloadID}" });
-            result.UnionWith(base.GetAllCacheKeys(key, entity));
-            return result;
         }
     }
 }

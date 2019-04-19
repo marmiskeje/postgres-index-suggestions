@@ -1,4 +1,5 @@
-﻿using IndexSuggestions.DAL.Contracts;
+﻿using IndexSuggestions.Common;
+using IndexSuggestions.DAL.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -30,6 +31,7 @@ namespace IndexSuggestions.Collector
                 cumulativeData.AvgDuration = newSample.AvgDuration;
             }
             cumulativeData.TotalExecutionsCount += newSample.TotalExecutionsCount;
+            cumulativeData.TotalDuration += newSample.TotalDuration;
         }
     }
 }

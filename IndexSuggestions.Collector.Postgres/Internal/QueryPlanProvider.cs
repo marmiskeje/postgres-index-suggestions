@@ -1,4 +1,5 @@
-﻿using IndexSuggestions.Collector.Contracts;
+﻿using IndexSuggestions.Common;
+using IndexSuggestions.DBMS.Contracts;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace IndexSuggestions.Collector.Postgres
                 {
                     node.ScanOperation = new AnyIndexScanOperation() { IndexId = planNode.SelectToken("indexid").Value<uint>() };
                 }
-                if (operationName == "SEQSCAN" && planNode.SelectToken("scanrelid") != null)
+                else if (operationName == "SEQSCAN" && planNode.SelectToken("scanrelid") != null)
                 {
                     var index = planNode.SelectToken("scanrelid").Value<int>();
                     var rte = queryTree.Rtes[index - 1];

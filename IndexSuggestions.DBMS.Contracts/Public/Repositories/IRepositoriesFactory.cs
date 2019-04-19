@@ -16,5 +16,7 @@ namespace IndexSuggestions.DBMS.Contracts
         IViewsRepository GetViewsRepository();
         IDatabaseDependencyObjectsRepository GetDatabaseDependencyObjectsRepository();
         IStoredProceduresRepository GetStoredProceduresRepository();
+        IExpressionOperatorsRepository GetExpressionOperatorsRepository();
+        IDatabaseSystemInfoRepository GetDatabaseSystemInfoRepository();
     }
 }

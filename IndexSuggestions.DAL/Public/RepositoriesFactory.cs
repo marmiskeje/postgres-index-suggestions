@@ -47,11 +47,6 @@ namespace IndexSuggestions.DAL
             return new WorkloadsRepository(CreateContext);
         }
 
-        public INormalizedWorkloadStatementsRepository GetNormalizedWorkloadStatementsRepository()
-        {
-            return new NormalizedWorkloadStatementsRepository(CreateContext);
-        }
-
         public INormalizedStatementStatisticsRepository GetNormalizedStatementStatisticsRepository()
         {
             return new NormalizedStatementStatisticsRepository(CreateContext);
@@ -85,6 +80,11 @@ namespace IndexSuggestions.DAL
         public ITotalViewStatisticsRepository GetTotalViewStatisticsRepository()
         {
             return new TotalViewStatisticsRepository(CreateContext);
+        }
+
+        public INormalizedWorkloadStatementsRepository GetNormalizedWorkloadStatementsRepository()
+        {
+            return new NormalizedWorkloadStatementsRepository(CreateContext);
         }
     }
 }

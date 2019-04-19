@@ -16,7 +16,8 @@ namespace IndexSuggestions.DBMS.Postgres
             var statementToUse = statement.Trim();
             string query = @"EXPLAIN (FORMAT JSON) " + statementToUse;
             // todo - fix this, dapper is not usable, it can´t inject parameter for some reason
-            return ExecuteQuery<ExplainResult>(query, null).Single();
+            var result = ExecuteQuery<ExplainResultDbData>(query, null).Single();
+            return new ExplainResultProvider().Provide(result.PlanJson);
         }
     }
 }

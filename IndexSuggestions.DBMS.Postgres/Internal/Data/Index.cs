@@ -40,6 +40,8 @@ namespace IndexSuggestions.DBMS.Postgres
         public uint DatabaseID { get; set; }
         [Column("db_name")]
         public string DatabaseName { get; set; }
+        [Column("index_access_method")]
+        public IndexAccessMethodType AccessMethod { get; set; }
 
         public Index()
         {

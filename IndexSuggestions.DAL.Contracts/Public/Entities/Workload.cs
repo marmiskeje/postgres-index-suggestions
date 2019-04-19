@@ -14,28 +14,25 @@ namespace IndexSuggestions.DAL.Contracts
         public WorkloadDefinition Definition { get; set; }
         [Required]
         public string DefinitionData { get; set; }
-        public List<NormalizedWorkloadStatement> NormalizedWorkloadStatements { get; set; }
     }
 
     public class WorkloadDefinition
     {
-        public string DatabaseName { get; set; }
-        public WorkloadPropertyValuesDefinition<String> Users { get; set; }
+        public uint DatabaseID { get; set; }
+        public WorkloadPropertyValuesDefinition<string> Users { get; set; }
         public WorkloadPropertyValuesDefinition<WorkloadDateTimeSlot> DateTimeSlots { get; set; }
-        public WorkloadPropertyValuesDefinition<WorkloadRelation> Relations { get; set; }
+        public WorkloadPropertyValuesDefinition<uint> Relations { get; set; }
         public WorkloadQueryThresholds QueryThresholds { get; set; }
-        public WorkloadPropertyValuesDefinition<String> Applications { get; set; }
+        public WorkloadPropertyValuesDefinition<string> Applications { get; set; }
     }
 
     public class WorkloadPropertyValuesDefinition<T>
     {
-        public HashSet<T> Values { get; set; }
-
-        public WorkloadPropertyRestrictionType RestrictionType { get; set; }
+        public HashSet<T> ForbiddenValues { get; set; }
 
         public WorkloadPropertyValuesDefinition()
         {
-            Values = new HashSet<T>();
+            ForbiddenValues = new HashSet<T>();
         }
     }
 
@@ -45,23 +42,10 @@ namespace IndexSuggestions.DAL.Contracts
         public int? MinExectutionCount { get; set; }
     }
 
-    public class WorkloadRelation
-    {
-        public long ID { get; set; }
-        public string Schema { get; set; }
-        public string TableName { get; set; }
-    }
-
     public class WorkloadDateTimeSlot
     {
         public TimeSpan StartTime { get; set; }
         public TimeSpan EndTime { get; set; }
         public DayOfWeek DayOfWeek { get; set; }
-    }
-
-    public enum WorkloadPropertyRestrictionType
-    {
-        Allowed = 0,
-        Disallowed = 1
     }
 }

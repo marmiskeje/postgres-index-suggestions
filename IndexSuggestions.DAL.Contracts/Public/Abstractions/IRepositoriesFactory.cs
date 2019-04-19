@@ -9,7 +9,6 @@ namespace IndexSuggestions.DAL.Contracts
         INormalizedStatementsRepository GetNormalizedStatementsRepository();
         ISettingPropertiesRepository GetSettingPropertiesRepository();
         IWorkloadsRepository GetWorkloadsRepository();
-        INormalizedWorkloadStatementsRepository GetNormalizedWorkloadStatementsRepository();
         INormalizedStatementStatisticsRepository GetNormalizedStatementStatisticsRepository();
         INormalizedStatementIndexStatisticsRepository GetNormalizedStatementIndexStatisticsRepository();
         INormalizedStatementRelationStatisticsRepository GetNormalizedStatementRelationStatisticsRepository();
@@ -17,5 +16,6 @@ namespace IndexSuggestions.DAL.Contracts
         ITotalIndexStatisticsRepository GetTotalIndexStatisticsRepository();
         ITotalStoredProcedureStatisticsRepository GetTotalStoredProcedureStatisticsRepository();
         ITotalViewStatisticsRepository GetTotalViewStatisticsRepository();
+        INormalizedWorkloadStatementsRepository GetNormalizedWorkloadStatementsRepository();
     }
 }

@@ -154,6 +154,7 @@ namespace IndexSuggestions.Collector
                 MaxDuration = statementStatisticsData.Duration,
                 MinDuration = statementStatisticsData.Duration,
                 RepresentativeStatement = statementStatisticsData.Statement,
+                TotalDuration = statementStatisticsData.Duration,
                 TotalExecutionsCount = 1,
                 UserName = statementStatisticsData.UserName
             };

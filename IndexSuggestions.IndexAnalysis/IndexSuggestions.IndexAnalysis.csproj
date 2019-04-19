@@ -9,6 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\IndexSuggestions.Common\IndexSuggestions.Common.csproj" />
     <ProjectReference Include="..\IndexSuggestions.DAL.Contracts\IndexSuggestions.DAL.Contracts.csproj" />
     <ProjectReference Include="..\IndexSuggestions.DBMS.Contracts\IndexSuggestions.DBMS.Contracts.csproj" />
   </ItemGroup>

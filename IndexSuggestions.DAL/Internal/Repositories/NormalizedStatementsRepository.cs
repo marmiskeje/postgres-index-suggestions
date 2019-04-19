@@ -27,10 +27,7 @@ namespace IndexSuggestions.DAL
         protected override void FillEntityGet(NormalizedStatement entity)
         {
             base.FillEntityGet(entity);
-            if (entity.StatementDefinitionData != null)
-            {
-                entity.StatementDefinition = JsonSerializationUtility.Deserialize<StatementDefinition>(entity.StatementDefinitionData); 
-            }
+            FillEntityForGet(entity);
         }
 
         protected override void FillEntitySet(NormalizedStatement entity)
@@ -49,5 +46,12 @@ namespace IndexSuggestions.DAL
             return result;
         }
 
+        internal static void FillEntityForGet(NormalizedStatement entity)
+        {
+            if (entity.StatementDefinitionData != null)
+            {
+                entity.StatementDefinition = JsonSerializationUtility.Deserialize<StatementDefinition>(entity.StatementDefinitionData);
+            }
+        }
     }
 }

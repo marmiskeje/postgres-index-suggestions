@@ -15,7 +15,6 @@ namespace IndexSuggestions.DAL
         public DbSet<SettingProperty> SettingProperties { get; set; }
         public DbSet<Workload> Workloads { get; set; }
         public DbSet<NormalizedStatement> NormalizedStatements { get; set; }
-        public DbSet<NormalizedWorkloadStatement> NormalizedWorkloadStatements { get; set; }
         public DbSet<NormalizedStatementStatistics> NormalizedStatementStatistics { get; set; }
         public DbSet<NormalizedStatementIndexStatistics> NormalizedStatementIndexStatistics { get; set; }
         public DbSet<NormalizedStatementRelationStatistics> NormalizedStatementRelationStatistics { get; set; }
@@ -71,9 +70,6 @@ namespace IndexSuggestions.DAL
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<NormalizedStatement>().HasIndex(x => x.StatementFingerprint).IsUnique();
             modelBuilder.Entity<NormalizedStatement>().HasIndex(x => x.CommandType).HasFilter("CommandType IS NOT NULL");
-            
-            modelBuilder.Entity<NormalizedWorkloadStatement>().HasOne(x => x.Workload).WithMany(x => x.NormalizedWorkloadStatements);
-            modelBuilder.Entity<NormalizedWorkloadStatement>().HasOne(x => x.NormalizedStatement).WithMany(x => x.NormalizedWorkloadStatements);
             modelBuilder.Entity<NormalizedStatementStatistics>().HasIndex(x => new { x.DatabaseID, x.NormalizedStatementID, x.UserName, x.ApplicationName, x.Date }).IsUnique();
             modelBuilder.Entity<NormalizedStatementStatistics>().HasOne(x => x.NormalizedStatement).WithMany(x => x.NormalizedStatementStatistics);
             modelBuilder.Entity<NormalizedStatementIndexStatistics>().HasIndex(x => new { x.DatabaseID, x.NormalizedStatementID, x.IndexID, x.Date }).IsUnique();
@@ -90,18 +86,17 @@ namespace IndexSuggestions.DAL
             modelBuilder.Entity<TotalViewStatistics>().HasIndex(x => x.ViewID);
             modelBuilder.Entity<SettingProperty>().HasIndex(x => x.Key).IsUnique();
             modelBuilder.Entity<SettingProperty>().SeedData(new SettingProperty() { ID = 1, Key = SettingPropertyKeys.LAST_PROCESSED_LOG_ENTRY_TIMESTAMP });
-            modelBuilder.Entity<SettingProperty>().SeedData(new SettingProperty() { ID = 2, Key = SettingPropertyKeys.ACTIVE_WORKLOAD, IntValue = 1 });
             var workload = new Workload()
             {
                 ID = 1,
                 Definition = new WorkloadDefinition()
                 {
-                    DatabaseName = "test",
-                    Applications = new WorkloadPropertyValuesDefinition<string>() { RestrictionType = WorkloadPropertyRestrictionType.Disallowed },
-                    DateTimeSlots = new WorkloadPropertyValuesDefinition<WorkloadDateTimeSlot>() { RestrictionType = WorkloadPropertyRestrictionType.Disallowed },
+                    DatabaseID = 1,
+                    Applications = new WorkloadPropertyValuesDefinition<string>(),
+                    DateTimeSlots = new WorkloadPropertyValuesDefinition<WorkloadDateTimeSlot>(),
                     QueryThresholds = new WorkloadQueryThresholds(),
-                    Relations = new WorkloadPropertyValuesDefinition<WorkloadRelation>() { RestrictionType = WorkloadPropertyRestrictionType.Disallowed },
-                    Users = new WorkloadPropertyValuesDefinition<string>() { RestrictionType = WorkloadPropertyRestrictionType.Disallowed }
+                    Relations = new WorkloadPropertyValuesDefinition<uint>(),
+                    Users = new WorkloadPropertyValuesDefinition<string>()
                 }
             };
             workload.DefinitionData = JsonSerializationUtility.Serialize(workload.Definition);

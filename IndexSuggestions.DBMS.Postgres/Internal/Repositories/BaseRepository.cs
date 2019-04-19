@@ -97,7 +97,8 @@ namespace IndexSuggestions.DBMS.Postgres
 
         protected string CreateCacheKeyForThisType(string uniqueKey)
         {
-            return String.Format("{0}:{1}_{2}", ThisType.Assembly.FullName, ThisType.FullName, uniqueKey);
+            var dbName = DatabaseScope.Current ?? "Implicit";
+            return String.Format("{0}_{1}:{2}_{3}", dbName, ThisType.Assembly.FullName, ThisType.FullName, uniqueKey);
         }
     }
 }

@@ -25,6 +25,7 @@ namespace IndexSuggestions.DAL.Contracts
         public TimeSpan MinDuration { get; set; }
         public TimeSpan MaxDuration { get; set; }
         public TimeSpan AvgDuration { get; set; }
+        public TimeSpan TotalDuration { get; set; }
     }
 
     public class NormalizedStatementStatisticsUniqueKey

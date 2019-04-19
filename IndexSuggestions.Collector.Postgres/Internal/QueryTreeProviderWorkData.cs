@@ -1,4 +1,5 @@
 ﻿using IndexSuggestions.Collector.Contracts;
+using IndexSuggestions.Common;
 using System;
 using System.Collections.Generic;
 using System.Data;

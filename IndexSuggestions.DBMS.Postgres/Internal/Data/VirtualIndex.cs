@@ -13,4 +13,10 @@ namespace IndexSuggestions.DBMS.Postgres
         [Column("indexname")]
         public string Name { get; set; }
     }
+
+    internal class VirtualIndexSize
+    {
+        [Column("hypopg_relation_size")]
+        public long Bytes { get; set; }
+    }
 }

@@ -6,6 +6,8 @@ namespace IndexSuggestions.DBMS.Contracts
 {
     public interface IExplainResult
     {
-        string PlanJson { get; set; }
+        string PlanJson { get; }
+        QueryPlanNode Plan { get; }
+        ISet<string> UsedIndexScanIndices { get; }
     }
 }

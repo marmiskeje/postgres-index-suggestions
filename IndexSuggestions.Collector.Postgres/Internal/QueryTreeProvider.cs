@@ -6,6 +6,8 @@ using System.Data;
 using System.Runtime.Serialization;
 using System.Linq;
 using IndexSuggestions.DBMS.Contracts;
+using IndexSuggestions.Common;
+using IndexSuggestions.DBMS.Postgres;
 
 namespace IndexSuggestions.Collector.Postgres
 {
@@ -28,76 +30,6 @@ namespace IndexSuggestions.Collector.Postgres
                     return QueryCommandType.Utility;
                 default:
                     return QueryCommandType.Unknown;
-            }
-        }
-        #endregion
-
-        #region private DbType Convert(PostgresDbType source)
-        //http://www.npgsql.org/doc/types/basic.html
-        private DbType Convert(PostgresDbType source)
-        {
-            switch (source)
-            {
-                case PostgresDbType.Bigint:
-                    return DbType.Int64;
-                case PostgresDbType.Double:
-                    return DbType.Double;
-                case PostgresDbType.Integer:
-                    return DbType.Int32;
-                case PostgresDbType.Numeric:
-                    return DbType.Decimal;
-                case PostgresDbType.Real:
-                    return DbType.Single;
-                case PostgresDbType.Smallint:
-                    return DbType.Int16;
-                case PostgresDbType.Money:
-                    return DbType.Currency;
-                case PostgresDbType.Boolean:
-                    return DbType.Boolean;
-                case PostgresDbType.Char:
-                    return DbType.String;
-                case PostgresDbType.Text:
-                    return DbType.String;
-                case PostgresDbType.Varchar:
-                    return DbType.String;
-                case PostgresDbType.Name:
-                    return DbType.String;
-                case PostgresDbType.Citext:
-                    return DbType.String;
-                case PostgresDbType.InternalChar:
-                    return DbType.String;
-                case PostgresDbType.Bytea:
-                    return DbType.Binary;
-                case PostgresDbType.Date:
-                    return DbType.Date;
-                case PostgresDbType.Time:
-                    return DbType.Time;
-                case PostgresDbType.Timestamp:
-                    return DbType.DateTime;
-                case PostgresDbType.TimestampTz:
-                    return DbType.DateTimeOffset;
-                case PostgresDbType.TimeTz:
-                    return DbType.DateTimeOffset;
-                case PostgresDbType.Bit:
-                    return DbType.Boolean;
-                case PostgresDbType.Varbit:
-                    return DbType.Boolean;
-                case PostgresDbType.Uuid:
-                    return DbType.Guid;
-                case PostgresDbType.Xml:
-                    return DbType.String;
-                case PostgresDbType.Json:
-                    return DbType.String;
-                case PostgresDbType.Jsonb:
-                    return DbType.Binary;
-                case PostgresDbType.Oid:
-                    return DbType.UInt32;
-                case PostgresDbType.Xid:
-                    return DbType.UInt32;
-                case PostgresDbType.Cid:
-                    return DbType.UInt32;
-                default:
-                    return DbType.Object;
             }
         }
         #endregion
@@ -631,7 +563,7 @@ namespace IndexSuggestions.Collector.Postgres
                         return new ConstExpression(data)
                         {
                             TypeID = typeId,
-                            DbType = Convert(EnumParsingSupport.ConvertUsingAttributeOrDefault<PostgresDbType, PostgresDbTypeIdentificationAttribute, long>(typeId, x => x.OID))
+                            DbType = PostgresDbTypeCovertUtility.Convert(EnumParsingSupport.ConvertUsingAttributeOrDefault<PostgresDbType, PostgresDbTypeIdentificationAttribute, long>(typeId, x => x.OID))
                         };
                     }
                 case "VAR":
@@ -651,7 +583,7 @@ namespace IndexSuggestions.Collector.Postgres
                         return new VariableExpression(dataToUse, rteNumber, attributeNumber)
                         {
                             TypeID = typeId,
-                            DbType = Convert(EnumParsingSupport.ConvertUsingAttributeOrDefault<PostgresDbType, PostgresDbTypeIdentificationAttribute, long>(typeId, x => x.OID))
+                            DbType = PostgresDbTypeCovertUtility.Convert(EnumParsingSupport.ConvertUsingAttributeOrDefault<PostgresDbType, PostgresDbTypeIdentificationAttribute, long>(typeId, x => x.OID))
                         };
                     }
                 case "RELABELTYPE":
@@ -675,7 +607,7 @@ namespace IndexSuggestions.Collector.Postgres
                             return new VariableExpression(dataToUse, rteNumber, attributeNumber)
                             {
                                 TypeID = typeId,
-                                DbType = Convert(EnumParsingSupport.ConvertUsingAttributeOrDefault<PostgresDbType, PostgresDbTypeIdentificationAttribute, long>(typeId, x => x.OID))
+                                DbType = PostgresDbTypeCovertUtility.Convert(EnumParsingSupport.ConvertUsingAttributeOrDefault<PostgresDbType, PostgresDbTypeIdentificationAttribute, long>(typeId, x => x.OID))
                             };
                         }
                         break;
@@ -686,7 +618,7 @@ namespace IndexSuggestions.Collector.Postgres
                         var result = new FunctionExpression(data)
                         {
                             ResultTypeID = typeId,
-                            ResultDbType = Convert(EnumParsingSupport.ConvertUsingAttributeOrDefault<PostgresDbType, PostgresDbTypeIdentificationAttribute, long>(typeId, x => x.OID))
+                            ResultDbType = PostgresDbTypeCovertUtility.Convert(EnumParsingSupport.ConvertUsingAttributeOrDefault<PostgresDbType, PostgresDbTypeIdentificationAttribute, long>(typeId, x => x.OID))
                         };
                         foreach (var argExpr in expressionData.SelectToken("args").Children())
                         {
@@ -714,7 +646,7 @@ namespace IndexSuggestions.Collector.Postgres
                         var result = new OperatorExpression(data)
                         {
                             ResultTypeID = typeId,
-                            ResultDbType = Convert(EnumParsingSupport.ConvertUsingAttributeOrDefault<PostgresDbType, PostgresDbTypeIdentificationAttribute, long>(typeId, x => x.OID))
+                            ResultDbType = PostgresDbTypeCovertUtility.Convert(EnumParsingSupport.ConvertUsingAttributeOrDefault<PostgresDbType, PostgresDbTypeIdentificationAttribute, long>(typeId, x => x.OID))
                         };
                         result.OperatorID = expressionData.SelectToken("opno").Value<uint>();
                         foreach (var argExpr in expressionData.SelectToken("args").Children())

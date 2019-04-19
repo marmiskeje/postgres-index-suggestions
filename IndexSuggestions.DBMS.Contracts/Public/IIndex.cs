@@ -15,5 +15,17 @@ namespace IndexSuggestions.DBMS.Contracts
         string SchemaName { get; set; }
         uint DatabaseID { get; set; }
         string DatabaseName { get; set; }
+        IndexAccessMethodType AccessMethod { get; set; }
+    }
+
+    public enum IndexAccessMethodType
+    {
+        Unknown = 0,
+        BTree = 1,
+        Hash = 2,
+        Gist = 3,
+        Gin = 4,
+        SpGist = 5,
+        Brin = 6
     }
 }
