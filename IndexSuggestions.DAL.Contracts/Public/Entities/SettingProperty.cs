@@ -11,6 +11,7 @@ namespace IndexSuggestions.DAL.Contracts
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long ID { get; set; }
         [MaxLength(64)]
+        [Required]
         public string Key { get; set; }
         public int? IntValue { get; set; }
         public DateTime? DateTimeValue { get; set; }

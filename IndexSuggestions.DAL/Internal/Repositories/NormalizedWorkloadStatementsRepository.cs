@@ -6,12 +6,11 @@ using System.Text;
 
 namespace IndexSuggestions.DAL
 {
-    internal class NormalizedWorkloadStatementsRepository : INormalizedWorkloadStatementsRepository
+    internal class NormalizedWorkloadStatementsRepository : BaseSimpleRepository<NormalizedWorkloadStatement>, INormalizedWorkloadStatementsRepository
     {
-        private Func<IndexSuggestionsContext> CreateContextFunc { get; }
-        public NormalizedWorkloadStatementsRepository(Func<IndexSuggestionsContext> createContextFunc)
+        public NormalizedWorkloadStatementsRepository(Func<IndexSuggestionsContext> createContextFunc) : base(createContextFunc)
         {
-            CreateContextFunc = createContextFunc;
+            
         }
 
         public IEnumerable<NormalizedWorkloadStatement> GetWorkloadStatements(Workload workload, DateTime fromInclusive, DateTime toExclusive)

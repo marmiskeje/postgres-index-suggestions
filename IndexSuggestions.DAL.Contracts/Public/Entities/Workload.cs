@@ -14,6 +14,7 @@ namespace IndexSuggestions.DAL.Contracts
         public WorkloadDefinition Definition { get; set; }
         [Required]
         public string DefinitionData { get; set; }
+        public List<WorkloadAnalysis> WorkloadAnalyses { get; set; }
     }
 
     public class WorkloadDefinition

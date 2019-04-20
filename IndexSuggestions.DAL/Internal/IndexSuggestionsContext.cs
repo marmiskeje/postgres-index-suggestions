@@ -22,7 +22,14 @@ namespace IndexSuggestions.DAL
         public DbSet<TotalIndexStatistics> TotalIndexStatistics { get; set; }
         public DbSet<TotalStoredProcedureStatistics> TotalStoredProcedureStatistics { get; set; }
         public DbSet<TotalViewStatistics> TotalViewStatistics { get; set; }
-
+        public DbSet<WorkloadAnalysis> WorkloadAnalyses { get; set; }
+        public DbSet<VirtualEnvironment> VirtualEnvironments { get; set; }
+        public DbSet<PossibleIndex> PossibleIndices { get; set; }
+        public DbSet<VirtualEnvironmentPossibleIndex> VirtualEnvironmentPossibleIndices { get; set; }
+        public DbSet<VirtualEnvironmentStatementEvaluation> VirtualEnvironmentStatementEvaluations { get; set; }
+        public DbSet<ExecutionPlan> ExecutionPlans { get; set; }
+        public DbSet<WorkloadAnalysisRealStatementEvaluation> WorkloadAnalysisRealStatementEvaluations { get; set; }
+        public DbSet<VirtualEnvironmentPossibleCoveringIndex> VirtualEnvironmentPossibleCoveringIndices { get; set; }
         public IndexSuggestionsContext(string providerName, string connectionString) : base()
         {
             this.providerName = providerName;
@@ -85,6 +92,26 @@ namespace IndexSuggestions.DAL
             modelBuilder.Entity<TotalViewStatistics>().HasIndex(x => new { x.DatabaseID, x.ViewID, x.Date }).IsUnique();
             modelBuilder.Entity<TotalViewStatistics>().HasIndex(x => x.ViewID);
             modelBuilder.Entity<SettingProperty>().HasIndex(x => x.Key).IsUnique();
+            modelBuilder.Entity<WorkloadAnalysis>().HasOne(x => x.Workload).WithMany(x => x.WorkloadAnalyses);
+            modelBuilder.Entity<WorkloadAnalysis>().HasIndex(x => new { x.PeriodFromDate, x.PeriodToDate });
+            modelBuilder.Entity<WorkloadAnalysis>().HasIndex(x => x.State);
+            modelBuilder.Entity<VirtualEnvironment>().HasOne(x => x.WorkloadAnalysis).WithMany(x => x.VirtualEnvironments);
+            modelBuilder.Entity<VirtualEnvironmentPossibleIndex>().HasKey(x => new { x.PossibleIndexID, x.VirtualEnvironemntID });
+            modelBuilder.Entity<VirtualEnvironmentPossibleIndex>().HasOne(x => x.PossibleIndex).WithMany(x => x.VirtualEnvironmentPossibleIndices).HasForeignKey(x => x.PossibleIndexID);
+            modelBuilder.Entity<VirtualEnvironmentPossibleIndex>().HasOne(x => x.VirtualEnvironment).WithMany(x => x.VirtualEnvironmentPossibleIndices).HasForeignKey(x => x.VirtualEnvironemntID);
+            modelBuilder.Entity<VirtualEnvironmentStatementEvaluation>().HasKey(x => new { x.ExecutionPlanID, x.NormalizedStatementID, x.VirtualEnvironmentID });
+            modelBuilder.Entity<VirtualEnvironmentStatementEvaluation>().HasOne(x => x.ExecutionPlan).WithMany(x => x.VirtualEnvironmentStatementEvaluations).HasForeignKey(x => x.ExecutionPlanID);
+            modelBuilder.Entity<VirtualEnvironmentStatementEvaluation>().HasOne(x => x.NormalizedStatement).WithMany(x => x.VirtualEnvironmentStatementEvaluations).HasForeignKey(x => x.NormalizedStatementID);
+            modelBuilder.Entity<VirtualEnvironmentStatementEvaluation>().HasOne(x => x.VirtualEnvironment).WithMany(x => x.VirtualEnvironmentStatementEvaluations).HasForeignKey(x => x.VirtualEnvironmentID);
+            modelBuilder.Entity<WorkloadAnalysisRealStatementEvaluation>().HasKey(x => new { x.ExecutionPlanID, x.NormalizedStatementID, x.WorkloadAnalysisID });
+            modelBuilder.Entity<WorkloadAnalysisRealStatementEvaluation>().HasOne(x => x.ExecutionPlan).WithMany(x => x.WorkloadAnalysisRealStatementEvaluations).HasForeignKey(x => x.ExecutionPlanID);
+            modelBuilder.Entity<WorkloadAnalysisRealStatementEvaluation>().HasOne(x => x.NormalizedStatement).WithMany(x => x.WorkloadAnalysisRealStatementEvaluations).HasForeignKey(x => x.NormalizedStatementID);
+            modelBuilder.Entity<WorkloadAnalysisRealStatementEvaluation>().HasOne(x => x.WorkloadAnalysis).WithMany(x => x.WorkloadAnalysisRealStatementEvaluations).HasForeignKey(x => x.WorkloadAnalysisID);
+            modelBuilder.Entity<VirtualEnvironmentPossibleCoveringIndex>().HasKey(x => new { x.NormalizedStatementID, x.PossibleIndexID, x.VirtualEnvironmentID });
+            modelBuilder.Entity<VirtualEnvironmentPossibleCoveringIndex>().HasOne(x => x.NormalizedStatement).WithMany(x => x.VirtualEnvironmentPossibleCoveringIndices).HasForeignKey(x => x.NormalizedStatementID);
+            modelBuilder.Entity<VirtualEnvironmentPossibleCoveringIndex>().HasOne(x => x.PossibleIndex).WithMany(x => x.VirtualEnvironmentPossibleCoveringIndices).HasForeignKey(x => x.PossibleIndexID);
+            modelBuilder.Entity<VirtualEnvironmentPossibleCoveringIndex>().HasOne(x => x.VirtualEnvironment).WithMany(x => x.VirtualEnvironmentPossibleCoveringIndices).HasForeignKey(x => x.VirtualEnvironmentID);
+
             modelBuilder.Entity<SettingProperty>().SeedData(new SettingProperty() { ID = 1, Key = SettingPropertyKeys.LAST_PROCESSED_LOG_ENTRY_TIMESTAMP });
             var workload = new Workload()
             {

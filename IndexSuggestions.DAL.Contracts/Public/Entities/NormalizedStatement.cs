@@ -24,6 +24,9 @@ namespace IndexSuggestions.DAL.Contracts
         public List<NormalizedStatementStatistics> NormalizedStatementStatistics { get; set; }
         public List<NormalizedStatementIndexStatistics> NormalizedStatementIndexStatistics { get; set; }
         public List<NormalizedStatementRelationStatistics> NormalizedStatementRelationStatistics { get; set; }
+        public List<VirtualEnvironmentStatementEvaluation> VirtualEnvironmentStatementEvaluations { get; set; }
+        public List<WorkloadAnalysisRealStatementEvaluation> WorkloadAnalysisRealStatementEvaluations { get; set; }
+        public List<VirtualEnvironmentPossibleCoveringIndex> VirtualEnvironmentPossibleCoveringIndices { get; set; }
     }
 
     public class StatementDefinition

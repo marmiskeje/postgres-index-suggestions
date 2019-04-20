@@ -1,6 +1,0 @@
-﻿{
-  "DBConnection": {
-    "ProviderName": "sqlserver", /* sqlserver|npgsql|mysql|mariadb*/
-    "ConnectionString": "Server=MANAGER\\SQLEXPRESS;Database=IndexSuggestions;Trusted_Connection=True;Application Name=IndexSuggestions;"
-  }
-}

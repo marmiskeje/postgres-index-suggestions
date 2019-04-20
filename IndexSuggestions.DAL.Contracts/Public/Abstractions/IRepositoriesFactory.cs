@@ -17,5 +17,13 @@ namespace IndexSuggestions.DAL.Contracts
         ITotalStoredProcedureStatisticsRepository GetTotalStoredProcedureStatisticsRepository();
         ITotalViewStatisticsRepository GetTotalViewStatisticsRepository();
         INormalizedWorkloadStatementsRepository GetNormalizedWorkloadStatementsRepository();
+        IWorkloadAnalysesRepository GetWorkloadAnalysesRepository();
+        IVirtualEnvironmentsRepository GetVirtualEnvironmentsRepository();
+        IPossibleIndicesRepository GetPossibleIndicesRepository();
+        IVirtualEnvironmentPossibleIndicesRepository GetVirtualEnvironmentPossibleIndicesRepository();
+        IVirtualEnvironmentStatementEvaluationsRepository GetVirtualEnvironmentStatementEvaluationsRepository();
+        IExecutionPlansRepository GetExecutionPlansRepository();
+        IWorkloadAnalysisRealStatementEvaluationsRepository GetWorkloadAnalysisRealStatementEvaluationsRepository();
+        IVirtualEnvironmentPossibleCoveringIndicesRepository GetVirtualEnvironmentPossibleCoveringIndicesRepository();
     }
 }

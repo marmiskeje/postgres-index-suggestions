@@ -6,6 +6,22 @@ using System.Text;
 
 namespace IndexSuggestions.DAL
 {
+    internal abstract class BaseSimpleRepository<TEntity> where TEntity : class
+    {
+        protected Func<IndexSuggestionsContext> CreateContextFunc { get; private set; }
+        public BaseSimpleRepository(Func<IndexSuggestionsContext> createContextFunc)
+        {
+            CreateContextFunc = createContextFunc;
+        }
+        public void Create(TEntity entity)
+        {
+            using (var context = CreateContextFunc())
+            {
+                context.Set<TEntity>().Add(entity);
+                context.SaveChanges();
+            }
+        }
+    }
     internal abstract class BaseRepository<TKey, TEntity> : IBaseRepository<TKey, TEntity> where TEntity : class, IEntity<TKey>
     {
         protected Type ThisType { get; private set; }

@@ -86,5 +86,45 @@ namespace IndexSuggestions.DAL
         {
             return new NormalizedWorkloadStatementsRepository(CreateContext);
         }
+
+        public IWorkloadAnalysesRepository GetWorkloadAnalysesRepository()
+        {
+            return new WorkloadAnalysesRepository(CreateContext);
+        }
+
+        public IVirtualEnvironmentsRepository GetVirtualEnvironmentsRepository()
+        {
+            return new VirtualEnvironmentsRepository(CreateContext);
+        }
+
+        public IPossibleIndicesRepository GetPossibleIndicesRepository()
+        {
+            return new PossibleIndicesRepository(CreateContext);
+        }
+
+        public IVirtualEnvironmentPossibleIndicesRepository GetVirtualEnvironmentPossibleIndicesRepository()
+        {
+            return new VirtualEnvironmentPossibleIndicesRepository(CreateContext);
+        }
+
+        public IVirtualEnvironmentStatementEvaluationsRepository GetVirtualEnvironmentStatementEvaluationsRepository()
+        {
+            return new VirtualEnvironmentStatementEvaluationsRepository(CreateContext);
+        }
+
+        public IExecutionPlansRepository GetExecutionPlansRepository()
+        {
+            return new ExecutionPlansRepository(CreateContext);
+        }
+
+        public IWorkloadAnalysisRealStatementEvaluationsRepository GetWorkloadAnalysisRealStatementEvaluationsRepository()
+        {
+            return new WorkloadAnalysisRealStatementEvaluationsRepository(CreateContext);
+        }
+
+        public IVirtualEnvironmentPossibleCoveringIndicesRepository GetVirtualEnvironmentPossibleCoveringIndicesRepository()
+        {
+            return new VirtualEnvironmentPossibleCoveringIndicesRepository(CreateContext);
+        }
     }
 }

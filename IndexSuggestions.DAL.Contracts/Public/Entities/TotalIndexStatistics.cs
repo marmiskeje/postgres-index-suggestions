@@ -10,13 +10,21 @@ namespace IndexSuggestions.DAL.Contracts
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long ID { get; set; }
+        [Required]
         public uint DatabaseID { get; set; }
+        [Required]
         public uint RelationID { get; set; }
+        [Required]
         public uint IndexID { get; set; }
+        [Required]
         public DateTime Date { get; set; }
+        [Required]
         public DateTime CreatedDate { get; set; }
+        [Required]
         public long IndexScanCount { get; set; }
+        [Required]
         public long IndexTupleReadCount { get; set; }
+        [Required]
         public long IndexTupleFetchCount { get; set; }
     }
 
