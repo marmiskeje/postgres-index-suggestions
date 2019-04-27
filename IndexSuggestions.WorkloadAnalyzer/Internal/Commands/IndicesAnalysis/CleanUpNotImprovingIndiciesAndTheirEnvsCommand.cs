@@ -20,20 +20,20 @@ namespace IndexSuggestions.WorkloadAnalyzer
         protected override void OnExecute()
         {
             var allImprovingIndices = new HashSet<IndexDefinition>();
-            foreach (var env in context.IndicesDesignData.IndicesEnvironments)
+            foreach (var env in context.IndicesDesignData.Environments)
             {
                 allImprovingIndices.AddRange(env.ImprovingPossibleIndices.All);
             }
             var notImprovingIndices = context.IndicesDesignData.PossibleIndices.All.Intersect(allImprovingIndices);
             List<VirtualIndicesEnvironment> environmentsToDel = new List<VirtualIndicesEnvironment>();
-            foreach (var env in context.IndicesDesignData.IndicesEnvironments)
+            foreach (var env in context.IndicesDesignData.Environments)
             {
                 if (env.ImprovingPossibleIndices.All.Count == 0 || env.PossibleIndices.All.Intersect(notImprovingIndices).Count() > 0)
                 {
                     environmentsToDel.Add(env);
                 }
             }
-            environmentsToDel.ForEach(x => context.IndicesDesignData.IndicesEnvironments.Remove(x));
+            environmentsToDel.ForEach(x => context.IndicesDesignData.Environments.Remove(x));
             context.IndicesDesignData.PossibleIndices.Remove(notImprovingIndices);
         }
     }

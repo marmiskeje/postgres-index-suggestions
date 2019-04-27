@@ -17,9 +17,9 @@ namespace IndexSuggestions.WorkloadAnalyzer
         }
         protected override void OnExecute()
         {
-            context.IndicesDesignData.IndicesEnvironments.Clear();
+            context.IndicesDesignData.Environments.Clear();
             var possibleIndices = context.IndicesDesignData.PossibleIndices.Clone();
-            context.IndicesDesignData.IndicesEnvironments.Add(new VirtualIndicesEnvironment(possibleIndices));
+            context.IndicesDesignData.Environments.Add(new VirtualIndicesEnvironment(possibleIndices));
         }
     }
 }

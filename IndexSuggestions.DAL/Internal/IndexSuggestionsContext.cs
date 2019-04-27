@@ -30,6 +30,7 @@ namespace IndexSuggestions.DAL
         public DbSet<ExecutionPlan> ExecutionPlans { get; set; }
         public DbSet<WorkloadAnalysisRealStatementEvaluation> WorkloadAnalysisRealStatementEvaluations { get; set; }
         public DbSet<VirtualEnvironmentPossibleCoveringIndex> VirtualEnvironmentPossibleCoveringIndices { get; set; }
+        public DbSet<VirtualEnvironmentPossibleHPartitioning> VirtualEnvironmentPossibleHPartitionings { get; set; }
         public IndexSuggestionsContext(string providerName, string connectionString) : base()
         {
             this.providerName = providerName;
@@ -96,6 +97,7 @@ namespace IndexSuggestions.DAL
             modelBuilder.Entity<WorkloadAnalysis>().HasIndex(x => new { x.PeriodFromDate, x.PeriodToDate });
             modelBuilder.Entity<WorkloadAnalysis>().HasIndex(x => x.State);
             modelBuilder.Entity<VirtualEnvironment>().HasOne(x => x.WorkloadAnalysis).WithMany(x => x.VirtualEnvironments);
+            modelBuilder.Entity<VirtualEnvironment>().HasIndex(x => x.Type);
             modelBuilder.Entity<VirtualEnvironmentPossibleIndex>().HasKey(x => new { x.PossibleIndexID, x.VirtualEnvironemntID });
             modelBuilder.Entity<VirtualEnvironmentPossibleIndex>().HasOne(x => x.PossibleIndex).WithMany(x => x.VirtualEnvironmentPossibleIndices).HasForeignKey(x => x.PossibleIndexID);
             modelBuilder.Entity<VirtualEnvironmentPossibleIndex>().HasOne(x => x.VirtualEnvironment).WithMany(x => x.VirtualEnvironmentPossibleIndices).HasForeignKey(x => x.VirtualEnvironemntID);
@@ -111,6 +113,8 @@ namespace IndexSuggestions.DAL
             modelBuilder.Entity<VirtualEnvironmentPossibleCoveringIndex>().HasOne(x => x.NormalizedStatement).WithMany(x => x.VirtualEnvironmentPossibleCoveringIndices).HasForeignKey(x => x.NormalizedStatementID);
             modelBuilder.Entity<VirtualEnvironmentPossibleCoveringIndex>().HasOne(x => x.PossibleIndex).WithMany(x => x.VirtualEnvironmentPossibleCoveringIndices).HasForeignKey(x => x.PossibleIndexID);
             modelBuilder.Entity<VirtualEnvironmentPossibleCoveringIndex>().HasOne(x => x.VirtualEnvironment).WithMany(x => x.VirtualEnvironmentPossibleCoveringIndices).HasForeignKey(x => x.VirtualEnvironmentID);
+            modelBuilder.Entity<VirtualEnvironmentPossibleHPartitioning>().HasOne(x => x.VirtualEnvironment).WithMany(x => x.VirtualEnvironmentPossibleHPartitionings).HasForeignKey(x => x.VirtualEnvironmentID);
+            
 
             modelBuilder.Entity<SettingProperty>().SeedData(new SettingProperty() { ID = 1, Key = SettingPropertyKeys.LAST_PROCESSED_LOG_ENTRY_TIMESTAMP });
             var workload = new Workload()

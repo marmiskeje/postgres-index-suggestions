@@ -19,25 +19,25 @@ namespace IndexSuggestions.WorkloadAnalyzer
     {
         private readonly string identificationString;
         public IndexStructureType StructureType { get;}
-        public IndexRelation Relation { get; }
-        public IReadOnlyList<IndexAttribute> Attributes { get; }
-        public IReadOnlyList<IndexAttribute> IncludeAttributes { get; }
+        public RelationData Relation { get; }
+        public IReadOnlyList<AttributeData> Attributes { get; }
+        public IReadOnlyList<AttributeData> IncludeAttributes { get; }
         public string Name
         {
             get { return identificationString; }
         }
-        public IndexDefinition(IndexStructureType structureType, IndexRelation relation, IEnumerable<IndexAttribute> attributes, IEnumerable<IndexAttribute> includeAttributes)
+        public IndexDefinition(IndexStructureType structureType, RelationData relation, IEnumerable<AttributeData> attributes, IEnumerable<AttributeData> includeAttributes)
         {
             StructureType = structureType;
             Relation = relation;
-            Attributes = new List<IndexAttribute>(attributes);
+            Attributes = new List<AttributeData>(attributes);
             if (includeAttributes != null)
             {
-                IncludeAttributes = new List<IndexAttribute>(includeAttributes);
+                IncludeAttributes = new List<AttributeData>(includeAttributes);
             }
             else
             {
-                IncludeAttributes = new List<IndexAttribute>(0);
+                IncludeAttributes = new List<AttributeData>(0);
             }
             this.identificationString = $"{StructureType}_{Relation.DatabaseName}_{Relation.SchemaName}.{Relation.Name}_{String.Join("_", Attributes.Concat(IncludeAttributes).Select(x => x.Name))}";
         }
@@ -60,6 +60,11 @@ namespace IndexSuggestions.WorkloadAnalyzer
         public override string ToString()
         {
             return identificationString;
+        }
+
+        public IndexDefinition WithReplacedRelation(RelationData relation)
+        {
+            return new IndexDefinition(StructureType, relation, Attributes, IncludeAttributes);
         }
     }
 }

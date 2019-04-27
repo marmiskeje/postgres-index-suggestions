@@ -14,7 +14,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
         }
         protected override void OnExecute()
         {
-            context.IndicesDesignData.PossibleIndices.Remove(context.IndicesDesignData.ExistingIndices);
+            context.IndicesDesignData.PossibleIndices.Remove(context.IndicesDesignData.ExistingIndices.All);
         }
     }
 }

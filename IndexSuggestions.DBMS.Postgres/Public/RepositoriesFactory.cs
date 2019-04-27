@@ -115,5 +115,10 @@ namespace IndexSuggestions.DBMS.Postgres
         {
             return new DatabaseSystemInfoRepository(settings.DBConnection.ConnectionString);
         }
+
+        public IVirtualHPartitioningsRepository GetVirtualHPartitioningsRepository()
+        {
+            return new VirtualHPartitioningsRepository(settings.DBConnection.ConnectionString);
+        }
     }
 }

@@ -5,19 +5,13 @@ using System.Text;
 
 namespace IndexSuggestions.WorkloadAnalyzer
 {
-    internal class PossibleIndicesData
+    internal class IndicesData
     {
-        //private readonly Dictionary<uint, ISet<IndexDefinition>> relationPossibleIndices = new Dictionary<uint, ISet<IndexDefinition>>();
         private readonly HashSet<IndexDefinition> all = new HashSet<IndexDefinition>();
         private readonly Dictionary<long, ISet<IndexDefinition>> allPerStatement = new Dictionary<long, ISet<IndexDefinition>>();
         private readonly Dictionary<NormalizedStatementQueryPair, ISet<IndexDefinition>> allPerQuery = new Dictionary<NormalizedStatementQueryPair, ISet<IndexDefinition>>();
         private readonly Dictionary<NormalizedStatementQueryPair, ISet<IndexDefinition>> allCoveringPerQuery = new Dictionary<NormalizedStatementQueryPair, ISet<IndexDefinition>>();
-        /*
-        public IReadOnlyDictionary<uint, ISet<IndexDefinition>> PossibleIndicesPerRelation
-        {
-            get { return relationPossibleIndices; }
-        }
-        */
+
         public IReadOnlyCollection<IndexDefinition> All
         {
             get { return all; }
@@ -37,12 +31,12 @@ namespace IndexSuggestions.WorkloadAnalyzer
             get { return allCoveringPerQuery; }
         }
 
-        public PossibleIndicesData()
+        public IndicesData()
         {
 
         }
 
-        private PossibleIndicesData(HashSet<IndexDefinition> all, Dictionary<long, ISet<IndexDefinition>> allPerStatement,
+        private IndicesData(HashSet<IndexDefinition> all, Dictionary<long, ISet<IndexDefinition>> allPerStatement,
                                     Dictionary<NormalizedStatementQueryPair, ISet<IndexDefinition>> allPerQuery,
                                     Dictionary<NormalizedStatementQueryPair, ISet<IndexDefinition>> allCoveringPerQuery)
         {
@@ -65,19 +59,6 @@ namespace IndexSuggestions.WorkloadAnalyzer
             foreach (var indexDefinition in indexDefinitions)
             {
                 all.Add(indexDefinition);
-                /*
-                if (!relationPossibleIndices.ContainsKey(indexDefinition.Relation.ID))
-                {
-                    relationPossibleIndices.Add(indexDefinition.Relation.ID, new HashSet<IndexDefinition>());
-                }
-                IndexDefinition indexDefinitionRepresentant = null;
-                if (!relationPossibleIndices[indexDefinition.Relation.ID].TryGetValue(indexDefinition, out indexDefinitionRepresentant))
-                {
-                    relationPossibleIndices[indexDefinition.Relation.ID].Add(indexDefinition);
-                    indexDefinitionRepresentant = indexDefinition;
-                }
-                */
-
                 allPerStatement[normalizedStatement.ID].Add(indexDefinition);
                 allPerQuery[queryKey].Add(indexDefinition);
             }
@@ -99,12 +80,6 @@ namespace IndexSuggestions.WorkloadAnalyzer
 
         public void Remove(IEnumerable<IndexDefinition> indices)
         {
-            /*
-            foreach (var relationId in relationPossibleIndices.Keys)
-            {
-                relationPossibleIndices[relationId].ExceptWith(indices);
-            }
-            */
             all.ExceptWith(indices);
             foreach (var statementId in allPerStatement.Keys)
             {
@@ -122,12 +97,6 @@ namespace IndexSuggestions.WorkloadAnalyzer
 
         public void RemoveExcept(IEnumerable<IndexDefinition> indices)
         {
-            /*
-            foreach (var relationId in relationPossibleIndices.Keys)
-            {
-                relationPossibleIndices[relationId].IntersectWith(indices);
-            }
-            */
             all.IntersectWith(indices);
             foreach (var statementId in allPerStatement.Keys)
             {
@@ -143,12 +112,12 @@ namespace IndexSuggestions.WorkloadAnalyzer
             }
         }
 
-        public PossibleIndicesData Clone()
+        public IndicesData Clone()
         {
             return ToSubSetOf(All);
         }
 
-        public PossibleIndicesData ToSubSetOf(IEnumerable<IndexDefinition> indices)
+        public IndicesData ToSubSetOf(IEnumerable<IndexDefinition> indices)
         {
             var all = new HashSet<IndexDefinition>(this.all.Intersect(indices));
             var allPerStatement = new Dictionary<long, ISet<IndexDefinition>>();
@@ -178,7 +147,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
                     allCoveringPerQuery.Add(query, toAdd);
                 }
             }
-            return new PossibleIndicesData(this.all, allPerStatement, allPerQuery, allCoveringPerQuery);
+            return new IndicesData(this.all, allPerStatement, allPerQuery, allCoveringPerQuery);
         }
     }
 }

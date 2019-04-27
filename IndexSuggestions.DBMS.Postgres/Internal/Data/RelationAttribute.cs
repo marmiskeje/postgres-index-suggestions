@@ -51,5 +51,9 @@ namespace IndexSuggestions.DBMS.Postgres
         {
             get { return PostgresDbTypeCovertUtility.Convert(EnumParsingSupport.ConvertUsingAttributeOrDefault<PostgresDbType, PostgresDbTypeIdentificationAttribute, long>(DbTypeId, x => x.OID)); }
         }
+        [Column("attr_is_nullable")]
+        public bool IsNullable { get; set; }
+        [Column("attr_stats_histogram_bounds")]
+        public object[] HistogramBounds => throw new NotImplementedException();
     }
 }

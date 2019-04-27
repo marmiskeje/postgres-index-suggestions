@@ -26,7 +26,8 @@ namespace IndexSuggestions.DBMS.Postgres
 				 when ia.amname = 'spgist' then 5
 				 when ia.amname = 'brin' then 6
 				 else 0
-				end) index_access_method
+				end) index_access_method,
+				iii.indexdef index_definition
                 FROM information_schema.tables r
                 INNER JOIN pg_database d ON d.datname = r.table_catalog
                 INNER JOIN pg_namespace s ON s.nspname = r.table_schema
@@ -34,6 +35,8 @@ namespace IndexSuggestions.DBMS.Postgres
                 INNER JOIN pg_index i ON i.indrelid = rr.oid
                 INNER JOIN pg_class ii ON ii.oid = i.indexrelid
 				INNER JOIN pg_am ia ON ia.oid = ii.relam
+				INNER JOIN pg_indexes iii ON iii.schemaname = s.nspname AND iii.tablename = rr.relname AND iii.indexname = ii.relname
+
             ";
             return ExecuteQuery<Index>(query, null);
         }

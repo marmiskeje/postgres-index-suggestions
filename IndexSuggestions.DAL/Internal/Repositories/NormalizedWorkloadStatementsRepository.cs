@@ -45,17 +45,17 @@ namespace IndexSuggestions.DAL
                                    select new { Key = item.Key, Items = item.Items };
                 }
                 var groupedResult = groupedQuery.ToDictionary(x => x.Key, x => x.Items.ToHashSet());
-                var reducedGroupedResult = new Dictionary<long, NormalizedStatementStatistics>();
+                var reducedGroupedResult = new Dictionary<(long NormalizedStatementID, long TotalExecutionsCount), NormalizedStatementStatistics>();
                 foreach (var item in groupedResult)
                 {
                     var values = item.Value.Where(stat => (workload.Definition.DateTimeSlots.ForbiddenValues.FirstOrDefault(x => x.DayOfWeek == stat.Date.DayOfWeek
                                     && x.StartTime >= stat.Date.TimeOfDay && stat.Date.TimeOfDay <= x.EndTime) == null));
-                    reducedGroupedResult.Add(item.Key, values.OrderByDescending(x => x.MaxDuration).FirstOrDefault());
+                    reducedGroupedResult.Add((item.Key, values.Sum(x => x.TotalExecutionsCount)), values.OrderByDescending(x => x.MaxDuration).FirstOrDefault());
                 }
                 var result = from item in reducedGroupedResult
-                             join statement in context.NormalizedStatements on item.Key equals statement.ID
-                             where statement.StatementDefinitionData != null && statement.CommandType == StatementQueryCommandType.Select
-                             select new NormalizedWorkloadStatement() { NormalizedStatement = statement, RepresentativeStatistics = item.Value };
+                             join statement in context.NormalizedStatements on item.Key.NormalizedStatementID equals statement.ID
+                             where statement.StatementDefinitionData != null
+                             select new NormalizedWorkloadStatement() { NormalizedStatement = statement, RepresentativeStatistics = item.Value, TotalExecutionsCount = item.Key.TotalExecutionsCount };
                 foreach (var item in result)
                 {
                     NormalizedStatementsRepository.FillEntityForGet(item.NormalizedStatement);

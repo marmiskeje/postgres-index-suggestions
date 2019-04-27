@@ -7,7 +7,7 @@ namespace IndexSuggestions.DBMS.Postgres
 {
     internal class VirtualIndicesRepository : BaseRepository, IVirtualIndicesRepository
     {
-        public VirtualIndicesRepository(string connectionString) : base("Server=127.0.0.1;Port=6633;Database=test;User Id=postgres;Password = root;Application Name=IndexSuggestions;") // temporary to virtual machine
+        public VirtualIndicesRepository(string connectionString) : base(connectionString)
         {
 
         }

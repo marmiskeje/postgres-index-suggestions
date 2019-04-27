@@ -4,12 +4,12 @@ using IndexSuggestions.DAL.Contracts;
 
 namespace IndexSuggestions.WorkloadAnalyzer
 {
-    internal class LoadWorkloadStatementsCommand : ChainableCommand
+    internal class LoadWorkloadStatementsDataCommand : ChainableCommand
     {
         private readonly WorkloadAnalysisContext context;
         private readonly INormalizedWorkloadStatementsRepository repository;
 
-        public LoadWorkloadStatementsCommand(WorkloadAnalysisContext context, INormalizedWorkloadStatementsRepository repository)
+        public LoadWorkloadStatementsDataCommand(WorkloadAnalysisContext context, INormalizedWorkloadStatementsRepository repository)
         {
             this.context = context;
             this.repository = repository;
@@ -18,10 +18,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
         protected override void OnExecute()
         {
             var items = repository.GetWorkloadStatements(context.Workload, context.WorkloadAnalysis.PeriodFromDate, context.WorkloadAnalysis.PeriodToDate);
-            foreach (var item in items)
-            {
-                context.Statements.Add(item.NormalizedStatement.ID, item);
-            }
+            context.StatementsData = new WorkloadStatementsData(items);
         }
     }
 }

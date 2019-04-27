@@ -12,6 +12,7 @@ namespace IndexSuggestions.DBMS.Contracts
         string Name { get; }
         uint DbTypeId { get; }
         DbType DbType { get; }
+        bool IsNullable { get; }
         IEnumerable<string> SupportedOperators { get; }
         /// <summary>
         /// Less value equals higher cardinality, possible logic:
@@ -23,5 +24,6 @@ namespace IndexSuggestions.DBMS.Contracts
         decimal CardinalityIndicator { get; }
         object[] MostCommonValues { get; }
         decimal[] MostCommonValuesFrequencies { get; }
+        object[] HistogramBounds { get; }
     }
 }

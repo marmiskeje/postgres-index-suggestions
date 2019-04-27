@@ -126,5 +126,10 @@ namespace IndexSuggestions.DAL
         {
             return new VirtualEnvironmentPossibleCoveringIndicesRepository(CreateContext);
         }
+
+        public IVirtualEnvironmentPossibleHPartitioningsRepository GetVirtualEnvironmentPossibleHPartitioningsRepository()
+        {
+            return new VirtualEnvironmentPossibleHPartitioningsRepository(CreateContext);
+        }
     }
 }

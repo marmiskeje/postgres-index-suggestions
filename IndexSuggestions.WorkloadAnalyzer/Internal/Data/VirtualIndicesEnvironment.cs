@@ -8,15 +8,15 @@ namespace IndexSuggestions.WorkloadAnalyzer
 {
     internal class VirtualIndicesEnvironment
     {
-        public PossibleIndicesData PossibleIndices { get; }
+        public IndicesData PossibleIndices { get; }
 
-        public PossibleIndicesData ImprovingPossibleIndices { get; } = new PossibleIndicesData();
+        public IndicesData ImprovingPossibleIndices { get; } = new IndicesData();
         /// <summary>
         /// Key: NormalizedStatementID
         /// </summary>
         public Dictionary<long, IExplainResult> PlansPerStatement { get; } = new Dictionary<long, IExplainResult>();
 
-        public VirtualIndicesEnvironment(PossibleIndicesData possibleIndices)
+        public VirtualIndicesEnvironment(IndicesData possibleIndices)
         {
             PossibleIndices = possibleIndices;
         }

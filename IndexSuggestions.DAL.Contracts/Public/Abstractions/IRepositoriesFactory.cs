@@ -25,5 +25,6 @@ namespace IndexSuggestions.DAL.Contracts
         IExecutionPlansRepository GetExecutionPlansRepository();
         IWorkloadAnalysisRealStatementEvaluationsRepository GetWorkloadAnalysisRealStatementEvaluationsRepository();
         IVirtualEnvironmentPossibleCoveringIndicesRepository GetVirtualEnvironmentPossibleCoveringIndicesRepository();
+        IVirtualEnvironmentPossibleHPartitioningsRepository GetVirtualEnvironmentPossibleHPartitioningsRepository();
     }
 }

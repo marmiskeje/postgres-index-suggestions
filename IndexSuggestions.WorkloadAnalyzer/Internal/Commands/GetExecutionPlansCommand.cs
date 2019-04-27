@@ -24,7 +24,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
             dictionary.Clear();
             using (var scope = new DatabaseScope(context.Database.Name))
             {
-                foreach (var s in context.Statements)
+                foreach (var s in context.StatementsData.AllSelects)
                 {
                     var explainResult = explainRepository.Eplain(s.Value.RepresentativeStatistics.RepresentativeStatement);
                     dictionary.Add(s.Key, explainResult);

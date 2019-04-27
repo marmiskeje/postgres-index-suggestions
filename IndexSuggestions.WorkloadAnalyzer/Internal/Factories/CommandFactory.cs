@@ -10,15 +10,18 @@ namespace IndexSuggestions.WorkloadAnalyzer
     {
         private readonly IRepositoriesFactory dalRepositories;
         private readonly DBMS.Contracts.IRepositoriesFactory dbmsRepositories;
-        private readonly IIndexSqlCreateStatementGenerator indexSqlCreateStatementGenerator;
+        private readonly ISqlCreateStatementGenerator sqlCreateStatementGenerator;
         private readonly IToSqlValueStringConverter toSqlValueStringConverter;
+        private readonly IAttributeHPartitioningDesigner attributeHPartitioningDesigner;
         public CommandFactory(IRepositoriesFactory dalRepositories, DBMS.Contracts.IRepositoriesFactory dbmsRepositories,
-                              IIndexSqlCreateStatementGenerator indexSqlCreateStatementGenerator, IToSqlValueStringConverter toSqlValueStringConverter)
+                              ISqlCreateStatementGenerator sqlCreateStatementGenerator, IToSqlValueStringConverter toSqlValueStringConverter,
+                              IAttributeHPartitioningDesigner attributeHPartitioningDesigner)
         {
             this.dalRepositories = dalRepositories;
             this.dbmsRepositories = dbmsRepositories;
-            this.indexSqlCreateStatementGenerator = indexSqlCreateStatementGenerator;
+            this.sqlCreateStatementGenerator = sqlCreateStatementGenerator;
             this.toSqlValueStringConverter = toSqlValueStringConverter;
+            this.attributeHPartitioningDesigner = attributeHPartitioningDesigner;
         }
         public IChainableCommand HandleExceptionCommand(IExecutableCommand onExceptionCommand = null, IExecutableCommand finallyCommand = null)
         {
@@ -27,7 +30,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
         public IChainableCommand EvaluateIndicesEnvironmentsCommand(WorkloadAnalysisContext context)
         {
             return new EvaluateIndicesEnvironmentsCommand(context, dbmsRepositories.GetVirtualIndicesRepository(), dbmsRepositories.GetExplainRepository(),
-                                                      indexSqlCreateStatementGenerator);
+                                                      sqlCreateStatementGenerator);
         }
 
         public IChainableCommand GenerateBaseBtreeIndicesCommand(WorkloadAnalysisContext context)
@@ -37,7 +40,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
 
         public IChainableCommand GetRealExecutionPlansCommand(WorkloadAnalysisContext context)
         {
-            return new GetExecutionPlansCommand(context, () => context.IndicesDesignData.RealExecutionPlansForStatements, dbmsRepositories.GetExplainRepository());
+            return new GetExecutionPlansCommand(context, () => context.RealExecutionPlansForStatements, dbmsRepositories.GetExplainRepository());
         }
 
         public IChainableCommand InitializeVirtualIndicesEnvironmentCommand(WorkloadAnalysisContext context)
@@ -55,19 +58,20 @@ namespace IndexSuggestions.WorkloadAnalyzer
             return new LoadWorkloadCommand(context, dalRepositories.GetWorkloadsRepository());
         }
 
-        public IChainableCommand LoadWorkloadStatementsCommand(WorkloadAnalysisContext context)
+        public IChainableCommand LoadWorkloadStatementsDataCommand(WorkloadAnalysisContext context)
         {
-            return new LoadWorkloadStatementsCommand(context, dalRepositories.GetNormalizedWorkloadStatementsRepository());
+            return new LoadWorkloadStatementsDataCommand(context, dalRepositories.GetNormalizedWorkloadStatementsRepository());
         }
 
         public IChainableCommand LoadExistingIndicesCommand(WorkloadAnalysisContext context)
         {
-            return new LoadExistingIndicesCommand(context, dbmsRepositories.GetIndicesRepository());
+            return new LoadExistingIndicesCommand(context, dbmsRepositories.GetIndicesRepository(), dbmsRepositories.GetRelationsRepository(),
+                                                  dbmsRepositories.GetRelationAttributesRepository());
         }
 
-        public IChainableCommand GenerateCoveringBtreeIndicesCommand(WorkloadAnalysisContext context)
+        public IChainableCommand GenerateCoveringIndicesCommand(WorkloadAnalysisContext context)
         {
-            return new GenerateCoveringBtreeIndicesCommand(context);
+            return new GenerateCoveringIndicesCommand(context);
         }
 
         public IChainableCommand GenerateBaseIndicesEnvironmentsCommand(WorkloadAnalysisContext context)
@@ -95,9 +99,9 @@ namespace IndexSuggestions.WorkloadAnalyzer
             return new GenerateFinalIndicesEnvironmentsCommand(context);
         }
 
-        public IChainableCommand GenerateAndEvaluateFilteredBtreeIndicesCommand(WorkloadAnalysisContext context)
+        public IChainableCommand GenerateAndEvaluateFilteredIndicesCommand(WorkloadAnalysisContext context)
         {
-            return new GenerateAndEvaluateFilteredBtreeIndicesCommand(context, toSqlValueStringConverter, dbmsRepositories.GetVirtualIndicesRepository(), indexSqlCreateStatementGenerator);
+            return new GenerateAndEvaluateFilteredIndicesCommand(context, toSqlValueStringConverter, dbmsRepositories.GetVirtualIndicesRepository(), sqlCreateStatementGenerator);
         }
 
         public IChainableCommand UpdateAnalysisStateCommand(WorkloadAnalysisContext context, WorkloadAnalysisStateType state)
@@ -107,7 +111,47 @@ namespace IndexSuggestions.WorkloadAnalyzer
 
         public IChainableCommand PersistsIndicesDesignDataCommand(WorkloadAnalysisContext context)
         {
-            return new PersistsIndicesDesignDataCommand(context, dalRepositories, indexSqlCreateStatementGenerator);
+            return new PersistsIndicesDesignDataCommand(context, dalRepositories, sqlCreateStatementGenerator);
+        }
+
+        public IChainableCommand LoadWorkloadRelationsDataCommand(WorkloadAnalysisContext context)
+        {
+            return new LoadWorkloadRelationsDataCommand(context, dbmsRepositories.GetRelationsRepository(), dbmsRepositories.GetRelationAttributesRepository());
+        }
+
+        public IChainableCommand InitializeHPartitioningEnvironmentCommand(WorkloadAnalysisContext context)
+        {
+            return new InitializeHPartitioningEnvironmentCommand(context, dbmsRepositories.GetVirtualHPartitioningsRepository());
+        }
+
+        public IChainableCommand PrepareHPartitioningAttributeDefinitionsCommand(WorkloadAnalysisContext context)
+        {
+            return new PrepareHPartitioningAttributeDefinitionsCommand(context, attributeHPartitioningDesigner);
+        }
+
+        public IChainableCommand GenerateBaseHPartitioningEnvironmentsCommand(WorkloadAnalysisContext context)
+        {
+            return new GenerateBaseHPartitioningEnvironmentsCommand(context);
+        }
+
+        public IChainableCommand EvaluateHPartitioningEnvironmentsCommand(WorkloadAnalysisContext context)
+        {
+            return new EvaluateHPartitioningEnvironmentsCommand(context, dbmsRepositories.GetVirtualHPartitioningsRepository(), dbmsRepositories.GetExplainRepository(), sqlCreateStatementGenerator);
+        }
+
+        public IChainableCommand CleanUpNotImprovingHPartitioningAndTheirEnvsCommand(WorkloadAnalysisContext context)
+        {
+            return new CleanUpNotImprovingHPartitioningAndTheirEnvsCommand(context);
+        }
+
+        public IChainableCommand PersistsHPartitioningsDesignDataCommand(WorkloadAnalysisContext context)
+        {
+            return new PersistsHPartitioningsDesignDataCommand(context, dalRepositories, sqlCreateStatementGenerator);
+        }
+
+        public IChainableCommand PersistsRealExecutionPlansCommand(WorkloadAnalysisContext context)
+        {
+            return new PersistsRealExecutionPlansCommand(context, dalRepositories);
         }
     }
 }

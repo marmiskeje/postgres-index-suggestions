@@ -19,24 +19,24 @@ namespace IndexSuggestions.WorkloadAnalyzer
 
         protected override void OnExecute()
         {
-            foreach (var kv in context.IndicesDesignData.StatementsExtractedData.DataPerQuery)
+            foreach (var kv in context.StatementsExtractedData.DataPerQuery)
             {
                 var query = kv.Key.Query;
-                var statement = context.Statements[kv.Key.NormalizedStatementID].NormalizedStatement;
+                var statement = context.StatementsData.AllSelects[kv.Key.NormalizedStatementID].NormalizedStatement;
                 var data = kv.Value;
                 GenerateIndices(data, statement, query);
             }
         }
 
-        private class IndexAttributeCardinalityComparer : IComparer<IndexAttribute>
+        private class IndexAttributeCardinalityComparer : IComparer<AttributeData>
         {
-            private static readonly Lazy<IComparer<IndexAttribute>> instance = new Lazy<IComparer<IndexAttribute>>(new IndexAttributeCardinalityComparer());
+            private static readonly Lazy<IComparer<AttributeData>> instance = new Lazy<IComparer<AttributeData>>(new IndexAttributeCardinalityComparer());
 
-            public static IComparer<IndexAttribute> Default
+            public static IComparer<AttributeData> Default
             {
                 get { return instance.Value; }
             }
-            public int Compare(IndexAttribute x, IndexAttribute y)
+            public int Compare(AttributeData x, AttributeData y)
             {
                 return x.CardinalityIndicator.CompareTo(y.CardinalityIndicator);
             }
@@ -112,7 +112,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
             {
                 foreach (var s in second)
                 {
-                    var mergedAttributes = new List<IndexAttribute>(f.Attributes);
+                    var mergedAttributes = new List<AttributeData>(f.Attributes);
                     mergedAttributes.AddRange(s.Attributes);
                     var newDefinition = new IndexDefinition(f.StructureType, f.Relation, mergedAttributes, null);
                     result.Add(newDefinition);
@@ -134,7 +134,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
             }
         }
 
-        private IndexDefinitionPermutations GenerateAllPermutations(IndexRelation relation, ISet<IndexAttribute> attributes)
+        private IndexDefinitionPermutations GenerateAllPermutations(RelationData relation, ISet<AttributeData> attributes)
         {
             var result = new IndexDefinitionPermutations();
             for (int i = 1; i <= attributes.Count; i++)
@@ -150,9 +150,9 @@ namespace IndexSuggestions.WorkloadAnalyzer
             return result;
         }
 
-        private Dictionary<IndexRelation, SortedSet<IndexAttribute>> GroupAttributesByRelationAndPrepare(IEnumerable<IndexAttribute> attributes)
+        private Dictionary<RelationData, SortedSet<AttributeData>> GroupAttributesByRelationAndPrepare(IEnumerable<AttributeData> attributes)
         {
-            return attributes.GroupBy(x => x.Relation).ToDictionary(x => x.Key, x => new SortedSet<IndexAttribute>(x.OrderBy(y => y.CardinalityIndicator).Take(MULTICOLUMN_ATTRIBUTES_MAX_COUNT), IndexAttributeCardinalityComparer.Default));
+            return attributes.GroupBy(x => x.Relation).ToDictionary(x => x.Key, x => new SortedSet<AttributeData>(x.OrderBy(y => y.CardinalityIndicator).Take(MULTICOLUMN_ATTRIBUTES_MAX_COUNT), IndexAttributeCardinalityComparer.Default));
         }
 
     }

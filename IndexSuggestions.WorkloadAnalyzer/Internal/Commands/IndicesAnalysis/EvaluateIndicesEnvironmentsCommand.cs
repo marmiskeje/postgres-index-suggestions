@@ -14,15 +14,15 @@ namespace IndexSuggestions.WorkloadAnalyzer
         private readonly WorkloadAnalysisContext context;
         private readonly IVirtualIndicesRepository virtualIndicesRepository;
         private readonly IExplainRepository explainRepository;
-        private readonly IIndexSqlCreateStatementGenerator indexSqlCreateStatementGenerator;
+        private readonly ISqlCreateStatementGenerator sqlCreateStatementGenerator;
 
         public EvaluateIndicesEnvironmentsCommand(WorkloadAnalysisContext context, IVirtualIndicesRepository virtualIndicesRepository, IExplainRepository explainRepository,
-                                             IIndexSqlCreateStatementGenerator indexSqlCreateStatementGenerator)
+                                             ISqlCreateStatementGenerator sqlCreateStatementGenerator)
         {
             this.context = context;
             this.virtualIndicesRepository = virtualIndicesRepository;
             this.explainRepository = explainRepository;
-            this.indexSqlCreateStatementGenerator = indexSqlCreateStatementGenerator;
+            this.sqlCreateStatementGenerator = sqlCreateStatementGenerator;
         }
 
         protected override void OnExecute()
@@ -30,7 +30,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
             context.IndicesDesignData.PossibleIndexSizes.Clear();
             using (var scope = new DatabaseScope(context.Database.Name))
             {
-                foreach (var env in context.IndicesDesignData.IndicesEnvironments)
+                foreach (var env in context.IndicesDesignData.Environments)
                 {
                     try
                     {
@@ -38,10 +38,8 @@ namespace IndexSuggestions.WorkloadAnalyzer
                         var virtualIndicesMapping = new Dictionary<IndexDefinition, IVirtualIndex>();
                         foreach (var index in env.PossibleIndices.All)
                         {
-                            var virtualIndex = virtualIndicesRepository.Create(new VirtualIndexDefinition()
-                            {
-                                CreateStatement = indexSqlCreateStatementGenerator.Generate(index)
-                            });
+                            var targetRelationData = context.RelationsData.GetReplacementOrOriginal(index.Relation.ID);
+                            var virtualIndex = virtualIndicesRepository.Create(sqlCreateStatementGenerator.Generate(index.WithReplacedRelation(targetRelationData)));
                             if (virtualIndex != null)
                             {
                                 virtualIndicesMapping.Add(index, virtualIndex);
@@ -55,14 +53,15 @@ namespace IndexSuggestions.WorkloadAnalyzer
                         {
                             var statementID = kv.Key;
                             var indices = kv.Value;
-                            var normalizedStatement = context.Statements[statementID].NormalizedStatement;
-                            var representativeStatement = context.Statements[statementID].RepresentativeStatistics.RepresentativeStatement;
-                            var explainResult = explainRepository.Eplain(representativeStatement);
+                            var normalizedStatement = context.StatementsData.AllSelects[statementID].NormalizedStatement;
+                            var representativeStatement = context.StatementsData.AllSelects[statementID].RepresentativeStatistics.RepresentativeStatement;
+                            var statementToUse = RepresentativeStatementReplacementUtility.Provide(normalizedStatement, representativeStatement, context.RelationsData);
+                            var explainResult = explainRepository.Eplain(statementToUse);
                             var latestPlan = explainResult.Plan;
                             HashSet<IndexDefinition> improvingVirtualIndices = new HashSet<IndexDefinition>();
                             
                             env.PlansPerStatement.Add(statementID, explainResult);
-                            if (latestPlan.TotalCost < context.IndicesDesignData.RealExecutionPlansForStatements[statementID].Plan.TotalCost)
+                            if (latestPlan.TotalCost < context.RealExecutionPlansForStatements[statementID].Plan.TotalCost)
                             {
                                 foreach (var i in indices)
                                 {

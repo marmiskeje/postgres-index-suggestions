@@ -6,16 +6,17 @@ namespace IndexSuggestions.DBMS.Contracts
 {
     public interface IIndex
     {
-        uint ID { get; set; }
-        string Name { get; set; }
-        IList<String> AttributesNames { get; set; }
-        uint RelationID { get; set; }
-        string RelationName { get; set; }
-        uint SchemaID { get; set; }
-        string SchemaName { get; set; }
-        uint DatabaseID { get; set; }
-        string DatabaseName { get; set; }
-        IndexAccessMethodType AccessMethod { get; set; }
+        uint ID { get; }
+        string Name { get; }
+        IList<String> AttributesNames { get; }
+        uint RelationID { get; }
+        string RelationName { get; }
+        uint SchemaID { get; }
+        string SchemaName { get; }
+        uint DatabaseID { get; }
+        string DatabaseName { get; }
+        IndexAccessMethodType AccessMethod { get;}
+        string CreateDefinition { get; }
     }
 
     public enum IndexAccessMethodType

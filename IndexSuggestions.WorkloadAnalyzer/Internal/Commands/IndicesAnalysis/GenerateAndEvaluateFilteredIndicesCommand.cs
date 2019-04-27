@@ -6,7 +6,7 @@ using System.Text;
 
 namespace IndexSuggestions.WorkloadAnalyzer
 {
-    internal class GenerateAndEvaluateFilteredBtreeIndicesCommand : ChainableCommand
+    internal class GenerateAndEvaluateFilteredIndicesCommand : ChainableCommand
     {
         private const int MOST_COMMON_VALUES_MAX_COUNT = 6;
         private const decimal MOST_COMMON_VALUE_MIN_FREQUENCY = 10m;
@@ -14,9 +14,9 @@ namespace IndexSuggestions.WorkloadAnalyzer
         private readonly WorkloadAnalysisContext context;
         private readonly IToSqlValueStringConverter toSqlValueStringConverter;
         private readonly IVirtualIndicesRepository virtualIndicesRepository;
-        private readonly IIndexSqlCreateStatementGenerator sqlCreateStatementGenerator;
-        public GenerateAndEvaluateFilteredBtreeIndicesCommand(WorkloadAnalysisContext context, IToSqlValueStringConverter toSqlValueStringConverter,
-                                                              IVirtualIndicesRepository virtualIndicesRepository, IIndexSqlCreateStatementGenerator sqlCreateStatementGenerator)
+        private readonly ISqlCreateStatementGenerator sqlCreateStatementGenerator;
+        public GenerateAndEvaluateFilteredIndicesCommand(WorkloadAnalysisContext context, IToSqlValueStringConverter toSqlValueStringConverter,
+                                                              IVirtualIndicesRepository virtualIndicesRepository, ISqlCreateStatementGenerator sqlCreateStatementGenerator)
         {
             this.context = context;
             this.toSqlValueStringConverter = toSqlValueStringConverter;
@@ -30,7 +30,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
                 virtualIndicesRepository.DestroyAll();
                 foreach (var index in context.IndicesDesignData.PossibleIndices.All)
                 {
-                    Dictionary<IndexAttribute, List<string>> possibleFilteredAttributeValues = new Dictionary<IndexAttribute, List<string>>();
+                    Dictionary<AttributeData, List<string>> possibleFilteredAttributeValues = new Dictionary<AttributeData, List<string>>();
                     foreach (var a in index.Attributes)
                     {
                         List<string> mostSignificantValues = new List<string>();
@@ -62,7 +62,8 @@ namespace IndexSuggestions.WorkloadAnalyzer
                     if (possibleFilteredAttributeValues.Count > 0)
                     {
                         string filter = CreateFilterString(possibleFilteredAttributeValues);
-                        var virtualIndex = virtualIndicesRepository.Create(new VirtualIndexDefinition() { CreateStatement = sqlCreateStatementGenerator.Generate(index, filter) });
+                        var targetRelationData = context.RelationsData.GetReplacementOrOriginal(index.Relation.ID);
+                        var virtualIndex = virtualIndicesRepository.Create(sqlCreateStatementGenerator.Generate(index.WithReplacedRelation(targetRelationData), filter));
                         var size = virtualIndicesRepository.GetVirtualIndexSize(virtualIndex.ID);
                         var filters = new Dictionary<string, long>();
                         filters.Add(filter, size);
@@ -72,7 +73,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
             }
         }
 
-        private string CreateFilterString(Dictionary<IndexAttribute, List<string>> possibleFilteredAttributeValues)
+        private string CreateFilterString(Dictionary<AttributeData, List<string>> possibleFilteredAttributeValues)
         {
             StringBuilder builder = new StringBuilder();
             int attributesCounter = 0;

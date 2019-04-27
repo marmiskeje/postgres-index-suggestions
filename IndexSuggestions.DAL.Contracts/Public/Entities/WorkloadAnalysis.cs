@@ -21,6 +21,9 @@ namespace IndexSuggestions.DAL.Contracts
         public DateTime CreatedDate { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
+        public string RelationReplacementsData { get; set; }
+        [NotMapped]
+        public List<WorkloadAnalysisRelationReplacement> RelationReplacements { get; set; } = new List<WorkloadAnalysisRelationReplacement>();
         [Required]
         public WorkloadAnalysisStateType State { get; set; }
         public List<VirtualEnvironment> VirtualEnvironments { get; set; }
@@ -33,5 +36,11 @@ namespace IndexSuggestions.DAL.Contracts
         InProgress = 1,
         EndedSuccesfully = 2,
         EndedWithError = 3
+    }
+
+    public class WorkloadAnalysisRelationReplacement
+    {
+        public uint SourceId { get; set; }
+        public uint TargetId { get; set; }
     }
 }

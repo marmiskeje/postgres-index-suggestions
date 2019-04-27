@@ -11,8 +11,8 @@ namespace IndexSuggestions.WorkloadAnalyzer
     {
         private readonly WorkloadAnalysisContext context;
         private readonly IRepositoriesFactory dalRepositories;
-        private readonly IIndexSqlCreateStatementGenerator sqlCreateStatementGenerator;
-        public PersistsIndicesDesignDataCommand(WorkloadAnalysisContext context, IRepositoriesFactory dalRepositories, IIndexSqlCreateStatementGenerator sqlCreateStatementGenerator)
+        private readonly ISqlCreateStatementGenerator sqlCreateStatementGenerator;
+        public PersistsIndicesDesignDataCommand(WorkloadAnalysisContext context, IRepositoriesFactory dalRepositories, ISqlCreateStatementGenerator sqlCreateStatementGenerator)
         {
             this.context = context;
             this.dalRepositories = dalRepositories;
@@ -26,20 +26,11 @@ namespace IndexSuggestions.WorkloadAnalyzer
             var virtualEnvPossibleIndicesRepository = dalRepositories.GetVirtualEnvironmentPossibleIndicesRepository();
             var virtualEnvStatementEvalsRepository = dalRepositories.GetVirtualEnvironmentStatementEvaluationsRepository();
             var executionPlansRepository = dalRepositories.GetExecutionPlansRepository();
-            var analysisRealStatementEvaluationsRepository = dalRepositories.GetWorkloadAnalysisRealStatementEvaluationsRepository();
             var virtualEnvPossibleCoveringIndicesRepository = dalRepositories.GetVirtualEnvironmentPossibleCoveringIndicesRepository();
             Dictionary<IndexDefinition, PossibleIndex> createdIndices = new Dictionary<IndexDefinition, PossibleIndex>();
             using (var scope = new TransactionScope())
             {
-                foreach (var kv in designData.RealExecutionPlansForStatements)
-                {
-                    var statementID = kv.Key;
-                    var explainResult = kv.Value;
-                    var createdPlan = Convert(statementID, explainResult);
-                    executionPlansRepository.Create(createdPlan);
-                    analysisRealStatementEvaluationsRepository.Create(Convert(context.WorkloadAnalysis.ID, statementID, createdPlan));
-                }
-                foreach (var env in designData.IndicesEnvironments)
+                foreach (var env in designData.Environments)
                 {
                     var createdEnvironment = Convert(env);
                     virtualEnvsRepository.Create(createdEnvironment);
@@ -95,11 +86,6 @@ namespace IndexSuggestions.WorkloadAnalyzer
             return new VirtualEnvironmentPossibleCoveringIndex() { VirtualEnvironmentID = env.ID, PossibleIndexID = createdIndex.ID, NormalizedStatementID = statementID };
         }
 
-        private WorkloadAnalysisRealStatementEvaluation Convert(long workloadAnalysisID, long statementID, ExecutionPlan createdPlan)
-        {
-            return new WorkloadAnalysisRealStatementEvaluation() { ExecutionPlanID = createdPlan.ID, NormalizedStatementID = statementID, WorkloadAnalysisID = workloadAnalysisID };
-        }
-
         private ExecutionPlan Convert(long statementID, DBMS.Contracts.IExplainResult explainResult)
         {
             return new ExecutionPlan() { Json = explainResult.PlanJson, TotalCost = explainResult.Plan.TotalCost };
@@ -125,7 +111,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
         private PossibleIndex Convert(IndexDefinition indexDefinition, long size, Dictionary<string, long> filters)
         {
             PossibleIndex result = new PossibleIndex();
-            result.CreateDefinition = sqlCreateStatementGenerator.Generate(indexDefinition);
+            result.CreateDefinition = sqlCreateStatementGenerator.Generate(indexDefinition).CreateStatement;
             result.FilterExpressions = new PossibleIndexFilterExpressionsData();
             foreach (var f in filters)
             {
@@ -140,6 +126,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
         {
             VirtualEnvironment result = new VirtualEnvironment();
             result.WorkloadAnalysisID = context.WorkloadAnalysis.ID;
+            result.Type = VirtualEnvironmentType.Indices;
             return result;
         }
     }

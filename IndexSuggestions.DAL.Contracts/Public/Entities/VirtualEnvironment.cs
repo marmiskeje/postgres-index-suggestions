@@ -12,9 +12,17 @@ namespace IndexSuggestions.DAL.Contracts
         public long ID { get; set; }
         [Required]
         public long WorkloadAnalysisID { get; set; }
+        public VirtualEnvironmentType Type { get; set; }
         public WorkloadAnalysis WorkloadAnalysis { get; set; }
         public List<VirtualEnvironmentPossibleIndex> VirtualEnvironmentPossibleIndices { get; set; }
         public List<VirtualEnvironmentStatementEvaluation> VirtualEnvironmentStatementEvaluations { get; set; }
         public List<VirtualEnvironmentPossibleCoveringIndex> VirtualEnvironmentPossibleCoveringIndices { get; set; }
+        public List<VirtualEnvironmentPossibleHPartitioning> VirtualEnvironmentPossibleHPartitionings { get; set; }
+    }
+
+    public enum VirtualEnvironmentType
+    {
+        Indices,
+        HPartitionings
     }
 }
