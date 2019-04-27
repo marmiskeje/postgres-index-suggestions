@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Linq;
 using IndexSuggestions.Common;
+using IndexSuggestions.DBMS.Contracts;
 
 namespace IndexSuggestions.WorkloadAnalyzer
 {

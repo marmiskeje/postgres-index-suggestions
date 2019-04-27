@@ -1,12 +1,13 @@
-﻿using System;
+﻿using IndexSuggestions.DBMS.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
 using System.Text;
 
-namespace IndexSuggestions.WorkloadAnalyzer
+namespace IndexSuggestions.DBMS.Postgres
 {
-    internal class ToSqlValueStringConverter : IToSqlValueStringConverter
+    public class ToSqlValueStringConverter : IToSqlValueStringConverter
     {
         public string Convert(DbType dbType, object value)
         {

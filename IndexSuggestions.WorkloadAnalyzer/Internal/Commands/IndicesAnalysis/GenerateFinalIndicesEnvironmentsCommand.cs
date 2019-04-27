@@ -1,4 +1,5 @@
 ﻿using IndexSuggestions.Common.CommandProcessing;
+using IndexSuggestions.DBMS.Contracts;
 using System;
 using System.Collections.Generic;
 using System.Text;

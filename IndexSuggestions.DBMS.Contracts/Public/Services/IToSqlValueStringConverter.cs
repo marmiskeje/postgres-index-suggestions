@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 
-namespace IndexSuggestions.WorkloadAnalyzer
+namespace IndexSuggestions.DBMS.Contracts
 {
     public interface IToSqlValueStringConverter
     {

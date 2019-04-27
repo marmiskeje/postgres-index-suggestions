@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Collections.Generic;
 using IndexSuggestions.Common.CommandProcessing;
+using IndexSuggestions.DBMS.Contracts;
 
 namespace IndexSuggestions.WorkloadAnalyzer
 {

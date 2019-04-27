@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace IndexSuggestions.WorkloadAnalyzer
+namespace IndexSuggestions.DBMS.Contracts
 {
-    internal enum IndexStructureType
+    public enum IndexStructureType
     {
         Unknown = 0,
         BTree = 1,
@@ -15,7 +15,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
         SpGist = 5,
         Brin = 6
     }
-    internal class IndexDefinition
+    public class IndexDefinition
     {
         private readonly string identificationString;
         public IndexStructureType StructureType { get;}

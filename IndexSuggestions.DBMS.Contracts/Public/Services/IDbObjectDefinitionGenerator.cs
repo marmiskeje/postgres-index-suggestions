@@ -1,11 +1,10 @@
-﻿using IndexSuggestions.DBMS.Contracts;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace IndexSuggestions.WorkloadAnalyzer
+namespace IndexSuggestions.DBMS.Contracts
 {
-    internal interface ISqlCreateStatementGenerator
+    public interface IDbObjectDefinitionGenerator
     {
         VirtualIndexDefinition Generate(IndexDefinition indexDefinition, string filterExpression = null);
         VirtualHPartitioningDefinition Generate(HPartitioningDefinition hPartitioningDefinition);

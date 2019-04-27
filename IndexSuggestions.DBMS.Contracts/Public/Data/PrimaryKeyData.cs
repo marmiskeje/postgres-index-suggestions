@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace IndexSuggestions.WorkloadAnalyzer
+namespace IndexSuggestions.DBMS.Contracts
 {
-    internal class PrimaryKeyData
+    public class PrimaryKeyData
     {
         public IReadOnlyList<AttributeData> Attributes { get; }
         public PrimaryKeyData(IEnumerable<AttributeData> attributes)

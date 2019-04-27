@@ -10,16 +10,16 @@ namespace IndexSuggestions.WorkloadAnalyzer
     {
         private readonly IRepositoriesFactory dalRepositories;
         private readonly DBMS.Contracts.IRepositoriesFactory dbmsRepositories;
-        private readonly ISqlCreateStatementGenerator sqlCreateStatementGenerator;
-        private readonly IToSqlValueStringConverter toSqlValueStringConverter;
+        private readonly DBMS.Contracts.IDbObjectDefinitionGenerator dbObjectDefinitionGenerator;
+        private readonly DBMS.Contracts.IToSqlValueStringConverter toSqlValueStringConverter;
         private readonly IAttributeHPartitioningDesigner attributeHPartitioningDesigner;
         public CommandFactory(IRepositoriesFactory dalRepositories, DBMS.Contracts.IRepositoriesFactory dbmsRepositories,
-                              ISqlCreateStatementGenerator sqlCreateStatementGenerator, IToSqlValueStringConverter toSqlValueStringConverter,
+                              DBMS.Contracts.IDbObjectDefinitionGenerator dbObjectDefinitionGenerator, DBMS.Contracts.IToSqlValueStringConverter toSqlValueStringConverter,
                               IAttributeHPartitioningDesigner attributeHPartitioningDesigner)
         {
             this.dalRepositories = dalRepositories;
             this.dbmsRepositories = dbmsRepositories;
-            this.sqlCreateStatementGenerator = sqlCreateStatementGenerator;
+            this.dbObjectDefinitionGenerator = dbObjectDefinitionGenerator;
             this.toSqlValueStringConverter = toSqlValueStringConverter;
             this.attributeHPartitioningDesigner = attributeHPartitioningDesigner;
         }
@@ -30,7 +30,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
         public IChainableCommand EvaluateIndicesEnvironmentsCommand(WorkloadAnalysisContext context)
         {
             return new EvaluateIndicesEnvironmentsCommand(context, dbmsRepositories.GetVirtualIndicesRepository(), dbmsRepositories.GetExplainRepository(),
-                                                      sqlCreateStatementGenerator);
+                                                      dbObjectDefinitionGenerator);
         }
 
         public IChainableCommand GenerateBaseBtreeIndicesCommand(WorkloadAnalysisContext context)
@@ -101,7 +101,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
 
         public IChainableCommand GenerateAndEvaluateFilteredIndicesCommand(WorkloadAnalysisContext context)
         {
-            return new GenerateAndEvaluateFilteredIndicesCommand(context, toSqlValueStringConverter, dbmsRepositories.GetVirtualIndicesRepository(), sqlCreateStatementGenerator);
+            return new GenerateAndEvaluateFilteredIndicesCommand(context, toSqlValueStringConverter, dbmsRepositories.GetVirtualIndicesRepository(), dbObjectDefinitionGenerator);
         }
 
         public IChainableCommand UpdateAnalysisStateCommand(WorkloadAnalysisContext context, WorkloadAnalysisStateType state)
@@ -111,7 +111,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
 
         public IChainableCommand PersistsIndicesDesignDataCommand(WorkloadAnalysisContext context)
         {
-            return new PersistsIndicesDesignDataCommand(context, dalRepositories, sqlCreateStatementGenerator);
+            return new PersistsIndicesDesignDataCommand(context, dalRepositories, dbObjectDefinitionGenerator);
         }
 
         public IChainableCommand LoadWorkloadRelationsDataCommand(WorkloadAnalysisContext context)
@@ -136,7 +136,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
 
         public IChainableCommand EvaluateHPartitioningEnvironmentsCommand(WorkloadAnalysisContext context)
         {
-            return new EvaluateHPartitioningEnvironmentsCommand(context, dbmsRepositories.GetVirtualHPartitioningsRepository(), dbmsRepositories.GetExplainRepository(), sqlCreateStatementGenerator);
+            return new EvaluateHPartitioningEnvironmentsCommand(context, dbmsRepositories.GetVirtualHPartitioningsRepository(), dbmsRepositories.GetExplainRepository(), dbObjectDefinitionGenerator);
         }
 
         public IChainableCommand CleanUpNotImprovingHPartitioningAndTheirEnvsCommand(WorkloadAnalysisContext context)
@@ -146,7 +146,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
 
         public IChainableCommand PersistsHPartitioningsDesignDataCommand(WorkloadAnalysisContext context)
         {
-            return new PersistsHPartitioningsDesignDataCommand(context, dalRepositories, sqlCreateStatementGenerator);
+            return new PersistsHPartitioningsDesignDataCommand(context, dalRepositories, dbObjectDefinitionGenerator);
         }
 
         public IChainableCommand PersistsRealExecutionPlansCommand(WorkloadAnalysisContext context)

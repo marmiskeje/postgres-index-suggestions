@@ -11,12 +11,13 @@ namespace IndexSuggestions.WorkloadAnalyzer
     {
         private readonly WorkloadAnalysisContext context;
         private readonly IRepositoriesFactory dalRepositories;
-        private readonly ISqlCreateStatementGenerator sqlCreateStatementGenerator;
-        public PersistsHPartitioningsDesignDataCommand(WorkloadAnalysisContext context, IRepositoriesFactory dalRepositories, ISqlCreateStatementGenerator sqlCreateStatementGenerator)
+        private readonly DBMS.Contracts.IDbObjectDefinitionGenerator dbObjectDefinitionGenerator;
+        public PersistsHPartitioningsDesignDataCommand(WorkloadAnalysisContext context, IRepositoriesFactory dalRepositories,
+                                                       DBMS.Contracts.IDbObjectDefinitionGenerator dbObjectDefinitionGenerator)
         {
             this.context = context;
             this.dalRepositories = dalRepositories;
-            this.sqlCreateStatementGenerator = sqlCreateStatementGenerator;
+            this.dbObjectDefinitionGenerator = dbObjectDefinitionGenerator;
         }
         protected override void OnExecute()
         {
@@ -59,10 +60,10 @@ namespace IndexSuggestions.WorkloadAnalyzer
             return new ExecutionPlan() { Json = explainResult.PlanJson, TotalCost = explainResult.Plan.TotalCost };
         }
 
-        private VirtualEnvironmentPossibleHPartitioning Convert(VirtualEnvironment environment, HPartitioningDefinition partitioning)
+        private VirtualEnvironmentPossibleHPartitioning Convert(VirtualEnvironment environment, DBMS.Contracts.HPartitioningDefinition partitioning)
         {
             VirtualEnvironmentPossibleHPartitioning result = new VirtualEnvironmentPossibleHPartitioning();
-            var definition = sqlCreateStatementGenerator.Generate(partitioning);
+            var definition = dbObjectDefinitionGenerator.Generate(partitioning);
             result.PartitioningStatement = definition.PartitioningStatement;
             result.PartitionStatements = definition.PartitionStatements;
             result.RelationID = partitioning.Relation.ID;

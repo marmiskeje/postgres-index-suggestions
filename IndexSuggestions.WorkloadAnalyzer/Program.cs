@@ -14,10 +14,10 @@ namespace IndexSuggestions.WorkloadAnalyzer
             var dalRepositories = DAL.RepositoriesFactory.Instance;
             var dbmsRepositories = DBMS.Postgres.RepositoriesFactory.Instance;
             var dbSystemInfo = dbmsRepositories.GetDatabaseSystemInfoRepository().LoadInfo();
-            var toSqlValueStringConverter = new ToSqlValueStringConverter();
-            var sqlCreateStatementGenerator = new SqlCreateStatementGenerator(dbSystemInfo.SupportsIncludeInIndices, toSqlValueStringConverter);
+            var toSqlValueStringConverter = new DBMS.Postgres.ToSqlValueStringConverter();
+            var dbObjectDefinitionGenerator = new DBMS.Postgres.DbObjectDefinitionGenerator(dbSystemInfo.SupportsIncludeInIndices, toSqlValueStringConverter);
             var attributeHPartitioningDesigner = new AttributeHPartitioningDesigner();
-            var commandFactory = new CommandFactory(dalRepositories, dbmsRepositories, sqlCreateStatementGenerator, toSqlValueStringConverter, attributeHPartitioningDesigner);
+            var commandFactory = new CommandFactory(dalRepositories, dbmsRepositories, dbObjectDefinitionGenerator, toSqlValueStringConverter, attributeHPartitioningDesigner);
             var chainFactory = new CommandChainFactory(commandFactory);
             var requestsLoader = new AnalysisRequestsLoader(log, queue, dalRepositories.GetWorkloadAnalysesRepository(), chainFactory);
             requestsLoader.Start();

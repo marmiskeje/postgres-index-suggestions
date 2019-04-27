@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 
-namespace IndexSuggestions.WorkloadAnalyzer
+namespace IndexSuggestions.DBMS.Contracts
 {
-    internal class HPartitioningDefinition
+    public class HPartitioningDefinition
     {
         public RelationData Relation { get; }
         public List<HPartitioningAttributeDefinition> PartitioningAttributes { get; } = new List<HPartitioningAttributeDefinition>();
@@ -22,7 +22,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
             return result;
         }
     }
-    internal abstract class HPartitioningAttributeDefinition
+    public abstract class HPartitioningAttributeDefinition
     {
         public AttributeData Attribute { get; }
         public HPartitioningAttributeDefinition(AttributeData attribute)
@@ -31,7 +31,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
         }
     }
 
-    internal class RangeHPartitioningAttributeDefinition : HPartitioningAttributeDefinition
+    public class RangeHPartitioningAttributeDefinition : HPartitioningAttributeDefinition
     {
         public List<RangeHPartitionAttributeDefinition> Partitions { get; } = new List<RangeHPartitionAttributeDefinition>();
         public RangeHPartitioningAttributeDefinition(AttributeData attribute) : base(attribute)
@@ -40,7 +40,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
         }
     }
 
-    internal class HashHPartitioningAttributeDefinition : HPartitioningAttributeDefinition
+    public class HashHPartitioningAttributeDefinition : HPartitioningAttributeDefinition
     {
         public int Modulus { get; }
         public HashHPartitioningAttributeDefinition(AttributeData attribute, int modulus) : base(attribute)
@@ -49,7 +49,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
         }
     }
 
-    internal class RangeHPartitionAttributeDefinition
+    public class RangeHPartitionAttributeDefinition
     {
         public DbType DbType { get; }
         public object FromValueInclusive { get; } 

@@ -14,15 +14,15 @@ namespace IndexSuggestions.WorkloadAnalyzer
         private readonly WorkloadAnalysisContext context;
         private readonly IVirtualIndicesRepository virtualIndicesRepository;
         private readonly IExplainRepository explainRepository;
-        private readonly ISqlCreateStatementGenerator sqlCreateStatementGenerator;
+        private readonly IDbObjectDefinitionGenerator dbObjectDefinitionGenerator;
 
         public EvaluateIndicesEnvironmentsCommand(WorkloadAnalysisContext context, IVirtualIndicesRepository virtualIndicesRepository, IExplainRepository explainRepository,
-                                             ISqlCreateStatementGenerator sqlCreateStatementGenerator)
+                                             IDbObjectDefinitionGenerator dbObjectDefinitionGenerator)
         {
             this.context = context;
             this.virtualIndicesRepository = virtualIndicesRepository;
             this.explainRepository = explainRepository;
-            this.sqlCreateStatementGenerator = sqlCreateStatementGenerator;
+            this.dbObjectDefinitionGenerator = dbObjectDefinitionGenerator;
         }
 
         protected override void OnExecute()
@@ -39,7 +39,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
                         foreach (var index in env.PossibleIndices.All)
                         {
                             var targetRelationData = context.RelationsData.GetReplacementOrOriginal(index.Relation.ID);
-                            var virtualIndex = virtualIndicesRepository.Create(sqlCreateStatementGenerator.Generate(index.WithReplacedRelation(targetRelationData)));
+                            var virtualIndex = virtualIndicesRepository.Create(dbObjectDefinitionGenerator.Generate(index.WithReplacedRelation(targetRelationData)));
                             if (virtualIndex != null)
                             {
                                 virtualIndicesMapping.Add(index, virtualIndex);

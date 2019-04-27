@@ -1,4 +1,5 @@
-﻿using System;
+﻿using IndexSuggestions.DBMS.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -8,7 +9,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
     internal class AttributeHPartitioningDesigner : IAttributeHPartitioningDesigner
     {
         private const int MIN_COUNTS_OF_PARTITIONS = 3;
-        private const int MAX_COUNT_OF_PARTITIONS = 100;
+        private const int MAX_COUNT_OF_PARTITIONS = 50;
         private const int POSSIBLE_ADDITIONAL_PARTITIONS_COUNT = 2;
         private static readonly HashSet<string> comparableOperators = new HashSet<string>(new string[] { ">", ">=", "<", "<=" });
         public HPartitioningAttributeDefinition DesignFor(AttributeData attribute, ISet<string> operators, PrimaryKeyData relationPrimaryKey)

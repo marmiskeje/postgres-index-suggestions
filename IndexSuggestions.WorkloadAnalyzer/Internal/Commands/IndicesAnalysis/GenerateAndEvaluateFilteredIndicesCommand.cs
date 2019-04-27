@@ -14,14 +14,14 @@ namespace IndexSuggestions.WorkloadAnalyzer
         private readonly WorkloadAnalysisContext context;
         private readonly IToSqlValueStringConverter toSqlValueStringConverter;
         private readonly IVirtualIndicesRepository virtualIndicesRepository;
-        private readonly ISqlCreateStatementGenerator sqlCreateStatementGenerator;
+        private readonly IDbObjectDefinitionGenerator dbObjectDefinitionGenerator;
         public GenerateAndEvaluateFilteredIndicesCommand(WorkloadAnalysisContext context, IToSqlValueStringConverter toSqlValueStringConverter,
-                                                              IVirtualIndicesRepository virtualIndicesRepository, ISqlCreateStatementGenerator sqlCreateStatementGenerator)
+                                                              IVirtualIndicesRepository virtualIndicesRepository, IDbObjectDefinitionGenerator dbObjectDefinitionGenerator)
         {
             this.context = context;
             this.toSqlValueStringConverter = toSqlValueStringConverter;
             this.virtualIndicesRepository = virtualIndicesRepository;
-            this.sqlCreateStatementGenerator = sqlCreateStatementGenerator;
+            this.dbObjectDefinitionGenerator = dbObjectDefinitionGenerator;
         }
         protected override void OnExecute()
         {
@@ -63,7 +63,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
                     {
                         string filter = CreateFilterString(possibleFilteredAttributeValues);
                         var targetRelationData = context.RelationsData.GetReplacementOrOriginal(index.Relation.ID);
-                        var virtualIndex = virtualIndicesRepository.Create(sqlCreateStatementGenerator.Generate(index.WithReplacedRelation(targetRelationData), filter));
+                        var virtualIndex = virtualIndicesRepository.Create(dbObjectDefinitionGenerator.Generate(index.WithReplacedRelation(targetRelationData), filter));
                         var size = virtualIndicesRepository.GetVirtualIndexSize(virtualIndex.ID);
                         var filters = new Dictionary<string, long>();
                         filters.Add(filter, size);

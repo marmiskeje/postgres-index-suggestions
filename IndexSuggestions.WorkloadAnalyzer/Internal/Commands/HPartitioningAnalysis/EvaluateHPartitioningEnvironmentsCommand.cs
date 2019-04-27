@@ -12,14 +12,14 @@ namespace IndexSuggestions.WorkloadAnalyzer
         private readonly WorkloadAnalysisContext context;
         private readonly IVirtualHPartitioningsRepository virtualHPartitioningsRepository;
         private readonly IExplainRepository explainRepository;
-        private readonly ISqlCreateStatementGenerator sqlCreateStatementGenerator;
+        private readonly IDbObjectDefinitionGenerator dbObjectDefinitionGenerator;
         public EvaluateHPartitioningEnvironmentsCommand(WorkloadAnalysisContext context, IVirtualHPartitioningsRepository virtualHPartitioningsRepository,
-                                                        IExplainRepository explainRepository, ISqlCreateStatementGenerator sqlCreateStatementGenerator)
+                                                        IExplainRepository explainRepository, IDbObjectDefinitionGenerator dbObjectDefinitionGenerator)
         {
             this.context = context;
             this.virtualHPartitioningsRepository = virtualHPartitioningsRepository;
             this.explainRepository = explainRepository;
-            this.sqlCreateStatementGenerator = sqlCreateStatementGenerator;
+            this.dbObjectDefinitionGenerator = dbObjectDefinitionGenerator;
         }
         protected override void OnExecute()
         {
@@ -31,7 +31,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
                     {
                         virtualHPartitioningsRepository.DestroyAll();
                         var targetRelationData = context.RelationsData.GetReplacementOrOriginal(env.Partitioning.Relation.ID);
-                        virtualHPartitioningsRepository.Create(sqlCreateStatementGenerator.Generate(env.Partitioning.WithReplacedRelation(targetRelationData)));
+                        virtualHPartitioningsRepository.Create(dbObjectDefinitionGenerator.Generate(env.Partitioning.WithReplacedRelation(targetRelationData)));
                         decimal latestWeightedTotalCost = 0;
                         decimal originalWeightedTotalCost = 0;
                         foreach (var queryPair in context.StatementsData.AllSelectQueriesByRelation[env.Partitioning.Relation.ID])

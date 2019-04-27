@@ -11,12 +11,12 @@ namespace IndexSuggestions.WorkloadAnalyzer
     {
         private readonly WorkloadAnalysisContext context;
         private readonly IRepositoriesFactory dalRepositories;
-        private readonly ISqlCreateStatementGenerator sqlCreateStatementGenerator;
-        public PersistsIndicesDesignDataCommand(WorkloadAnalysisContext context, IRepositoriesFactory dalRepositories, ISqlCreateStatementGenerator sqlCreateStatementGenerator)
+        private readonly DBMS.Contracts.IDbObjectDefinitionGenerator dbObjectDefinitionGenerator;
+        public PersistsIndicesDesignDataCommand(WorkloadAnalysisContext context, IRepositoriesFactory dalRepositories, DBMS.Contracts.IDbObjectDefinitionGenerator dbObjectDefinitionGenerator)
         {
             this.context = context;
             this.dalRepositories = dalRepositories;
-            this.sqlCreateStatementGenerator = sqlCreateStatementGenerator;
+            this.dbObjectDefinitionGenerator = dbObjectDefinitionGenerator;
         }
         protected override void OnExecute()
         {
@@ -27,7 +27,7 @@ namespace IndexSuggestions.WorkloadAnalyzer
             var virtualEnvStatementEvalsRepository = dalRepositories.GetVirtualEnvironmentStatementEvaluationsRepository();
             var executionPlansRepository = dalRepositories.GetExecutionPlansRepository();
             var virtualEnvPossibleCoveringIndicesRepository = dalRepositories.GetVirtualEnvironmentPossibleCoveringIndicesRepository();
-            Dictionary<IndexDefinition, PossibleIndex> createdIndices = new Dictionary<IndexDefinition, PossibleIndex>();
+            Dictionary<DBMS.Contracts.IndexDefinition, PossibleIndex> createdIndices = new Dictionary<DBMS.Contracts.IndexDefinition, PossibleIndex>();
             using (var scope = new TransactionScope())
             {
                 foreach (var env in designData.Environments)
@@ -108,10 +108,10 @@ namespace IndexSuggestions.WorkloadAnalyzer
             return result;
         }
 
-        private PossibleIndex Convert(IndexDefinition indexDefinition, long size, Dictionary<string, long> filters)
+        private PossibleIndex Convert(DBMS.Contracts.IndexDefinition indexDefinition, long size, Dictionary<string, long> filters)
         {
             PossibleIndex result = new PossibleIndex();
-            result.CreateDefinition = sqlCreateStatementGenerator.Generate(indexDefinition).CreateStatement;
+            result.CreateDefinition = dbObjectDefinitionGenerator.Generate(indexDefinition).CreateStatement;
             result.FilterExpressions = new PossibleIndexFilterExpressionsData();
             foreach (var f in filters)
             {

@@ -1,16 +1,16 @@
-﻿using System;
-using System.Linq;
+﻿using IndexSuggestions.DBMS.Contracts;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using IndexSuggestions.DBMS.Contracts;
+using System.Linq;
 
-namespace IndexSuggestions.WorkloadAnalyzer
+namespace IndexSuggestions.DBMS.Postgres
 {
-    internal class SqlCreateStatementGenerator : ISqlCreateStatementGenerator
+    public class DbObjectDefinitionGenerator : IDbObjectDefinitionGenerator
     {
         private readonly bool supportsInclude;
         private readonly IToSqlValueStringConverter toSqlValueStringConverter;
-        public SqlCreateStatementGenerator(bool supportsInclude, IToSqlValueStringConverter toSqlValueStringConverter)
+        public DbObjectDefinitionGenerator(bool supportsInclude, IToSqlValueStringConverter toSqlValueStringConverter)
         {
             this.supportsInclude = supportsInclude;
             this.toSqlValueStringConverter = toSqlValueStringConverter;

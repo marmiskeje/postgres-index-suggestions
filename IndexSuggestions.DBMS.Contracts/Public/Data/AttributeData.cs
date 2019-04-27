@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Data;
 using System.Text;
 
-namespace IndexSuggestions.WorkloadAnalyzer
+namespace IndexSuggestions.DBMS.Contracts
 {
-    internal class AttributeData : IEquatable<AttributeData>
+    public class AttributeData : IEquatable<AttributeData>
     {
         private readonly IRelationAttribute attribute;
         private readonly string identificationString;

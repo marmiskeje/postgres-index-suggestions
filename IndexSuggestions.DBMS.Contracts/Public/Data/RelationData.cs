@@ -3,9 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace IndexSuggestions.WorkloadAnalyzer
+namespace IndexSuggestions.DBMS.Contracts
 {
-    internal class RelationData : IEquatable<RelationData>
+    public class RelationData : IEquatable<RelationData>
     {
         private readonly IRelation relation;
         public uint ID => relation.ID;
