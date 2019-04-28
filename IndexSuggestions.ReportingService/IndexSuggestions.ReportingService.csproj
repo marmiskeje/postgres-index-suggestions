@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RazorEngine.NetCore" Version="2.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IndexSuggestions.Common.NLog\IndexSuggestions.Common.NLog.csproj" />
+    <ProjectReference Include="..\IndexSuggestions.Common\IndexSuggestions.Common.csproj" />
+    <ProjectReference Include="..\IndexSuggestions.DAL.Contracts\IndexSuggestions.DAL.Contracts.csproj" />
+    <ProjectReference Include="..\IndexSuggestions.DAL\IndexSuggestions.DAL.csproj" />
+    <ProjectReference Include="..\IndexSuggestions.DBMS.Contracts\IndexSuggestions.DBMS.Contracts.csproj" />
+    <ProjectReference Include="..\IndexSuggestions.DBMS.Postgres\IndexSuggestions.DBMS.Postgres.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="dalsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="dbmssettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

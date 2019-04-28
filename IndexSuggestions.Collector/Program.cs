@@ -1,7 +1,7 @@
 ﻿using IndexSuggestions.Collector.Contracts;
 using IndexSuggestions.Common.Cache;
 using IndexSuggestions.Common.CommandProcessing;
-using IndexSuggestions.Common.Logging;
+using IndexSuggestions.Common.TaskScheduling;
 using IndexSuggestions.DAL;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -80,7 +80,6 @@ namespace IndexSuggestions.Collector
 
         private static Dictionary<TimeSpan, IExecutableCommand> PlanRegularTasks(IMergeStatisticsChainFactory mergeStatisticsChainFactory, IDateTimeSelectorsProvider dateTimeSelectors)
         {
-            
             var regularTasks = new Dictionary<TimeSpan, IExecutableCommand>();
             regularTasks.Add(new TimeSpan(1, 0, 0), new ActionCommand(() =>
             {

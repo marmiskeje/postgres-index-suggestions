@@ -7,7 +7,7 @@ using System.Text;
 
 namespace IndexSuggestions.DAL
 {
-    internal class IndexSuggestionsContext : DbContext
+    internal partial class IndexSuggestionsContext : DbContext
     {
         private readonly string providerName = null;
         private readonly string connectionString = null;
@@ -85,6 +85,7 @@ namespace IndexSuggestions.DAL
             modelBuilder.Entity<NormalizedStatementRelationStatistics>().HasIndex(x => new { x.DatabaseID, x.NormalizedStatementID, x.RelationID, x.Date }).IsUnique();
             modelBuilder.Entity<NormalizedStatementRelationStatistics>().HasOne(x => x.NormalizedStatement).WithMany(x => x.NormalizedStatementRelationStatistics);
             modelBuilder.Entity<TotalRelationStatistics>().HasIndex(x => new { x.DatabaseID, x.RelationID, x.Date }).IsUnique();
+            modelBuilder.Entity<TotalRelationStatistics>().HasIndex(x => new { x.DatabaseID, x.Date });
             modelBuilder.Entity<TotalRelationStatistics>().HasIndex(x => x.RelationID);
             modelBuilder.Entity<TotalIndexStatistics>().HasIndex(x => new { x.DatabaseID, x.RelationID, x.IndexID, x.Date }).IsUnique();
             modelBuilder.Entity<TotalIndexStatistics>().HasIndex(x => x.IndexID);
@@ -114,24 +115,8 @@ namespace IndexSuggestions.DAL
             modelBuilder.Entity<VirtualEnvironmentPossibleCoveringIndex>().HasOne(x => x.PossibleIndex).WithMany(x => x.VirtualEnvironmentPossibleCoveringIndices).HasForeignKey(x => x.PossibleIndexID);
             modelBuilder.Entity<VirtualEnvironmentPossibleCoveringIndex>().HasOne(x => x.VirtualEnvironment).WithMany(x => x.VirtualEnvironmentPossibleCoveringIndices).HasForeignKey(x => x.VirtualEnvironmentID);
             modelBuilder.Entity<VirtualEnvironmentPossibleHPartitioning>().HasOne(x => x.VirtualEnvironment).WithMany(x => x.VirtualEnvironmentPossibleHPartitionings).HasForeignKey(x => x.VirtualEnvironmentID);
-            
 
-            modelBuilder.Entity<SettingProperty>().SeedData(new SettingProperty() { ID = 1, Key = SettingPropertyKeys.LAST_PROCESSED_LOG_ENTRY_TIMESTAMP });
-            var workload = new Workload()
-            {
-                ID = 1,
-                Definition = new WorkloadDefinition()
-                {
-                    DatabaseID = 1,
-                    Applications = new WorkloadPropertyValuesDefinition<string>(),
-                    DateTimeSlots = new WorkloadPropertyValuesDefinition<WorkloadDateTimeSlot>(),
-                    QueryThresholds = new WorkloadQueryThresholds(),
-                    Relations = new WorkloadPropertyValuesDefinition<uint>(),
-                    Users = new WorkloadPropertyValuesDefinition<string>()
-                }
-            };
-            workload.DefinitionData = JsonSerializationUtility.Serialize(workload.Definition);
-            modelBuilder.Entity<Workload>().SeedData(workload);
+            IndexSuggestionsContextSeedDataUtility.SeedData(modelBuilder);
         }
     }
 }

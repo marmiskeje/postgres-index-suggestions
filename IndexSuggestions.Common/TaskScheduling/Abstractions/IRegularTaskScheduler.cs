@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace IndexSuggestions.Collector
+namespace IndexSuggestions.Common.TaskScheduling
 {
-    internal interface IRegularTaskScheduler : IDisposable
+    public interface IRegularTaskScheduler : IDisposable
     {
         void Start();
         void Stop();

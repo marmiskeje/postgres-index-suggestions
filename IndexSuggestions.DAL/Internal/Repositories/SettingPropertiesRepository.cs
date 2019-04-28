@@ -20,5 +20,19 @@ namespace IndexSuggestions.DAL
                 return context.SettingProperties.Where(x => x.Key == key).SingleOrDefault();
             }
         }
+
+        public TObject GetObject<TObject>(string key)
+        {
+            TObject result = default(TObject);
+            using (var context = CreateContextFunc())
+            {
+                var setting = context.SettingProperties.Where(x => x.Key == key).SingleOrDefault();
+                if (setting != null && !String.IsNullOrEmpty(setting.StrValue))
+                {
+                    result = JsonSerializationUtility.Deserialize<TObject>(setting.StrValue);
+                }
+            }
+            return result;
+        }
     }
 }

@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SummaryReport" xml:space="preserve">
+    <value>&lt;!doctype html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;DBMS statistics - summary report&lt;/title&gt;
+    &lt;style&gt;
+        body {
+            margin: 10px;
+            font-family: 'Open Sans', arial;
+            font-size: 16px;
+        }
+
+        table {
+            border-collapse: collapse;
+            border: 1px solid #38678f;
+        }
+
+        th {
+            background: #4682b4;
+            border: 1px solid #38678f;
+            text-shadow: 0 1px 0 #38678f;
+            box-shadow: inset 0px 1px 2px #568ebd;
+            color: white;
+            height: 20px;
+            padding: 10px;
+        }
+
+        td {
+            border-left: 1px solid #cccccc;
+            border-right: 1px solid #cccccc;
+            border-bottom: 1px solid #cccccc;
+            padding: 10px;
+        }
+
+        .featured {
+			background: #edf3f8;
+        }
+		
+		.center {
+			text-align: center;
+		}
+		
+		h2 {
+			text-transform: uppercase;
+		}
+		
+		h2:after,
+		h2:before{
+			content:"\00a0\00a0\00a0\00a0\00a0";
+			text-decoration:line-through;
+		}
+		
+		.leftIndent {
+			padding-left: 20px;
+		}
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+	&lt;h1 class="center"&gt;DBMS statistics - summary report&lt;h1&gt;
+	&lt;h3 class="center"&gt;(@(Model.ToDateString(Model.PeriodFrom)) - @(Model.ToDateString(Model.PeriodTo)))&lt;/h3&gt;
+	&lt;div class="leftIndent"&gt;
+		@foreach (var db in Model.Databases)
+        {
+			&lt;h2&gt;Database @(db.Name)&lt;/h2&gt;
+			&lt;h3&gt;TOP 10 most frequently executed statements:&lt;/h3&gt;
+			&lt;table&gt;
+				&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Statement&lt;/th&gt;&lt;th&gt;Execution count&lt;/th&gt;&lt;th&gt;Max duration&lt;/th&gt;&lt;th&gt;Avg duration&lt;/th&gt;&lt;th&gt;Min duration&lt;/th&gt;&lt;th&gt;Total duration&lt;/th&gt;&lt;tr&gt;
+				@if (db.TopExecutedStatements.Count &gt; 0)
+				{
+					@for (int i = 0; i &lt; db.TopExecutedStatements.Count; i++)
+					{
+						&lt;tr&gt;
+							&lt;td&gt;@(i + 1)&lt;/td&gt;
+							&lt;td&gt;@db.TopExecutedStatements[i].Statement&lt;/td&gt;
+							&lt;td class="featured"&gt;@db.TopExecutedStatements[i].ExecutionCount&lt;/td&gt;
+							&lt;td&gt;@db.TopExecutedStatements[i].MaxDuration&lt;/td&gt;
+							&lt;td&gt;@db.TopExecutedStatements[i].AvgDuration&lt;/td&gt;
+							&lt;td&gt;@db.TopExecutedStatements[i].MinDuration&lt;/td&gt;
+							&lt;td&gt;@db.TopExecutedStatements[i].TotalDuration&lt;/td&gt;
+						&lt;/tr&gt;
+					}
+				}
+				else
+				{
+					&lt;tr&gt;
+						&lt;td colspan="7"&gt;No data&lt;/td&gt;
+					&lt;/tr&gt;
+				}
+			&lt;/table&gt;
+			&lt;br /&gt;
+			&lt;h3&gt;TOP 10 slowest statements:&lt;/h3&gt;
+			&lt;table&gt;
+				&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Statement&lt;/th&gt;&lt;th&gt;Execution count&lt;/th&gt;&lt;th&gt;Max duration&lt;/th&gt;&lt;th&gt;Avg duration&lt;/th&gt;&lt;th&gt;Min duration&lt;/th&gt;&lt;th&gt;Total duration&lt;/th&gt;&lt;tr&gt;
+				@if (db.TopSlowestStatements.Count &gt; 0)
+				{
+					@for (int i = 0; i &lt; db.TopSlowestStatements.Count; i++)
+					{
+						&lt;tr&gt;
+							&lt;td&gt;@(i + 1)&lt;/td&gt;
+							&lt;td&gt;@db.TopSlowestStatements[i].Statement&lt;/td&gt;
+							&lt;td&gt;@db.TopSlowestStatements[i].ExecutionCount&lt;/td&gt;
+							&lt;td class="featured"&gt;@db.TopSlowestStatements[i].MaxDuration&lt;/td&gt;
+							&lt;td&gt;@db.TopSlowestStatements[i].AvgDuration&lt;/td&gt;
+							&lt;td&gt;@db.TopSlowestStatements[i].MinDuration&lt;/td&gt;
+							&lt;td&gt;@db.TopSlowestStatements[i].TotalDuration&lt;/td&gt;
+						&lt;/tr&gt;
+					}
+				}
+				else
+				{
+					&lt;tr&gt;
+						&lt;td colspan="7"&gt;No data&lt;/td&gt;
+					&lt;/tr&gt;
+				}
+			&lt;/table&gt;
+			&lt;br /&gt;
+			&lt;h3&gt;TOP 10 alive relations:&lt;/h3&gt;
+			&lt;table&gt;
+				&lt;tr&gt;&lt;th&gt;#&lt;/th&gt;&lt;th&gt;Relation&lt;/th&gt;&lt;th&gt;# Seq scans&lt;/th&gt;&lt;th&gt;# Index scans&lt;/th&gt;&lt;th&gt;# Inserted tuples&lt;/th&gt;&lt;th&gt;# Updated tuples&lt;/th&gt;&lt;th&gt;# Deleted tuples&lt;/th&gt;&lt;th&gt;# Total&lt;/th&gt;&lt;tr&gt;
+				@if (db.TopAliveRelations.Count &gt; 0)
+				{
+					@for (int i = 0; i &lt; db.TopAliveRelations.Count; i++)
+					{
+						&lt;tr&gt;
+							&lt;td&gt;@(i + 1)&lt;/td&gt;
+							&lt;td&gt;@db.TopAliveRelations[i].Name&lt;/td&gt;
+							&lt;td &gt;@db.TopAliveRelations[i].SeqScansCount&lt;/td&gt;
+							&lt;td&gt;@db.TopAliveRelations[i].IndexScansCount&lt;/td&gt;
+							&lt;td&gt;@db.TopAliveRelations[i].TuplesInsertCount&lt;/td&gt;
+							&lt;td&gt;@db.TopAliveRelations[i].TuplesUpdateCount&lt;/td&gt;
+							&lt;td&gt;@db.TopAliveRelations[i].TuplesDeleteCount&lt;/td&gt;
+							&lt;td class="featured"&gt;@db.TopAliveRelations[i].TotalCount&lt;/td&gt;
+						&lt;/tr&gt;
+					}
+				}
+				else
+				{
+					&lt;tr&gt;
+						&lt;td colspan="8"&gt;No data&lt;/td&gt;
+					&lt;/tr&gt;
+				}
+			&lt;/table&gt;
+		}
+	&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</value>
+  </data>
+</root>

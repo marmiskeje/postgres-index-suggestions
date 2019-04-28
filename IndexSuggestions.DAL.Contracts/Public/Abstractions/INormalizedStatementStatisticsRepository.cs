@@ -8,5 +8,6 @@ namespace IndexSuggestions.DAL.Contracts
     {
         NormalizedStatementStatistics GetByUniqueKey(NormalizedStatementStatisticsUniqueKey key);
         IReadOnlyDictionary<long, List<NormalizedStatementStatistics>> GetAllGroupedByStatement(DateTime createdFrom, DateTime createdTo);
+        IReadOnlyDictionary<long, NormalizedStatementStatistics> GetTotalGroupedByStatement(uint databaseID, DateTime dateFromInclusive, DateTime dateToExclusive);
     }
 }

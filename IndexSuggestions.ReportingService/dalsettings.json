@@ -1,0 +1,6 @@
+﻿{
+  "DBConnection": {
+    "ProviderName": "sqlserver", /* sqlserver|npgsql|mysql|mariadb*/
+    "ConnectionString": "Server=EMKONB;Database=IndexSuggestions;Integrated Security=True;Application Name=IndexSuggestions;"
+  }
+}

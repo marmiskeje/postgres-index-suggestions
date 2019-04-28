@@ -2,12 +2,11 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using System.Linq;
 using System.Threading;
 
-namespace IndexSuggestions.Collector
+namespace IndexSuggestions.Common.TaskScheduling
 {
-    internal class RegularTaskScheduler : IRegularTaskScheduler
+    public class RegularTaskScheduler : IRegularTaskScheduler
     {
         private readonly ICommandProcessingQueue<IExecutableCommand> queue;
         private readonly List<InternalTask> registeredTasksAscSorted;
@@ -45,26 +44,7 @@ namespace IndexSuggestions.Collector
         {
             lock (lockObject)
             {
-                this.timer.Change(Timeout.Infinite, Timeout.Infinite); 
-            }
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        private void Dispose(bool isDisposing)
-        {
-            if (!isDisposed)
-            {
-                if (isDisposing)
-                {
-                    Stop();
-                }
-                timer.Dispose();
-                isDisposed = true;
+                this.timer.Change(Timeout.Infinite, Timeout.Infinite);
             }
         }
 
@@ -77,7 +57,7 @@ namespace IndexSuggestions.Collector
                 {
                     queue.Enqueue(followingTask.Task);
                     followingTask = null;
-                } 
+                }
             }
             if (!isDisposed)
             {
@@ -120,6 +100,25 @@ namespace IndexSuggestions.Collector
                     }
                 }
             }
+        }
+
+        private void Dispose(bool isDisposing)
+        {
+            if (!isDisposed)
+            {
+                if (isDisposing)
+                {
+                    Stop();
+                }
+                timer.Dispose();
+                isDisposed = true;
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         ~RegularTaskScheduler()
