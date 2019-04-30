@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <StartupObject>DiplomaThesis.ReportingService.Program</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="RazorEngine.NetCore" Version="2.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DiplomaThesis.Common.NLog\DiplomaThesis.Common.NLog.csproj" />
+    <ProjectReference Include="..\DiplomaThesis.Common\DiplomaThesis.Common.csproj" />
+    <ProjectReference Include="..\DiplomaThesis.DAL.Contracts\DiplomaThesis.DAL.Contracts.csproj" />
+    <ProjectReference Include="..\DiplomaThesis.DAL\DiplomaThesis.DAL.csproj" />
+    <ProjectReference Include="..\DiplomaThesis.DBMS.Contracts\DiplomaThesis.DBMS.Contracts.csproj" />
+    <ProjectReference Include="..\DiplomaThesis.DBMS.Postgres\DiplomaThesis.DBMS.Postgres.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="dalsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="dbmssettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

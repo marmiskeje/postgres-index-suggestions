@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DiplomaThesis.Common\DiplomaThesis.Common.csproj" />
+    <ProjectReference Include="..\DiplomaThesis.DAL.Contracts\DiplomaThesis.DAL.Contracts.csproj" />
+    <ProjectReference Include="..\DiplomaThesis.DBMS.Contracts\DiplomaThesis.DBMS.Contracts.csproj" />
+  </ItemGroup>
+
+</Project>
