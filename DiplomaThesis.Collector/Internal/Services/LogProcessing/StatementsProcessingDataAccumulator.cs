@@ -148,6 +148,7 @@ namespace DiplomaThesis.Collector
             {
                 ApplicationName = statementStatisticsData.ApplicationName,
                 AvgDuration = statementStatisticsData.Duration,
+                AvgTotalCost = statementStatisticsData.TotalCost,
                 CreatedDate = DateTime.Now,
                 DatabaseID = statementStatisticsData.DatabaseID,
                 Date = statementStatisticsData.ExecutionDate,
@@ -156,7 +157,9 @@ namespace DiplomaThesis.Collector
                 RepresentativeStatement = statementStatisticsData.Statement,
                 TotalDuration = statementStatisticsData.Duration,
                 TotalExecutionsCount = 1,
-                UserName = statementStatisticsData.UserName
+                UserName = statementStatisticsData.UserName,
+                MinTotalCost = statementStatisticsData.TotalCost,
+                MaxTotalCost = statementStatisticsData.TotalCost
             };
             lock (lockObject)
             {

@@ -1,0 +1,112 @@
+﻿<div class="mainContentMenu" layout="row">
+    <div class="mainContentMenuBody" layout="row" flex layout-align="start center">
+        <div layout="row" layout-align="start center">
+            <md-button class="btn-nav-menu" style="min-width: inherit" ng-click="actions.goBack()">
+                <i class="material-icons">keyboard_backspace</i>
+            </md-button>
+            <div style="width: 7px"></div>
+            <span>{{'ANALYSIS_WORKLOAD_ANALYSIS_CREATE.PAGE_SUBTITLE' | translate}}</span>
+        </div>
+</div>
+</div>
+<div class="mainContentBody" layout="column">
+    <div>
+        <br />
+    </div>
+    <div layout="row">
+        <div>
+            <md-input-container>
+                <label>Workload:</label>
+                <md-select ng-model="viewModel.WorkloadAnalysis.Workload" aria-label="select-current-workload" required>
+                    <md-option ng-repeat="w in viewModel.allWorkloads" ng-value="w">
+                        {{w.Name}}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+        <div style="padding-left:15px">
+            <md-input-container>
+                <label>Period from:</label>
+                <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required
+                       placeholder="Period from" show-todays-date="" minutes="true" min-date="date" show-icon="false"
+                       ng-model="viewModel.dateFrom" class=" dtp-no-msclear md-input">
+            </md-input-container>
+        </div>
+        <div style="padding-left:15px">
+            <md-input-container>
+                <label>Period to:</label>
+                <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required
+                       placeholder="Period to" show-todays-date="" minutes="true" min-date="date" show-icon="false"
+                       ng-model="viewModel.dateTo" class=" dtp-no-msclear md-input">
+            </md-input-container>
+        </div>
+    </div>
+    <div><br /></div>
+    <div>Relation replacements:</div>
+        <div layout="row">
+            <md-list>
+                <md-list-item ng-repeat="item in viewModel.WorkloadAnalysis.RelationReplacements">
+                    <div class="md-list-item-text" layout="row" layout-align="start center">
+                        <div>{{item.SourceRelation.FullName}} => {{item.TargetRelation.FullName}}</div>
+                        <div style="padding-left: 10px">
+                            <md-button class="md-fab md-primary md-tiny">
+                                <md-tooltip>Remove</md-tooltip>
+                                <md-icon><i class="material-icons">remove</i></md-icon></md-button>
+                        </div>
+                        <div>
+                            <md-button class="md-fab md-primary md-tiny" ng-click="actions.showDataTransferScript($event, item)">
+                                <md-tooltip>Generate data transfer script</md-tooltip>
+                                <md-icon><i class="material-icons">subject</i></md-icon></md-button>
+                        </div>
+                    </div>
+                    <md-divider></md-divider>
+                </md-list-item>
+            </md-list>
+            <div style="width:1px; background: rgba(0,0,0,0.12)"></div>
+            <div >
+                <md-content style="padding: 15px; min-width: 250px">
+                    <div layout="column">
+                        <div layout="row" layout-aligen="center center">
+                            <md-input-container>
+                                <label>Source relation:</label>
+                                <md-select ng-model="viewModel.sourceRelation" required>
+                                    <md-option ng-repeat="item in viewModel.allRelations" ng-value="item.FullName">
+                                        {{item.FullName}}
+                                    </md-option>
+                                </md-select>
+                            </md-input-container>
+                            <div style="width: 30px; text-align: center">
+                                <div style="margin-top: 7px">=></div>
+                            </div>
+                            <md-input-container>
+                                <label>Target relation:</label>
+                                <md-select ng-model="viewModel.targetRelation" required>
+                                    <md-option ng-repeat="item in viewModel.allRelations" ng-value="item.FullName">
+                                        {{item.FullName}}
+                                    </md-option>
+                                </md-select>
+                            </md-input-container>
+                        </div>
+                        <div layout="column" layout-aligen="center center">
+                            <md-button class="md-raised">
+                                <i style="vertical-align: middle;" class="material-icons">keyboard_arrow_left</i>
+                                <span>Add</span>
+                            </md-button>
+                        </div>
+                    </div>
+                </md-content>
+            </div>
+        </div>
+    </div>
+    <div flex ng-hide="viewModel.isReadonly">
+        <br />
+        <br />
+        <br />
+        <md-divider></md-divider>
+        <br />
+        <br />
+        <div flex layout="column" layout-align="center center">
+            <md-button class="md-primary md-raised">Start</md-button>
+        </div>
+    </div>
+</div>

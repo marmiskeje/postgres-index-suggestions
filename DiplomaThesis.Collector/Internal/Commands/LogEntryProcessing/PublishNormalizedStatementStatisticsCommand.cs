@@ -18,7 +18,7 @@ namespace DiplomaThesis.Collector
         }
         protected override void OnExecute()
         {
-            statementDataAccumulator.PublishNormalizedStatementStatistics(new LogEntryStatementStatisticsData()
+            var stats = new LogEntryStatementStatisticsData()
             {
                 ApplicationName = context.Entry.ApplicationName,
                 DatabaseID = context.DatabaseID,
@@ -27,7 +27,12 @@ namespace DiplomaThesis.Collector
                 NormalizedStatementFingerprint = context.StatementData.NormalizedStatementFingerprint,
                 Statement = context.Entry.Statement,
                 UserName = context.Entry.UserName
-            });
+            };
+            if (context.QueryPlan != null)
+            {
+                stats.TotalCost = context.QueryPlan.TotalCost;
+            }
+            statementDataAccumulator.PublishNormalizedStatementStatistics(stats);
         }
     }
 }

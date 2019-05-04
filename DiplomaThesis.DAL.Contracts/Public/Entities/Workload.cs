@@ -10,6 +10,12 @@ namespace DiplomaThesis.DAL.Contracts
     {
         [Key, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public long ID { get; set; }
+        [Required]
+        public string Name { get; set; }
+        [Required]
+        public uint DatabaseID { get; set; }
+        [Required]
+        public DateTime CreatedDate { get; set; }
         [NotMapped]
         public WorkloadDefinition Definition { get; set; }
         [Required]
@@ -19,7 +25,6 @@ namespace DiplomaThesis.DAL.Contracts
 
     public class WorkloadDefinition
     {
-        public uint DatabaseID { get; set; }
         public WorkloadPropertyValuesDefinition<string> Users { get; set; }
         public WorkloadPropertyValuesDefinition<WorkloadDateTimeSlot> DateTimeSlots { get; set; }
         public WorkloadPropertyValuesDefinition<uint> Relations { get; set; }

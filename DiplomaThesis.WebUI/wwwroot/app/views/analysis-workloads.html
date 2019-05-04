@@ -1,0 +1,15 @@
+﻿<div class="mainContentMenu" layout="row">
+    <div class="mainContentMenuBody" layout="row" flex layout-align="start center">
+        <div flex="20">
+            <span>{{'ANALYSIS_WORKLOADS.PAGE_SUBTITLE' | translate}}</span>
+        </div>
+        <div>
+            <md-button class="md-primary md-raised" ng-click="actions.showWorkloadDetail(null)">Create new</md-button>
+        </div>
+    </div>
+</div>
+<div class="mainContentBody" layout="column">
+    <div>
+        <div style="min-height: 500px" ui-grid="gridAnalysisWorkloads" ui-grid-pagination ui-grid-resize-columns class="grid"></div>
+    </div>
+</div>

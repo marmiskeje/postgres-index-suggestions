@@ -1,0 +1,135 @@
+﻿<div class="mainContentMenu" layout="row">
+    <div class="mainContentMenuBody" layout="row" flex layout-align="start center">
+        <div layout="row" layout-align="start center">
+            <md-button class="btn-nav-menu" style="min-width: inherit" ng-click="actions.goBack()">
+                <i class="material-icons">keyboard_backspace</i>
+            </md-button>
+            <div style="width: 7px"></div>
+            <span>{{pageSubtitle}}</span>
+        </div>
+</div>
+</div>
+<div class="mainContentBody" layout="column">
+    <div>
+        <br />
+    </div>
+    <div layout="row">
+        <div flex="33">
+            <md-input-container style="min-width:300px">
+                <label>Name</label>
+                <input ng-model="viewModel.Workload.Name" ng-readonly="viewModel.isReadonly">
+            </md-input-container>
+        </div>
+        <div flex="33">
+            <md-input-container style="min-width:300px">
+                <label>Min statement duration (ms)</label>
+                <input type="number" min="0" ng-model="viewModel.Workload.Tresholds.MinDuration" ng-readonly="viewModel.isReadonly">
+            </md-input-container>
+        </div>
+        <div flex="33">
+            <md-input-container style="min-width:300px">
+                <label>Min execution count</label>
+                <input type="number" min="0" ng-model="viewModel.Workload.Tresholds.MinExectutionCount" ng-readonly="viewModel.isReadonly">
+            </md-input-container>
+        </div>
+    </div>
+    <div><br /></div>
+    <div>
+        <div>Forbidden relations:</div>
+        <md-chips ng-model="viewModel.Workload.ForbiddenRelations" md-autocomplete-snap
+                  md-require-match="true"
+                  input-aria-label="Forbidden Relations" readonly="viewModel.isReadonly">
+            <md-autocomplete md-selected-item="viewModel.ForbiddenRelationToAdd"
+                             md-search-text="viewModel.ForbiddenRelationSearch"
+                             md-no-cache="true"
+                             md-items="item in actions.searchRelation(viewModel.ForbiddenRelationSearch)"
+                             input-aria-describedby="autocompleteTitle"
+                             placeholder="Type in relation name...">
+                <span>{{item.FullName}}</span>
+            </md-autocomplete>
+            <md-chip-template>
+                <span>
+                    {{$chip.FullName}}
+                </span>
+            </md-chip-template>
+        </md-chips>
+    </div>
+    <div><br /></div>
+    <div>
+        <div>Forbidden users:</div>
+        <md-chips ng-model="viewModel.Workload.ForbiddenUsers" placeholder="Type in username..."
+                  input-aria-label="Forbidden Relations" readonly="viewModel.isReadonly">
+        </md-chips>
+    </div>
+    <div><br /></div>
+    <div>
+        <div>Forbidden applications:</div>
+        <md-chips ng-model="viewModel.Workload.ForbiddenApplications" placeholder="Type in application name..."
+                  input-aria-label="Forbidden Relations" readonly="viewModel.isReadonly">
+        </md-chips>
+    </div>
+    <div><br /></div>
+    <div>
+        <div>Forbidden datetime slots:</div>
+        <div layout="row">
+            <md-list>
+                <md-list-item ng-repeat="item in viewModel.Workload.ForbiddenDateTimeSlots">
+                    <div class="md-list-item-text" layout="row" layout-align="start center">
+                        <div style="min-width: 130px">{{item.DayName}}:</div>
+                        <div>{{item.StartTime}} - {{item.EndTime}}</div>
+                        <div style="padding-left: 10px" ng-hide="viewModel.isReadonly">
+                            <md-button class="md-fab md-primary md-tiny">
+                                <md-tooltip>Remove</md-tooltip>
+                                <md-icon><i class="material-icons">remove</i></md-icon></md-button>
+                        </div>
+                    </div>
+                    <md-divider></md-divider>
+                </md-list-item>
+            </md-list>
+            <div style="width:1px; background: rgba(0,0,0,0.12)"></div>
+            <div ng-hide="viewModel.isReadonly">
+                <md-content style="padding: 15px; min-width: 250px">
+                    <div layout="column">
+                        <div>
+                            <md-select ng-model="viewModel.ForbiddenDateTimeSlotDay" required>
+                                <md-option ng-repeat="item in viewModel.DayNames" ng-value="item">
+                                    {{item}}
+                                </md-option>
+                            </md-select>
+                        </div>
+                        <div layout="row" layout-aligen="center center">
+                            <md-input-container style="min-width: 100px">
+                                <label>Start time</label>
+                                <input type="time" ng-model="viewModel.ForbiddenDateTimeSlotStartTime" step="1" required>
+                            </md-input-container>
+                            <div style="width: 30px; text-align: center">
+                                <div style="margin-top: 7px">-</div>
+                            </div>
+                            <md-input-container style="min-width: 100px">
+                                <label>End time</label>
+                                <input type="time" ng-model="viewModel.ForbiddenDateTimeSlotStartTime" step="1" required>
+                            </md-input-container>
+                        </div>
+                        <div layout="column" layout-aligen="center center">
+                            <md-button class="md-raised">
+                                <i style="vertical-align: middle;" class="material-icons">keyboard_arrow_left</i>
+                                <span>Add</span>
+                            </md-button>
+                        </div>
+                    </div>
+                </md-content>
+            </div>
+        </div>
+    </div>
+    <div flex ng-hide="viewModel.isReadonly">
+        <br />
+        <br />
+        <br />
+        <md-divider></md-divider>
+        <br />
+        <br />
+        <div flex layout="column" layout-align="center center">
+            <md-button class="md-primary md-raised">Create</md-button>
+        </div>
+    </div>
+</div>

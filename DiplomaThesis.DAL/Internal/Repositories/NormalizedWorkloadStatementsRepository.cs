@@ -18,7 +18,7 @@ namespace DiplomaThesis.DAL
             using (var context = CreateContextFunc())
             {
                 var query = context.NormalizedStatementStatistics
-                    .Where(x => x.DatabaseID == workload.Definition.DatabaseID)
+                    .Where(x => x.DatabaseID == workload.DatabaseID)
                     .Where(x => x.Date >= fromInclusive)
                     .Where(x => x.Date < toExclusive);
                 if (workload.Definition.Applications.ForbiddenValues.Count > 0)

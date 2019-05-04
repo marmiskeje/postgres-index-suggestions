@@ -1,0 +1,40 @@
+{
+  "ROOT": {
+    "PAGE_TITLE": "Diploma thesis",
+    "SETTINGS": "Settings"
+  },
+  "STATS_OVERVIEW": {
+    "PAGE_SUBTITLE": "Statistics overview"
+  },
+  "STATS_RELATIONS": {
+    "PAGE_SUBTITLE": "Relation & mat. view statistics"
+  },
+  "STATS_INDICES": {
+    "PAGE_SUBTITLE": "Index statistics"
+  },
+  "STATS_STORED_PROCEDURES": {
+    "PAGE_SUBTITLE": "Stored procedure statistics"
+  },
+  "STATS_STATEMENTS": {
+    "PAGE_SUBTITLE": "Statement statistics"
+  },
+  "STATS_STATEMENT_DETAIL": {
+    "PAGE_SUBTITLE": "Statement detail"
+  },
+  "ANALYSIS_UNUSED_DB_OBJECTS": {
+    "PAGE_SUBTITLE": "Unused db objects"
+  },
+  "ANALYSIS_WORKLOADS": {
+    "PAGE_SUBTITLE": "Workloads"
+  },
+  "ANALYSIS_WORKLOAD_DETAIL": {
+    "CREATE_NEW": "Create new workload",
+    "VIEW": "Workload"
+  },
+  "ANALYSIS_WORKLOAD_ANALYSES": {
+    "PAGE_SUBTITLE": "Workload analyses"
+  },
+  "ANALYSIS_WORKLOAD_ANALYSIS_CREATE": {
+    "PAGE_SUBTITLE": "New workload analyses"
+  }
+}

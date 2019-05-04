@@ -1,0 +1,124 @@
+﻿<!DOCTYPE html>
+<html ng-app="WebApp">
+<head>
+    <title>{{'ROOT.PAGE_TITLE' | translate}} - {{pageSubtitle | translate}}</title>
+    <meta charset="utf-8" />
+    <meta content="IE=edge, chrome=1" http-equiv="X-UA-Compatible" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="Expires" content="0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/material-icons.css" />
+    <link rel="stylesheet" href="css/angular-material.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.js"></script>
+    <!--<script type="text/javascript" src="scripts/AngularJS/angular.min.js"></script>-->
+    <script type="text/javascript" src="scripts/AngularJS/angular-cookies.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-touch.min.js"></script>
+    <script type="text/javascript" src="scripts/AngularJS/angular-animate.min.js"></script>
+    <script type="text/javascript" src="scripts/AngularJS/angular-aria.min.js"></script>
+    <script type="text/javascript" src="scripts/AngularJS/angular-sanitize.min.js"></script>
+    <script type="text/javascript" src="scripts/AngularJS/angular-messages.min.js"></script>
+    <script type="text/javascript" src="scripts/AngularJS/angular-local-storage.min.js"></script>
+    <script type="text/javascript" src="scripts/AngularJS/angular-ui-router.min.js"></script>
+    <script type="text/javascript" src="scripts/AngularJS/angular-translate.min.js"></script>
+    <script type="text/javascript" src="scripts/AngularJS/angular-translate-storage-cookie.min.js"></script>
+    <script type="text/javascript" src="scripts/AngularJS/angular-translate-loader-static-files.min.js"></script>
+    <script type="text/javascript" src="scripts/AngularJS/angular-translate-loader-url.min.js"></script>
+    <script type="text/javascript" src="scripts/AngularJSMaterial/angular-material.min.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment-with-locales.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/ng-material-datetimepicker/dist/angular-material-datetimepicker.min.js"></script>
+    <link href="https://unpkg.com/ng-material-datetimepicker/dist/material-datetimepicker.min.css" rel="stylesheet" type="text/css" />
+
+    <script type="text/javascript" src="https://www.chartjs.org/dist/2.8.0/Chart.min.js"></script>
+    <script type="text/javascript" src="https://unpkg.com/chartjs-plugin-colorschemes@latest/dist/chartjs-plugin-colorschemes.min.js"></script>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/angular-ui/bower-ui-grid/ui-grid.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/gh/angular-ui/bower-ui-grid/ui-grid.min.css" rel="stylesheet" type="text/css" />
+
+    <script type="text/javascript" src="app/app.js"></script>
+
+    <script type="text/javascript" src="app/constants/state-names.js"></script>
+    <script type="text/javascript" src="app/constants/events.js"></script>
+
+    <!--data-->
+    <script type="text/javascript" src="app/data/database-data.js"></script>
+    <!--view models-->
+    <script type="text/javascript" src="app/viewmodel/root-view-model.js"></script>
+    <!--services-->
+
+    <script type="text/javascript" src="app/controllers/stats-overview-controller.js"></script>
+    <script type="text/javascript" src="app/controllers/stats-relations-controller.js"></script>
+    <script type="text/javascript" src="app/controllers/stats-indices-controller.js"></script>
+    <script type="text/javascript" src="app/controllers/stats-stored-procedures-controller.js"></script>
+    <script type="text/javascript" src="app/controllers/stats-statements-controller.js"></script>
+    <script type="text/javascript" src="app/controllers/stats-statement-detail-controller.js"></script>
+    <script type="text/javascript" src="app/controllers/analysis-workloads-controller.js"></script>
+    <script type="text/javascript" src="app/controllers/analysis-workload-detail.js"></script>
+    <script type="text/javascript" src="app/controllers/analysis-workload-analyses-controller.js"></script>
+    <script type="text/javascript" src="app/controllers/analysis-workload-analysis-create.js"></script>
+    <script type="text/javascript" src="app/controllers/analysis-unused-db-objects-controller.js"></script>
+</head>
+<body layout="column" id="pageBody">
+    <div layout="row" class="header" layout-align="start center">
+        <div flex="15">
+            <span>{{'ROOT.PAGE_TITLE' | translate}}</span>
+        </div>
+        <div flex="20">
+            <md-input-container>
+                <md-select class="headerSelect" ng-model="viewModel.currentDatabase" aria-label="select-current-database">
+                    <md-option ng-repeat="db in viewModel.allDatabases" ng-value="db">
+                        {{db.name}}
+                    </md-option>
+                </md-select>
+            </md-input-container>
+        </div>
+        <div flex>
+
+        </div>
+        <div flex="5">
+            <md-button class="md-fab md-primary md-mini" aria-label="btn-settings">
+                <md-tooltip>{{'ROOT.SETTINGS' | translate}}</md-tooltip>
+                <md-icon><i class="material-icons">more_vert</i></md-icon>
+            </md-button>
+            
+        </div>
+    </div>
+    <div flex layout="row" class="body">
+        <div flex="15" class="menuContent">
+            <div layout="column">
+                <md-button ng-href="#!/stats-overview" class="btn-nav-menu">
+                    <i class="material-icons">graphic_eq</i>
+                    <span>Statistics</span>
+                </md-button>
+                <md-divider></md-divider>
+                <md-button ng-class="{'menuContentItemSelected' : services.state.current.name == 'stats-overview'}"
+                           ng-href="#!/stats-overview" class="btn-nav-menu btn-nav-sub-menu">Overview</md-button>
+                <md-button ng-class="{'menuContentItemSelected' : services.state.current.name == 'stats-relations'}"
+                           ng-href="#!/stats-relations" class="btn-nav-menu btn-nav-sub-menu">Relations &amp; mat. views</md-button>
+                <md-button ng-class="{'menuContentItemSelected' : services.state.current.name == 'stats-indices'}"
+                           ng-href="#!/stats-indices" class="btn-nav-menu btn-nav-sub-menu">Indices</md-button>
+                <md-button ng-class="{'menuContentItemSelected' : services.state.current.name == 'stats-stored-procedures'}"
+                           ng-href="#!/stats-stored-procedures" class="btn-nav-menu btn-nav-sub-menu">Stored procedures</md-button>
+                <md-button ng-class="{'menuContentItemSelected' : services.state.current.name == 'stats-statements'}"
+                           ng-href="#!/stats-statements" class="btn-nav-menu btn-nav-sub-menu">Statements</md-button>
+                <md-divider></md-divider>
+                <md-button ng-href="#!/analysis-workload-analyses" class="btn-nav-menu">
+                    <i class="material-icons">graphic_eq</i>
+                    <span>Analysis</span>
+                </md-button>
+                <md-button ng-class="{'menuContentItemSelected' : services.state.current.name == 'analysis-workloads'}"
+                           ng-href="#!/analysis-workloads" class="btn-nav-menu btn-nav-sub-menu">Workloads</md-button>
+                <md-button ng-class="{'menuContentItemSelected' : services.state.current.name == 'analysis-workload-analyses'}"
+                           ng-href="#!/analysis-workload-analyses" class="btn-nav-menu btn-nav-sub-menu">Workload analyses</md-button>
+                <md-button ng-class="{'menuContentItemSelected' : services.state.current.name == 'analysis-unused-db-objects'}"
+                           ng-href="#!/analysis-unused-db-objects" class="btn-nav-menu btn-nav-sub-menu">Unused db objects</md-button>
+            </div>
+        </div>
+        <md-content flex="85" ui-view class="mainContent">
+        </md-content>
+    </div>
+</body>
+</html>

@@ -14,9 +14,11 @@ namespace DiplomaThesis.DAL
             var workload = new Workload()
             {
                 ID = 1,
+                Name = "TestWorkload",
+                DatabaseID = 1,
+                CreatedDate = DateTime.Now,
                 Definition = new WorkloadDefinition()
                 {
-                    DatabaseID = 1,
                     Applications = new WorkloadPropertyValuesDefinition<string>(),
                     DateTimeSlots = new WorkloadPropertyValuesDefinition<WorkloadDateTimeSlot>(),
                     QueryThresholds = new WorkloadQueryThresholds(),

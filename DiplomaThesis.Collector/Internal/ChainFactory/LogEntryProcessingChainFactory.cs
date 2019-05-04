@@ -62,7 +62,7 @@ namespace DiplomaThesis.Collector
             }));
             chain.Add(generalCommands.ComputeNormalizedStatementFingerprintCommand(context));
             chain.Add(generalCommands.PublishNormalizedStatementCommand(context));
-            chain.Add(generalCommands.PublishNormalizedStatementStatisticsCommand(context));
+            
             
             ParallelCommandStepsCreator parallelSteps = new ParallelCommandStepsCreator();
 
@@ -83,6 +83,7 @@ namespace DiplomaThesis.Collector
             parallelSteps.AddParallelStep(queryPlanProcessingChain.AsChainableCommand());
 
             chain.Add(parallelSteps.CreateParallelCommand());
+            chain.Add(generalCommands.PublishNormalizedStatementStatisticsCommand(context));
             return chain.AsChainableCommand();
         }
 

@@ -32,6 +32,42 @@ namespace DiplomaThesis.Collector
             }
             cumulativeData.TotalExecutionsCount += newSample.TotalExecutionsCount;
             cumulativeData.TotalDuration += newSample.TotalDuration;
+            if (cumulativeData.MaxTotalCost.HasValue)
+            {
+                if (newSample.MaxTotalCost.HasValue)
+                {
+                    cumulativeData.MaxTotalCost = Math.Max(cumulativeData.MaxTotalCost.Value, newSample.MaxTotalCost.Value); 
+                }
+            }
+            else
+            {
+                cumulativeData.MaxTotalCost = newSample.MaxTotalCost;
+            }
+            if (cumulativeData.MinTotalCost.HasValue)
+            {
+                if (newSample.MinTotalCost.HasValue)
+                {
+                    cumulativeData.MinTotalCost = Math.Max(cumulativeData.MinTotalCost.Value, newSample.MinTotalCost.Value);
+                }
+            }
+            else
+            {
+                cumulativeData.MinTotalCost = newSample.MinTotalCost;
+            }
+            if (cumulativeData.AvgTotalCost.HasValue)
+            {
+                if (newSample.AvgTotalCost.HasValue && (cumulativeData.TotalExecutionsCount > 0 || newSample.TotalExecutionsCount > 0))
+                {
+                    cumulativeData.AvgTotalCost = (cumulativeData.TotalExecutionsCount * cumulativeData.AvgTotalCost.Value
+                                                   + newSample.TotalExecutionsCount * newSample.AvgTotalCost.Value
+                                                   )
+                                                   / (cumulativeData.TotalExecutionsCount + newSample.TotalExecutionsCount);
+                }
+            }
+            else
+            {
+                cumulativeData.AvgTotalCost = newSample.AvgTotalCost;
+            }
         }
     }
 }

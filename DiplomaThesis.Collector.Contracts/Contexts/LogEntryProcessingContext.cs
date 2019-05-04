@@ -44,6 +44,7 @@ namespace DiplomaThesis.Collector.Contracts
         public string ApplicationName { get; set; }
         public DateTime ExecutionDate { get; set; }
         public TimeSpan Duration { get; set; }
+        public decimal? TotalCost { get; set; }
     }
 
     public class LogEntryStatementIndexStatisticsData

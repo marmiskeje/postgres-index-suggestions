@@ -37,6 +37,9 @@ namespace DiplomaThesis.DAL.Contracts
         public TimeSpan AvgDuration { get; set; }
         [Required]
         public TimeSpan TotalDuration { get; set; }
+        public decimal? MinTotalCost { get; set; }
+        public decimal? MaxTotalCost { get; set; }
+        public decimal? AvgTotalCost { get; set; }
     }
 
     public class NormalizedStatementStatisticsUniqueKey

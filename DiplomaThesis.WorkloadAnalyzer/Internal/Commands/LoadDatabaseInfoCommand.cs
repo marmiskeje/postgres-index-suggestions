@@ -16,7 +16,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
 
         protected override void OnExecute()
         {
-            context.Database = databasesRepository.Get(context.Workload.Definition.DatabaseID);
+            context.Database = databasesRepository.Get(context.Workload.DatabaseID);
         }
     }
 }

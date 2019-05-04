@@ -1,0 +1,91 @@
+﻿<div class="mainContentMenu" layout="row">
+    <div class="mainContentMenuBody" layout="row" flex layout-align="start center">
+        <div flex="20" layout="row" layout-align="start center">
+            <md-button class="btn-nav-menu" style="min-width: inherit" ng-click="actions.goBack()">
+                <i class="material-icons">keyboard_backspace</i>
+            </md-button>
+            <div style="width: 7px"></div>
+            <span>{{'STATS_STATEMENT_DETAIL.PAGE_SUBTITLE' | translate}}</span>
+        </div>
+        <div>
+            <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required
+                    placeholder="Date from" show-todays-date="" minutes="true" min-date="date" show-icon="true"
+                    ng-model="viewModel.dateFrom" class=" dtp-no-msclear dtp-input md-input">
+        </div>
+        <div>
+            <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required
+                    placeholder="Date to" show-todays-date="" minutes="true" min-date="date" show-icon="true"
+                    ng-model="viewModel.dateTo" class=" dtp-no-msclear dtp-input md-input">
+        </div>
+        <div>
+            <md-button ng-disabled="!viewModel.isValid || viewModel.isLoading" class="md-primary md-raised">Load</md-button>
+        </div>
+</div>
+</div>
+<div class="mainContentBody" layout="column">
+    <div style="padding-left: 25px">
+        <h3>Select * from test</h3>
+        <br />
+    </div>
+    <div>
+        
+    </div>
+    <div layout="row">
+        <div flex="50">
+            <span>Execution timeline:</span>
+            <div  class="chart">
+                <canvas id="div-stats-statement-exec-timeline"></canvas>
+            </div>
+        </div>
+        <div flex="50">
+            <span>Duration timeline:</span>
+            <div class="chart">
+                <canvas id="div-stats-statement-duration-timeline"></canvas>
+            </div>
+        </div>
+    </div>
+    <div>
+        <br />
+    </div>
+    <div layout="row">
+        <span>Relations usage:</span>
+        <div style="width: 20px"></div>
+        <md-radio-group ng-model="viewModel.selectedRelationsUsageFilter" layout="row">
+            <md-radio-button value="0" class="md-primary">Seq scans count</md-radio-button>
+            <md-radio-button value="1">Min cost</md-radio-button>
+            <md-radio-button value="2">Max const</md-radio-button>
+            <md-radio-button value="3">Avg const</md-radio-button>
+        </md-radio-group>
+    </div>
+    <div class="chart">
+        <canvas id="div-stats-statement-relations"></canvas>
+    </div>
+    <div>
+        <br />
+    </div>
+    <div layout="row">
+        <span>Indices usage:</span>
+        <div style="width: 20px"></div>
+        <md-radio-group ng-model="viewModel.selectedIndicesUsageFilter" layout="row">
+            <md-radio-button value="0" class="md-primary">Index scans count</md-radio-button>
+            <md-radio-button value="1">Min cost</md-radio-button>
+            <md-radio-button value="2">Max const</md-radio-button>
+            <md-radio-button value="3">Avg const</md-radio-button>
+        </md-radio-group>
+    </div>
+    <div class="chart">
+        <canvas id="div-stats-statement-indices"></canvas>
+    </div>
+    <div>
+        <br />
+    </div>
+    <div>
+        <span>Top 10 slowest representatives:</span>
+    </div>
+    <div>
+        <br />
+    </div>
+    <div layout="column">
+        <div ui-grid="gridStatsSlowestStatements" ui-grid-pagination ui-grid-resize-columns class="grid"></div>
+    </div>
+</div>
