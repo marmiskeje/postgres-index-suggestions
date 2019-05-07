@@ -1,0 +1,85 @@
+﻿<div class="mainContentMenu" layout="row">
+    <div class="mainContentMenuBody" layout="row" flex layout-align="start center">
+        <div flex="20" layout="row" layout-align="start center">
+            <md-button class="btn-nav-menu" style="min-width: inherit" ng-click="actions.goBack()">
+                <i class="material-icons">keyboard_backspace</i>
+            </md-button>
+            <div style="width: 7px"></div>
+            <span>{{'ANALYSIS_WORKLOAD_ANALYSIS_DETAIL.PAGE_SUBTITLE' | translate}}</span>
+        </div>
+        <div layout="row" class="lighterText">
+            <span>Created date:</span>
+            <span style="padding-left: 12px">{{viewModel.WorkloadAnalysis.CreatedDate}}</span>
+        </div>
+        <div layout="row" class="lighterText" style="padding-left: 30px">
+            <span>Period:</span>
+            <span style="padding-left: 12px">{{viewModel.WorkloadAnalysis.Period}}</span>
+        </div>
+        <div layout="row" class="lighterText" style="padding-left: 30px">
+            <span>Workload:</span>
+            <span style="padding-left: 12px">{{viewModel.WorkloadAnalysis.Workload}}</span>
+        </div>
+    </div>
+</div>
+<div class="mainContentBody" layout="column" flex>
+    <md-content>
+        <md-tabs class="md-primary md-dynamic-height">
+            <md-tab label="Indices">
+                <md-content class="md-padding">
+                    <div layout="column">
+                        <div class="secondaryContentMenu" layout="row">
+                            <div>
+                                <md-button>
+                                    <md-icon><i class="material-icons">reorder</i></md-icon>
+                                    <span>Select environment</span>
+                                </md-button>
+                            </div>
+                            <div>
+                                <md-button>
+                                    <md-icon><i class="material-icons">tune</i></md-icon>
+                                    <span>Find best environment</span>
+                                </md-button>
+                            </div>
+                        </div>
+                        <div class="secondaryContentBody" layout="column" flex>
+                            <div>
+                                <span>Affected SELECT statements:</span>
+                            </div>
+                            <div><br /></div>
+                            <div>
+                                <div ui-grid="gridAnalysisIndicesAffectedStatements" ui-grid-pagination ui-grid-resize-columns class="grid"></div>
+                            </div>
+                            <div><br /></div>
+                            <div>
+                                <span>Possible indices details:</span>
+                            </div>
+                            <div><br /></div>
+                            <div>
+                                <div ui-grid="gridAnalysisIndicesPossibleIndices" ui-grid-pagination ui-grid-resize-columns class="grid"></div>
+                            </div>
+                            <div><br /></div>
+                            <div>
+                                <span>Not affected SELECT statements:</span>
+                            </div>
+                            <div><br /></div>
+                            <div>
+                                <div ui-grid="gridAnalysisIndicesNotAffectedStatements" ui-grid-pagination ui-grid-resize-columns class="grid"></div>
+                            </div>
+                        </div>
+                    </div>
+                </md-content>
+            </md-tab>
+            <md-tab label="Horizontal partitionings">
+                <md-content class="md-padding">
+                    <h2 class="md-display-1">Horizontal partitionings</h2>
+                    <p class="md-body-1">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla venenatis ante augue.
+                        Phasellus volutpat neque ac dui mattis vulputate. Etiam consequat aliquam cursus. In
+                        sodales pretium ultrices. Maecenas lectus est, sollicitudin consectetur felis nec,
+                        feugiat ultricies mi.
+                    </p>
+                </md-content>
+            </md-tab>
+        </md-tabs>
+    </md-content>
+</div>

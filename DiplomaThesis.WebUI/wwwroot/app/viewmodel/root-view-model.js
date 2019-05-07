@@ -1,4 +1,6 @@
-﻿Web.ViewModels.RootViewModel = new function () {
+﻿Web.ViewModels.RootViewModel = function () {
+    this.isLoading = true;
     this.currentDatabase = null;
     this.allDatabases = [];
+    this.databaseRelations = {};
 }

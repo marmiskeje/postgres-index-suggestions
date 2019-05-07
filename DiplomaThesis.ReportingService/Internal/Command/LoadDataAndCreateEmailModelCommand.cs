@@ -9,13 +9,13 @@ namespace DiplomaThesis.ReportingService
 {
     internal class LoadDataAndCreateEmailModelCommand : ChainableCommand
     {
+        private const int TOP_COUNT = 0;
         private readonly ILog log;
         private readonly ReportContextWithModel<SummaryEmailModel> context;
         private readonly DBMS.Contracts.IDatabasesRepository databasesRepository;
         private readonly DBMS.Contracts.IRelationsRepository relationsRepository;
         private readonly ITotalRelationStatisticsRepository totalRelationStatisticsRepository;
         private readonly INormalizedStatementStatisticsRepository normalizedStatementStatisticsRepository;
-        private readonly INormalizedStatementsRepository normalizedStatementsRepository;
 
         public LoadDataAndCreateEmailModelCommand(ILog log, ReportContextWithModel<SummaryEmailModel> context, DBMS.Contracts.IRepositoriesFactory dbmsRepositories,
                                                   IRepositoriesFactory dalRepositories)
@@ -26,7 +26,6 @@ namespace DiplomaThesis.ReportingService
             relationsRepository = dbmsRepositories.GetRelationsRepository();
             totalRelationStatisticsRepository = dalRepositories.GetTotalRelationStatisticsRepository();
             normalizedStatementStatisticsRepository = dalRepositories.GetNormalizedStatementStatisticsRepository();
-            normalizedStatementsRepository = dalRepositories.GetNormalizedStatementsRepository();
         }
 
         protected override void OnExecute()
@@ -43,25 +42,28 @@ namespace DiplomaThesis.ReportingService
                 {
                     var dbInfo = new SummaryEmailDatabaseInfo();
                     // alive relations
-                    var totalStatisticsPerRelation = totalRelationStatisticsRepository.GetTotalGroupedByRelation(db.ID, context.DateFromInclusive, context.DateToExclusive);
+                    var summaryTotalRelationStatistics = totalRelationStatisticsRepository.GetSummaryTotalRelationStatistics(db.ID, context.DateFromInclusive, context.DateToExclusive, TOP_COUNT);
                     var topAliveRelations = new List<SummaryEmailTopAliveRelation>();
-                    foreach (var item in totalStatisticsPerRelation)
+                    foreach (var item in summaryTotalRelationStatistics)
                     {
-                        topAliveRelations.Add(Convert(db.Name, item.Value));
+                        topAliveRelations.Add(Convert(db.Name, item));
                     }
-                    topAliveRelations.Sort((x, y) => y.TotalCount.CompareTo(x.TotalCount));
-                    dbInfo.TopAliveRelations.AddRange(topAliveRelations.Take(10));
+                    dbInfo.TopAliveRelations.AddRange(topAliveRelations);
                     // queries
-                    var totalStatisticsPerStatement = normalizedStatementStatisticsRepository.GetTotalGroupedByStatement(db.ID, context.DateFromInclusive, context.DateToExclusive);
-                    var statementStatistics = new List<SummaryEmailTopStatement>();
-                    foreach (var item in totalStatisticsPerStatement)
+                    var topExecutedStats = normalizedStatementStatisticsRepository.GetSummaryTotalStatementStatistics(db.ID, context.DateFromInclusive, context.DateToExclusive, SummaryNormalizedStatementStatisticsOrderBy.ExecutionCount, TOP_COUNT);
+                    var topExecuted = new List<SummaryEmailTopStatement>();
+                    foreach (var item in topExecutedStats)
                     {
-                        statementStatistics.Add(Convert(item.Value));
+                        topExecuted.Add(Convert(item));
                     }
-                    statementStatistics.Sort((x, y) => y.ExecutionCount.CompareTo(x.ExecutionCount));
-                    dbInfo.TopExecutedStatements.AddRange(statementStatistics.Take(10));
-                    statementStatistics.Sort((x, y) => y.MaxDuration.CompareTo(x.MaxDuration));
-                    dbInfo.TopSlowestStatements.AddRange(statementStatistics.Take(10));
+                    dbInfo.TopExecutedStatements.AddRange(topExecuted);
+                    var topSlowestStats = normalizedStatementStatisticsRepository.GetSummaryTotalStatementStatistics(db.ID, context.DateFromInclusive, context.DateToExclusive, SummaryNormalizedStatementStatisticsOrderBy.MaxDuration, TOP_COUNT);
+                    var topSlowest = new List<SummaryEmailTopStatement>();
+                    foreach (var item in topSlowestStats)
+                    {
+                        topSlowest.Add(Convert(item));
+                    }
+                    dbInfo.TopSlowestStatements.AddRange(topSlowest);
                     dbInfo.Name = db.Name;
                     model.Databases.Add(dbInfo);
                 }
@@ -80,14 +82,14 @@ namespace DiplomaThesis.ReportingService
             }
         }
 
-        private SummaryEmailTopStatement Convert(NormalizedStatementStatistics source)
+        private SummaryEmailTopStatement Convert(SummaryNormalizedStatementStatistics source)
         {
             var result = new SummaryEmailTopStatement();
             result.AvgDuration = FormatDuration(source.AvgDuration);
             result.ExecutionCount = source.TotalExecutionsCount;
             result.MaxDuration = FormatDuration(source.MaxDuration);
             result.MinDuration = FormatDuration(source.MinDuration);
-            result.Statement = normalizedStatementsRepository.GetByPrimaryKey(source.NormalizedStatementID)?.Statement ?? "Uknown";
+            result.Statement = source.Statement;
             if (result.Statement.Length > 250)
             {
                 result.Statement = result.Statement.Substring(0, 250) + "...";
@@ -123,7 +125,7 @@ namespace DiplomaThesis.ReportingService
             return $"{Math.Round(value, 2)} {unit}";
         }
 
-        private SummaryEmailTopAliveRelation Convert(string dbName, TotalRelationStatistics source)
+        private SummaryEmailTopAliveRelation Convert(string dbName, SummaryTotalRelationStatistics source)
         {
             var result = new SummaryEmailTopAliveRelation();
             result.TuplesDeleteCount = source.TupleDeleteCount;
@@ -136,7 +138,7 @@ namespace DiplomaThesis.ReportingService
             }
             result.SeqScansCount = source.SeqScanCount;
             result.TuplesUpdateCount = source.TupleUpdateCount;
-            result.TotalCount = source.TupleDeleteCount + source.TupleInsertCount + source.TupleUpdateCount + source.IndexScanCount + source.SeqScanCount;
+            result.TotalCount = source.TotalLivenessCount;
             return result;
         }
     }

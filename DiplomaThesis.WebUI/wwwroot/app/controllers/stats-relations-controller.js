@@ -1,14 +1,9 @@
-﻿Web.Controllers.StatsRelationsController = function ($scope, $rootScope, $http, uiGridConstants, $state) {
+﻿Web.Controllers.StatsRelationsController = function ($scope, $rootScope, $http, uiGridConstants, $state, statisticsService, drawingService) {
     $rootScope.pageSubtitle = 'STATS_RELATIONS.PAGE_SUBTITLE';
     $scope.actions = new Object();
     $scope.actions.showStatementDetail = function (statementId) {
-        $state.go('stats-statement-detail', { statementId: statementId, dateFrom: $scope.viewModel.dateFrom, dateTo: $scope.viewModel.dateTo });
+        $state.go(Web.Constants.StateNames.STATS_STATEMENT_DETAIL, { statementId: statementId, dateFrom: $scope.viewModel.dateFrom, dateTo: $scope.viewModel.dateTo });
     };
-    $scope.viewModel = new Object();
-    $scope.viewModel.isValid = true;
-    $scope.viewModel.isLoading = false;
-    $scope.viewModel.dateFrom = moment().startOf('day');
-    $scope.viewModel.dateTo = moment().startOf('day').add(1, 'days');
     var paginationOptions = {
         pageNumber: 1,
         pageSize: 25,
@@ -66,52 +61,140 @@
         $scope.gridStatsRelationsStatements.data = data.slice(firstRow, firstRow + paginationOptions.pageSize);
     }
     getPage();
-    this.drawChart = function() {
-        var ctx = document.getElementById('div-stats-relations').getContext('2d');
-        var chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [new Date(2018, 1, 1), new Date(2018, 1, 2), new Date(2018, 1, 5)],
-                datasets: [{
-                    label: 'Sequential reads count',
-                    data: [
-                        10, 30, 5,
-                    ],
-                    fill: false,
-                }, {
-                    label: 'Sequential tuple reads count',
-                    fill: false,
-                    data: [
-                        500, 30, 5
-                    ],
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    xAxes: [{
-                        type: 'time',
-                        time: {
-                            minUnit: 'minute',
-                            displayFormats: {
-                                minute: 'MMM D h:mm a',
-                                hour: 'MMM D h:mm a'
-                            }
-                        }
-                    }]
-                },
-                plugins: {
-                    colorschemes: {
-                        scheme: 'brewer.Set1-9'//'brewer.Paired12'
-                    }
-                }
-            }
-        });
+    $scope.actions.drawChart = function (graphData) {
+        var data = {
+            labels: [],
+            datasets: []
+        };
+        var seqScanCountDataset = {
+            label: 'Seq scans count',
+            data: [],
+            fill: false
+        };
+        var seqTupleReadCountDataset = {
+            label: 'Seq tuple read count',
+            data: [],
+            fill: false
+        };
+        var indexScanCountDataset = {
+            label: 'Index scans count',
+            data: [],
+            fill: false
+        };
+        var indexTupleFetchCountDataset = {
+            label: 'Index tuple retch count',
+            data: [],
+            fill: false
+        };
+        var tupleInsertedCountDataset = {
+            label: '# Tuple inserted',
+            data: [],
+            fill: false
+        };
+        var tupleUpdatedCountDataset = {
+            label: '# Tuple updated',
+            data: [],
+            fill: false
+        };
+        var tupleDeletedCountDataset = {
+            label: '# Tuple deleted',
+            data: [],
+            fill: false
+        };
+        for (var i = 0; i < graphData.length; i++) {
+            data.labels.push(graphData[i].date);
+            seqScanCountDataset.data.push(graphData[i].seqScanCount);
+            seqTupleReadCountDataset.data.push(graphData[i].seqTupleReadCount);
+            indexScanCountDataset.data.push(graphData[i].indexScanCount);
+            indexTupleFetchCountDataset.data.push(graphData[i].indexTupleFetchCount);
+            tupleInsertedCountDataset.data.push(graphData[i].tupleInsertCount);
+            tupleUpdatedCountDataset.data.push(graphData[i].tupleUpdateCount);
+            tupleDeletedCountDataset.data.push(graphData[i].tupleDeleteCount);
+        }
+        data.datasets.push(seqScanCountDataset);
+        data.datasets.push(seqTupleReadCountDataset);
+        data.datasets.push(indexScanCountDataset);
+        data.datasets.push(indexTupleFetchCountDataset);
+        data.datasets.push(tupleInsertedCountDataset);
+        data.datasets.push(tupleUpdatedCountDataset);
+        data.datasets.push(tupleDeletedCountDataset);
+        if ($scope.viewModel.graph != null) {
+            $scope.viewModel.graph.destroy();
+            $scope.viewModel.graph = null;
+        }
+        $scope.viewModel.graph = drawingService.drawTimeLineGraph('div-stats-relations', '', data);
     }
-    this.drawChart();
+    if ($state.current.data == null) {
+        $scope.viewModel = new Web.ViewModels.StatsRelationsViewModel();
+        $scope.viewModel.dateFrom = moment().startOf('day');
+        $scope.viewModel.dateTo = moment().startOf('day').add(1, 'days');
+        if ($rootScope.viewModel.currentDatabase.id in $rootScope.viewModel.databaseRelations) {
+            $scope.viewModel.allRelations = $rootScope.viewModel.databaseRelations[$rootScope.viewModel.currentDatabase.id];
+            if ($scope.viewModel.allRelations.length > 0) {
+                $scope.viewModel.currentRelation = $scope.viewModel.allRelations[0];
+            }
+        }
+        $state.current.data = $scope.viewModel;
+    } else {
+        $scope.viewModel = $state.current.data;
+    }
+    $scope.viewModel.validate();
+    $scope.actions.loadData = function () {
+        return new Promise(function (resolve, reject) {
+            $scope.viewModel.isLoading = true;
+            var request = new Web.Data.StatsRelationTotalRequest();
+            request.relationID = $scope.viewModel.currentRelation.id;
+            request.filter.dateFrom = $scope.viewModel.dateFrom;
+            request.filter.dateTo = $scope.viewModel.dateTo;
+            statisticsService.getRelationTotalStats(request, function (response) {
+                $scope.viewModel.isLoading = false;
+                if (response.data == null) {
+                    notificationsService.showError("An error occured during data loading.", errorResponse.status, errorResponse.statusText);
+                    resolve(null);
+                }
+                else if (response.data.isSuccess && response.data.data != null) {
+                    var result = response.data.data;
+                    resolve(result);
+                }
+                else {
+                    notificationsService.showError("An error occured during data loading.", 500, response.data.errorMessage);
+                    resolve(null);
+                }
+            });
+        });
+    };
+    $scope.actions.refreshData = function () {
+        if ($scope.viewModel.validate()) {
+            $scope.actions.loadData().then(function (data) {
+                if (data != null) {
+                    $scope.viewModel.graphData = data;
+                    $scope.actions.drawChart(data);
+                }
+            });
+        }
+        else {
+            if ($scope.viewModel.graph != null) {
+                $scope.viewModel.graph.destroy();
+            }
+            $scope.gridStatsRelationsStatements.data = [];
+            $scope.gridStatsRelationsStatements.totalItems = 0;
+        }
+    }
+    $rootScope.$on('onDatabaseChanged', function () {
+        $scope.viewModel.allRelations = [];
+        $scope.viewModel.currentRelation = null;
+        if ($rootScope.viewModel.currentDatabase.id in $rootScope.viewModel.databaseRelations) {
+            $scope.viewModel.allRelations = $rootScope.viewModel.databaseRelations[$rootScope.viewModel.currentDatabase.id];
+            if ($scope.viewModel.allRelations.length > 0) {
+                $scope.viewModel.currentRelation = $scope.viewModel.allRelations[0];
+            }
+        }
+        $scope.viewModel.validate();
+        $scope.actions.refreshData();
+    })
+    $scope.actions.refreshData();
 }
 
 
 
-angular.module('WebApp').controller('StatsRelationsController', ['$scope', '$rootScope', '$http', 'uiGridConstants', '$state', Web.Controllers.StatsRelationsController]);
+angular.module('WebApp').controller('StatsRelationsController', ['$scope', '$rootScope', '$http', 'uiGridConstants', '$state', 'statisticsService', 'drawingService', Web.Controllers.StatsRelationsController]);

@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Text;
+using Microsoft.Extensions.Logging.Debug;
+using Microsoft.Extensions.Logging;
 
 namespace DiplomaThesis.DAL
 {
@@ -11,7 +13,8 @@ namespace DiplomaThesis.DAL
     {
         private readonly string providerName = null;
         private readonly string connectionString = null;
-        
+        private static readonly LoggerFactory loggerFactory = new LoggerFactory(new[] { new DebugLoggerProvider() });
+
         public DbSet<SettingProperty> SettingProperties { get; set; }
         public DbSet<Workload> Workloads { get; set; }
         public DbSet<NormalizedStatement> NormalizedStatements { get; set; }
@@ -56,6 +59,12 @@ namespace DiplomaThesis.DAL
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
+#if DEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                optionsBuilder.UseLoggerFactory(loggerFactory);
+            }
+#endif
             switch (providerName?.ToLower())
             {
                 case "mariadb":

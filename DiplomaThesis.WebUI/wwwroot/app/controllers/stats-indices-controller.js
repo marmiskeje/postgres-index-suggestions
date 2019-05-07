@@ -2,7 +2,7 @@
     $rootScope.pageSubtitle = 'STATS_INDICES.PAGE_SUBTITLE';
     $scope.actions = new Object();
     $scope.actions.showStatementDetail = function (statementId) {
-        $state.go('stats-statement-detail', { statementId: statementId, dateFrom: $scope.viewModel.dateFrom, dateTo: $scope.viewModel.dateTo });
+        $state.go(Web.Constants.StateNames.STATS_STATEMENT_DETAIL, { statementId: statementId, dateFrom: $scope.viewModel.dateFrom, dateTo: $scope.viewModel.dateTo });
     };
     $scope.viewModel = new Object();
     $scope.viewModel.isValid = true;

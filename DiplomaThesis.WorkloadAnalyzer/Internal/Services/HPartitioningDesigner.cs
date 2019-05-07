@@ -12,6 +12,11 @@ namespace DiplomaThesis.WorkloadAnalyzer
         private const int MAX_COUNT_OF_PARTITIONS = 50;
         private const int POSSIBLE_ADDITIONAL_PARTITIONS_COUNT = 2;
         private static readonly HashSet<string> comparableOperators = new HashSet<string>(new string[] { ">", ">=", "<", "<=" });
+        private readonly bool supportsHashPartitioning = false;
+        public AttributeHPartitioningDesigner(bool supportsHashPartitioning)
+        {
+            this.supportsHashPartitioning = supportsHashPartitioning;
+        }
         public HPartitioningAttributeDefinition DesignFor(AttributeData attribute, ISet<string> operators, PrimaryKeyData relationPrimaryKey)
         {
             // if relation has primary key, attribute must be part of it
@@ -43,7 +48,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                     }
                 }
                 // hash partitioning only for attributes where user never applied comparison operators 
-                else if (comparableOperators.Intersect(operators).Count() == 0) // hash
+                else if (supportsHashPartitioning && comparableOperators.Intersect(operators).Count() == 0) // hash
                 {
                     switch (attribute.DbType)
                     {

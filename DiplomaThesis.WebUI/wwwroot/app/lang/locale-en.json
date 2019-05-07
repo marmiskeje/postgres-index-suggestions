@@ -36,5 +36,8 @@
   },
   "ANALYSIS_WORKLOAD_ANALYSIS_CREATE": {
     "PAGE_SUBTITLE": "New workload analyses"
+  },
+  "ANALYSIS_WORKLOAD_ANALYSIS_DETAIL": {
+    "PAGE_SUBTITLE": "Workload analysis"
   }
 }

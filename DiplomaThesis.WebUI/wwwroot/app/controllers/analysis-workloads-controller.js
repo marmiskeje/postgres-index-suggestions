@@ -2,7 +2,7 @@
     $rootScope.pageSubtitle = 'ANALYSIS_WORKLOADS.PAGE_SUBTITLE';
     $scope.actions = new Object();
     $scope.actions.showWorkloadDetail = function (workload) {
-        $state.go('analysis-workload-detail', { workload: workload });
+        $state.go(Web.Constants.StateNames.ANALYSIS_WORKLOAD_DETAIL, { workload: workload });
     };
     $scope.viewModel = new Object();
     $scope.viewModel.isValid = true;

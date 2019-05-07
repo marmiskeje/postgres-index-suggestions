@@ -111,8 +111,17 @@ md-select-value {
     border-bottom: 1px solid rgba(0,0,0,0.12);
 }
 
+.secondaryContentMenu {
+    height: 49px;
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+}
+
 .mainContentMenuBody {
     padding-left: 15px;
+}
+
+.secondaryContentBody {
+    padding: 15px
 }
 
 .md-tiny {
@@ -148,4 +157,24 @@ md-select-value {
 
 md-select {
     min-width: 140px;
+}
+
+.lighterText {
+    color: #545454 
+}
+
+md-tabs md-ink-bar {
+    color: white;
+    background-color: rgb(187,222,251);
+}
+
+.ui-grid-cell-contents-auto {
+    /* Old Solution */
+    /*min-width: max-content !important;*/
+    /* New Solution */
+    display: grid;
+    grid-auto-columns: max-content;
+    /* IE Solution */
+    display: -ms-grid;
+    -ms-grid-columns: max-content;
 }

@@ -1,125 +1,129 @@
-﻿Web.Controllers.StatsOverviewController = function ($scope, $rootScope) {
+﻿Web.Controllers.StatsOverviewController = function ($scope, $rootScope, $state, statisticsService, notificationsService, drawingService) {
     $rootScope.pageSubtitle = 'STATS_OVERVIEW.PAGE_SUBTITLE';
-    $scope.viewModel = new Object();
-    $scope.viewModel.selectedPeriod = 1;
-    this.drawMostExecutedChart = function () {
-        var ctx = document.getElementById('div-stats-most-executed-statements').getContext('2d');
-        var chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['select * from test where x = 0...', 'select * from test2', 'select * from test3', 'select * from test4', 'select * from test5', 'select * from test6', 'select * from test7', '8', '9', '10'],
-                datasets: [{
-                    label: 'Execution count',
-                    data: [
-                        10, 30, 5, 3, 10, 100, 55, 13, 24, 28
-                    ],
-                    fill: false,
-                    //backgroundColor: ["#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#efef33", "#a65628", "#f781bf", "#999999", "#7075bf"]
-                    backgroundColor: ["#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8"]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    colorschemes: {
-                        scheme: 'brewer.Set1-9'//'brewer.Paired12'
-                    }
-                },
-                scales: {
-                    xAxes: [{
-                        ticks: {
-                            min: 0
-                        }
-                    }]
-                },
-                title: {
-                    display: true,
-                    text: 'TOP 10 most frequently executed statements',
-                    fontSize: 16
+    $scope.actions = new Object();
+    $scope.actions.drawMostExecutedStatementsChart = function (graphData) {
+        var data = {
+            labels: [],
+            datasets: []
+        };
+        var dataset = {
+            label: 'Execution count',
+            data: [],
+            fill: false,
+            backgroundColor: ["#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8"]
+        };
+        for (var i = 0; i < graphData.length; i++) {
+            data.labels.push(graphData[i].independentValue.substring(0, 100));
+            dataset.data.push(graphData[i].dependentValue);
+        }
+        data.datasets.push(dataset);
+        if ($scope.viewModel.mostExecutedStatementsChart != null) {
+            $scope.viewModel.mostExecutedStatementsChart.destroy();
+            $scope.viewModel.mostExecutedStatementsChart = null;
+        }
+        $scope.viewModel.mostExecutedStatementsChart = drawingService.drawBarGraph('div-stats-most-executed-statements', 'TOP 10 most frequently executed statements', data);
+    }
+    $scope.actions.drawSlowestStatementsChart = function (graphData) {
+        var data = {
+            labels: [],
+            datasets: []
+        };
+        var dataset = {
+            label: 'Max duration (s)',
+            data: [],
+            fill: false,
+            backgroundColor: ["#7075bf", "#7075bf", "#7075bf", "#7075bf", "#7075bf", "#7075bf", "#7075bf", "#7075bf", "#7075bf", "#7075bf", "#7075bf"]
+        };
+        for (var i = 0; i < graphData.length; i++) {
+            data.labels.push(graphData[i].independentValue.substring(0, 100));
+            dataset.data.push(graphData[i].dependentValue / 1000);
+        }
+        data.datasets.push(dataset);
+        if ($scope.viewModel.slowestStatementsChart != null) {
+            $scope.viewModel.slowestStatementsChart.destroy();
+            $scope.viewModel.slowestStatementsChart = null;
+        }
+        $scope.viewModel.slowestStatementsChart = drawingService.drawBarGraph('div-stats-slowest-statements', 'TOP 10 slowest statements', data);
+    }
+    $scope.actions.drawMostAliveRelationsChart = function (graphData) {
+        var data = {
+            labels: [],
+            datasets: []
+        };
+        var dataset = {
+            label: 'Liveness index',
+            data: [],
+            fill: false,
+            backgroundColor: ["#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8"]
+        };
+        for (var i = 0; i < graphData.length; i++) {
+            data.labels.push(graphData[i].independentValue.substring(0, 100));
+            dataset.data.push(graphData[i].dependentValue);
+        }
+        data.datasets.push(dataset);
+        if ($scope.viewModel.mostAliveRelationsChart != null) {
+            $scope.viewModel.mostAliveRelationsChart.destroy();
+            $scope.viewModel.mostAliveRelationsChart = null;
+        }
+        $scope.viewModel.mostAliveRelationsChart = drawingService.drawBarGraph('div-stats-most-alive-relations', 'TOP 10 alive relations', data);
+    }
+    $scope.actions.loadData = function () {
+        return new Promise(function (resolve, reject) {
+            $scope.viewModel.isLoading = true;
+            var request = new Web.Data.StatsOverviewRequest();
+            request.databaseID = $rootScope.viewModel.currentDatabase.id;
+            var dateTo = moment();
+            var dateFrom = moment(dateTo).add(-1 * $scope.viewModel.selectedPeriod, 'hours');
+            request.filter.dateFrom = dateFrom;
+            request.filter.dateTo = dateTo;
+            statisticsService.getOverview(request, function (response) {
+                $scope.viewModel.isLoading = false;
+                if (response.data == null) {
+                    notificationsService.showError("An error occured during data loading.", errorResponse.status, errorResponse.statusText);
+                    resolve(null);
                 }
+                else if (response.data.isSuccess && response.data.data != null) {
+                    var result = response.data.data;
+                    resolve(result);
+                }
+                else {
+                    notificationsService.showError("An error occured during data loading.", 500, response.data.errorMessage);
+                    resolve(null);
+                }
+            });
+        });
+    };
+    $scope.actions.refreshData = function (loadingEnforced) {
+        var loadData = new Promise(function (resolve, reject) {
+            if (loadingEnforced || $scope.viewModel.graphData == null || moment.duration(moment().diff($scope.viewModel.graphDataLoadedDate)).asMinutes() > 1) {
+                $scope.actions.loadData().then(function (result) {
+                    resolve(result);
+                });
+            }
+            else {
+                resolve($scope.viewModel.graphData);
+            }
+        });
+        loadData.then(function (data) {
+            if (data != null) {
+                $scope.viewModel.graphData = data;
+                $scope.viewModel.graphDataLoadedDate = moment();
+                $scope.actions.drawMostExecutedStatementsChart(data.mostExecutedStatements);
+                $scope.actions.drawSlowestStatementsChart(data.mostSlowestStatements);
+                $scope.actions.drawMostAliveRelationsChart(data.mostAliveRelations);
             }
         });
     }
-    this.drawSlowestChart = function () {
-        var ctx = document.getElementById('div-stats-slowest-statements').getContext('2d');
-        var chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['select * from test where x = 0...', 'select * from test2', 'select * from test3', 'select * from test4', 'select * from test5', 'select * from test6', 'select * from test7', '8', '9', '10'],
-                datasets: [{
-                    label: 'Max duration (s)',
-                    data: [
-                        10, 30, 5, 3, 10, 100, 55, 13, 24, 28
-                    ],
-                    fill: false,
-                    backgroundColor: ["#7075bf","#7075bf","#7075bf","#7075bf","#7075bf","#7075bf","#7075bf","#7075bf","#7075bf","#7075bf","#7075bf"]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    colorschemes: {
-                        scheme: 'brewer.Set1-9'//'brewer.Paired12'
-                    }
-                },
-                scales: {
-                    xAxes: [{
-                        ticks: {
-                            min: 0
-                        }
-                    }]
-                },
-                title: {
-                    display: true,
-                    text: 'TOP 10 slowest statements',
-                    fontSize: 16
-                }
-            }
-        });
+    if ($state.current.data == null) {
+        $scope.viewModel = new Web.ViewModels.StatsOverviewViewModel();
+        $state.current.data = $scope.viewModel;
+    } else {
+        $scope.viewModel = $state.current.data;
     }
-    this.drawMostAliveChart = function () {
-        var ctx = document.getElementById('div-stats-most-alive-relations').getContext('2d');
-        var chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: ['test', 'test', 'test', 'test', 'test', 'test', '7', '8', '9', '10'],
-                datasets: [{
-                    label: 'Liveness index',
-                    data: [
-                        10, 30, 5, 3, 10, 100, 55, 13, 24, 28
-                    ],
-                    fill: false,
-                    backgroundColor: ["#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8", "#377eb8"]
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    colorschemes: {
-                        scheme: 'brewer.Set1-9'//'brewer.Paired12'
-                    }
-                },
-                scales: {
-                    xAxes: [{
-                        ticks: {
-                            min: 0
-                        }
-                    }]
-                },
-                title: {
-                    display: true,
-                    text: 'TOP 10 alive relations',
-                    fontSize: 16
-                }
-            }
-        });
-    }
-    this.drawMostExecutedChart();
-    this.drawSlowestChart();
-    this.drawMostAliveChart();
+    $scope.actions.refreshData(false);
+    $rootScope.$on('onDatabaseChanged', function () {
+        $scope.actions.refreshData(true);
+    })
 }
 
-angular.module('WebApp').controller('StatsOverviewController', ['$scope', '$rootScope', Web.Controllers.StatsOverviewController]);
+angular.module('WebApp').controller('StatsOverviewController', ['$scope', '$rootScope', '$state', 'statisticsService', 'notificationsService', 'drawingService', Web.Controllers.StatsOverviewController]);

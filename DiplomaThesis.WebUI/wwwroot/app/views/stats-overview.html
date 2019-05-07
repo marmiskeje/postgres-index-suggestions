@@ -1,10 +1,10 @@
 ﻿<div class="mainContentMenu" layout="row">
     <div class="mainContentMenuBody" layout="row" flex layout-align="start center">
         <div flex="20">
-            <span>{{'STATS_RELATIONS.PAGE_SUBTITLE' | translate}}</span>
+            <span>{{'STATS_OVERVIEW.PAGE_SUBTITLE' | translate}}</span>
         </div>
         <div>
-            <md-radio-group ng-model="viewModel.selectedPeriod" layout="row">
+            <md-radio-group ng-model="viewModel.selectedPeriod" layout="row" ng-change="actions.refreshData(true)">
                 <md-radio-button value="1" class="md-primary">Last hour</md-radio-button>
                 <md-radio-button value="6">Last 6 hours</md-radio-button>
                 <md-radio-button value="24">Last 24 hours</md-radio-button>
@@ -13,13 +13,16 @@
     </div>
 </div>
 <div class="mainContentBody" layout="column">
-    <div class="chart">
+    <div class="chart" ng-hide="viewModel.isLoading">
         <canvas id="div-stats-most-executed-statements"></canvas>
     </div>
-    <div class="chart">
+    <div class="chart" ng-hide="viewModel.isLoading">
         <canvas id="div-stats-slowest-statements"></canvas>
     </div>
-    <div class="chart">
+    <div class="chart" ng-hide="viewModel.isLoading">
         <canvas id="div-stats-most-alive-relations"></canvas>
+    </div>
+    <div ng-hide="!viewModel.isLoading" layout="row" layout-align="space-around">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
     </div>
 </div>

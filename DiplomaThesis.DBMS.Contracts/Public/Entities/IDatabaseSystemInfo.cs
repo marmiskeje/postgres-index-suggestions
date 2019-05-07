@@ -8,5 +8,6 @@ namespace DiplomaThesis.DBMS.Contracts
     {
         string VersionNumberString { get; }
         bool SupportsIncludeInIndices { get; }
+        bool SupportsHashHPartitioning { get; }
     }
 }

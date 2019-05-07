@@ -8,6 +8,12 @@ namespace DiplomaThesis.DAL.Contracts
     {
         NormalizedStatementStatistics GetByUniqueKey(NormalizedStatementStatisticsUniqueKey key);
         IReadOnlyDictionary<long, List<NormalizedStatementStatistics>> GetAllGroupedByStatement(DateTime createdFrom, DateTime createdTo);
-        IReadOnlyDictionary<long, NormalizedStatementStatistics> GetTotalGroupedByStatement(uint databaseID, DateTime dateFromInclusive, DateTime dateToExclusive);
+        IEnumerable<SummaryNormalizedStatementStatistics> GetSummaryTotalStatementStatistics(uint databaseID, DateTime dateFromInclusive, DateTime dateToExclusive, SummaryNormalizedStatementStatisticsOrderBy orderBy, int count);
+    }
+
+    public enum SummaryNormalizedStatementStatisticsOrderBy
+    {
+        ExecutionCount = 0,
+        MaxDuration = 1
     }
 }

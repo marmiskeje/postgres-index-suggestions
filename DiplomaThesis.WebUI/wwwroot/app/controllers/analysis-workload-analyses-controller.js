@@ -1,11 +1,11 @@
 ﻿Web.Controllers.AnalysisWorkloadAnalysesController = function ($scope, $rootScope, $http, uiGridConstants, $state) {
     $rootScope.pageSubtitle = 'ANALYSIS_WORKLOAD_ANALYSES.PAGE_SUBTITLE';
     $scope.actions = new Object();
-    $scope.actions.showAnalysisDetail = function (workloadAnalysisId) {
-        $state.go('analysis-workload-analysis-detail', { workloadAnalysisId: workloadAnalysisId });
+    $scope.actions.showAnalysisDetail = function (workloadAnalysis) {
+        $state.go(Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSIS_DETAIL, { workloadAnalysis: workloadAnalysis });
     };
     $scope.actions.showCreateWindow = function () {
-        $state.go('analysis-workload-analysis-create');
+        $state.go(Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSIS_CREATE);
     };
     $scope.viewModel = new Object();
     $scope.viewModel.isValid = true;
@@ -32,7 +32,7 @@
             {
                 name: 'Actions', displayName: '', field: 'Actions', enableSorting: false, maxWidth: 50, enableHiding: false,
                 cellTemplate: '<md-button style="padding: 0; margin: 0; min-height: inherit; min-width: inherit"' +
-                    'ng-click="grid.appScope.actions.showAnalysisDetail(row.entity.Id)"><md-tooltip>Show detail</md-tooltip><i class="material-icons md-18">zoom_in</i></md-button>'
+                    'ng-click="grid.appScope.actions.showAnalysisDetail(row.entity)"><md-tooltip>Show detail</md-tooltip><i class="material-icons md-18">zoom_in</i></md-button>'
             }
         ],
         onRegisterApi: function (gridApi){

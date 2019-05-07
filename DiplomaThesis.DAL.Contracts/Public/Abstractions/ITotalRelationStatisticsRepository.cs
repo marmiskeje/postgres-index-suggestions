@@ -9,6 +9,7 @@ namespace DiplomaThesis.DAL.Contracts
         TotalRelationStatistics GetByUniqueKey(TotalRelationStatisticsUniqueKey key);
         IReadOnlyDictionary<uint, List<TotalRelationStatistics>> GetAllGroupedByRelation(DateTime createdFromInclusive, DateTime createdToExclusive);
         IEnumerable<TotalRelationStatistics> GetAllForDatabase(uint databaseID, DateTime dateFromInclusive, DateTime dateToExclusive);
-        IReadOnlyDictionary<uint, TotalRelationStatistics> GetTotalGroupedByRelation(uint databaseID, DateTime dateFromInclusive, DateTime dateToExclusive);
+        IEnumerable<TotalRelationStatistics> GetAllForRelation(uint relationID, DateTime dateFromInclusive, DateTime dateToExclusive);
+        IEnumerable<SummaryTotalRelationStatistics> GetSummaryTotalRelationStatistics(uint databaseID, DateTime dateFromInclusive, DateTime dateToExclusive, int count);
     }
 }

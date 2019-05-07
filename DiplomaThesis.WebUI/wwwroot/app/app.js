@@ -27,7 +27,11 @@ Web.App = angular.module('WebApp', ['ui.router', 'ngCookies', 'ngSanitize', 'pas
 
 Web.App.config(['$stateProvider', '$urlRouterProvider', '$translateProvider', '$httpProvider', '$mdThemingProvider', function ($stateProvider, $urlRouterProvider, $translateProvider, $httpProvider, $mdThemingProvider) {
     $urlRouterProvider.otherwise(Web.Constants.StateNames.IMPLICIT);
-    
+    $stateProvider.state(Web.Constants.StateNames.IMPLICIT, {
+        url: "/root",
+        controller: "RootController",
+        templateUrl: "/app/views/root.html",
+    });
     $stateProvider.state(Web.Constants.StateNames.STATS_OVERVIEW, {
         url: "/stats-overview",
         controller: "StatsOverviewController",
@@ -80,6 +84,12 @@ Web.App.config(['$stateProvider', '$urlRouterProvider', '$translateProvider', '$
         controller: "AnalysisWorkloadAnalysisCreateController",
         templateUrl: "/app/views/analysis-workload-analysis-create.html"
     });
+    $stateProvider.state(Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSIS_DETAIL, {
+        url: "/analysis-workload-analysis-detail",
+        controller: "AnalysisWorkloadAnalysisDetailController",
+        templateUrl: "/app/views/analysis-workload-analysis-detail.html",
+        params: { workloadAnalysis: null}
+    });
     $stateProvider.state(Web.Constants.StateNames.ANALYSIS_UNUSED_DB_OBJECTS, {
         url: "/analysis-unused-db-objects",
         controller: "AnalysisUnusedDbObjectsController",
@@ -94,24 +104,31 @@ Web.App.config(['$stateProvider', '$urlRouterProvider', '$translateProvider', '$
 
     $mdThemingProvider.theme('default')
         .primaryPalette('blue', { 'default': '700' })
-        .accentPalette('pink')
+        .accentPalette('blue')
         .warnPalette('red')
         .backgroundPalette('grey');
 }]);
 
-Web.App.run(['$rootScope', '$state', '$translate', function ($rootScope, $state, $translate) {
-    $rootScope.services = new Object();
-    $rootScope.services.state = $state;
-    $rootScope.actions = new Object();;
-    $rootScope.viewModel = Object();
-    var db = new Object();
-    db.id = 1;
-    db.name = "TestDatabase";
-    $rootScope.viewModel.allDatabases = [];
-    $rootScope.viewModel.allDatabases.push(db);
-    var db2 = new Object();
-    db2.id = 2;
-    db2.name = "TestDatabase2";
-    $rootScope.viewModel.allDatabases.push(db2);
-    $rootScope.viewModel.currentDatabase = db;
+Web.App.run(['$rootScope', '$state', '$translate', '$transitions', function ($rootScope, $state, $translate, $transitions) {
+    $rootScope.viewModel = new Web.ViewModels.RootViewModel();
+    $rootScope.actions = new Object();
+    $transitions.onBefore({}, function (transition) {
+        if (transition.to().name != Web.Constants.StateNames.IMPLICIT) {
+            if ($rootScope.viewModel.isLoading) { // global data are not loaded
+                return transition.router.stateService.target(Web.Constants.StateNames.IMPLICIT);
+            }
+        }
+    });
 }]);
+// limig bar chart label length
+Chart.scaleService.updateScaleDefaults('category', {
+    ticks: {
+        callback: function (tick) {
+            var maxLength = 25;
+            if (tick.length >= maxLength) {
+                return tick.slice(0, tick.length).substring(0, maxLength - 1).trim() + '...';;
+            }
+            return tick;
+        }
+    }
+});

@@ -5,14 +5,34 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="dalsettings.json" />
+    <Content Remove="dbmssettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="wwwroot\app\services\" />
     <Folder Include="wwwroot\scripts\AngularJSMaterial\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="dalsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="dbmssettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DiplomaThesis.DAL.Contracts\DiplomaThesis.DAL.Contracts.csproj" />
+    <ProjectReference Include="..\DiplomaThesis.DAL\DiplomaThesis.DAL.csproj" />
+    <ProjectReference Include="..\DiplomaThesis.DBMS.Contracts\DiplomaThesis.DBMS.Contracts.csproj" />
+    <ProjectReference Include="..\DiplomaThesis.DBMS.Postgres\DiplomaThesis.DBMS.Postgres.csproj" />
   </ItemGroup>
 
 </Project>

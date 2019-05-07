@@ -1,7 +1,7 @@
 ﻿using DiplomaThesis.DBMS.Contracts;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace DiplomaThesis.DBMS.Postgres
 {
@@ -20,8 +20,7 @@ from pg_proc p
 inner join pg_database d on d.datname = current_database()
 inner join pg_namespace n on n.oid = p.pronamespace
 inner join pg_language l on l.oid = p.prolang
-where n.nspname NOT IN ('information_schema', 'pg_catalog')
-";
+where n.nspname NOT IN (" + String.Join(", ", SystemObjects.SystemSchemas.Select(x => "'" + x + "'")) + ")";
             return ExecuteQuery<StoredProcedure>(sql, null);
         }
     }

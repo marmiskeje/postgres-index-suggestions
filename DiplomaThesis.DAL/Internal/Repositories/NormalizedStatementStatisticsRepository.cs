@@ -34,25 +34,32 @@ namespace DiplomaThesis.DAL
             }
         }
 
-        public IReadOnlyDictionary<long, NormalizedStatementStatistics> GetTotalGroupedByStatement(uint databaseID, DateTime dateFromInclusive, DateTime dateToExclusive)
+        public IEnumerable<SummaryNormalizedStatementStatistics> GetSummaryTotalStatementStatistics(uint databaseID, DateTime dateFromInclusive, DateTime dateToExclusive, SummaryNormalizedStatementStatisticsOrderBy orderBy, int count)
         {
             using (var context = CreateContextFunc())
             {
-                return context.NormalizedStatementStatistics
+                var query = context.NormalizedStatementStatistics
                     .Where(x => x.DatabaseID == databaseID && x.Date >= dateFromInclusive && x.Date < dateToExclusive)
-                    .GroupBy(x => x.NormalizedStatementID)
-                    .ToDictionary(x => x.Key, x => new NormalizedStatementStatistics()
-                    {
-                        DatabaseID = databaseID,
-                        Date = dateFromInclusive,
-                        CreatedDate = x.Max(y => y.CreatedDate),
-                        AvgDuration = TimeSpan.FromTicks((long)x.Average(y => y.AvgDuration.Ticks)),
-                        MaxDuration = x.Max(y => y.MaxDuration),
-                        MinDuration = x.Min(y => y.MinDuration),
-                        NormalizedStatementID = x.Key,
-                        TotalDuration = TimeSpan.FromTicks(x.Sum(y => y.TotalDuration.Ticks)),
-                        TotalExecutionsCount = x.Sum(y => y.TotalExecutionsCount)
-                    });
+                    .GroupBy(x => x.NormalizedStatement.Statement);
+                switch (orderBy)
+                {
+                    case SummaryNormalizedStatementStatisticsOrderBy.ExecutionCount:
+                        query = query.OrderByDescending(x => x.Sum(y => y.TotalExecutionsCount));
+                        break;
+                    case SummaryNormalizedStatementStatisticsOrderBy.MaxDuration:
+                        query = query.OrderByDescending(x => x.Max(y => y.MaxDuration));
+                        break;
+                }
+                return query.Take(count)
+                             .Select(x => new SummaryNormalizedStatementStatistics()
+                             {
+                                 AvgDuration = TimeSpan.FromTicks((long)x.Average(y => y.AvgDuration.Ticks)),
+                                 MaxDuration = x.Max(y => y.MaxDuration),
+                                 MinDuration = x.Min(y => y.MinDuration),
+                                 Statement = x.Key,
+                                 TotalDuration = TimeSpan.FromTicks(x.Sum(y => y.TotalDuration.Ticks)),
+                                 TotalExecutionsCount = x.Sum(y => y.TotalExecutionsCount)
+                             }).ToList();
             }
         }
     }

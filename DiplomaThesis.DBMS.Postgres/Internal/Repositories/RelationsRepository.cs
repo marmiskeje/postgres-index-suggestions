@@ -8,7 +8,7 @@ namespace DiplomaThesis.DBMS.Postgres
 {
     internal class RelationsRepository : BaseRepository, IRelationsRepository
     {
-        private const string ALL_CACHE_KEY = "ALL";
+        private const string ALL_BY_ID_CACHE_KEY = "ALL_BY_ID";
         public RelationsRepository(string connectionString) : base(connectionString)
         {
             
@@ -17,23 +17,31 @@ namespace DiplomaThesis.DBMS.Postgres
         public IRelation Get(uint relationID)
         {
             string attributeKey = $"{relationID}";
-            var cacheKey = CreateCacheKeyForThisType(ALL_CACHE_KEY);
-            Dictionary<string, Relation> all = null;
             IRelation result = null;
-            if (!Cache.TryGetValue(cacheKey, out all) || !all.ContainsKey(attributeKey))
-            {
-                all = GetAll();
-                Cache.Save(cacheKey, all, MediumCacheExpiration);
-            }
+            Dictionary<string, Relation> all = GetAllById();
             if (all.ContainsKey(attributeKey))
             {
                 result = all[attributeKey];
             }
             return result;
         }
-#warning pozor, toto je iba per aktualna databaza, treba prerobit, aj na ostatnych miestach
-        private Dictionary<string, Relation> GetAll()
+
+
+        public IEnumerable<IRelation> GetAll()
         {
+            return GetAllById().Values;
+        }
+
+        public IEnumerable<IRelation> GetAllNonSystems()
+        {
+            return GetAllById().Values.Where(x => !SystemObjects.SystemSchemas.Contains(x.SchemaName));
+        }
+
+#warning pozor, toto je iba per aktualna databaza, treba prerobit, aj na ostatnych miestach
+        private Dictionary<string, Relation> GetAllById()
+        {
+            var cacheKey = CreateCacheKeyForThisType(ALL_BY_ID_CACHE_KEY);
+            Dictionary<string, Relation> all = null;
             string query = @"
 select d.oid as db_id, d.datname as db_name, s.oid as schema_id, s.nspname as schema_name, rr.oid as relation_id, rr.relname as relation_name,
 pg_relation_size(rr.oid) as relation_size, rr.reltuples relation_tuples_count,
@@ -44,7 +52,12 @@ INNER JOIN pg_namespace s ON s.nspname = r.table_schema
 INNER JOIN pg_class rr ON rr.relname = r.table_name AND rr.relnamespace = s.oid
 LEFT OUTER JOIN pg_index pi ON pi.indrelid = rr.oid AND pi.indisprimary
             ";
-            return ExecuteQuery<Relation>(query, null).ToDictionary(x => $"{x.ID}");
+            if (!Cache.TryGetValue(cacheKey, out all))
+            {
+                all = ExecuteQuery<Relation>(query, null).ToDictionary(x => $"{x.ID}");
+                Cache.Save(cacheKey, all, MediumCacheExpiration);
+            }
+            return all;
         }
     }
 }

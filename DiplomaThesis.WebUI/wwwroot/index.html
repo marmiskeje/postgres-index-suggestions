@@ -44,11 +44,22 @@
     <script type="text/javascript" src="app/constants/events.js"></script>
 
     <!--data-->
+    <script type="text/javascript" src="app/data/base-filters-data.js"></script>
     <script type="text/javascript" src="app/data/database-data.js"></script>
+    <script type="text/javascript" src="app/data/stats-overview-request.js"></script>
+    <script type="text/javascript" src="app/data/stats-relation-total-request.js"></script>
     <!--view models-->
     <script type="text/javascript" src="app/viewmodel/root-view-model.js"></script>
-    <!--services-->
+    <script type="text/javascript" src="app/viewmodel/stats-overview-view-model.js"></script>
+    <script type="text/javascript" src="app/viewmodel/stats-relations-view-model.js"></script>
 
+    <!--services-->
+    <script type="text/javascript" src="app/services/drawing-service.js"></script>
+    <script type="text/javascript" src="app/services/notifications-service.js"></script>
+    <script type="text/javascript" src="app/services/entities-service.js"></script>
+    <script type="text/javascript" src="app/services/statistics-service.js"></script>
+    <!--controllers-->
+    <script type="text/javascript" src="app/controllers/root-controller.js"></script>
     <script type="text/javascript" src="app/controllers/stats-overview-controller.js"></script>
     <script type="text/javascript" src="app/controllers/stats-relations-controller.js"></script>
     <script type="text/javascript" src="app/controllers/stats-indices-controller.js"></script>
@@ -59,20 +70,25 @@
     <script type="text/javascript" src="app/controllers/analysis-workload-detail.js"></script>
     <script type="text/javascript" src="app/controllers/analysis-workload-analyses-controller.js"></script>
     <script type="text/javascript" src="app/controllers/analysis-workload-analysis-create.js"></script>
+    <script type="text/javascript" src="app/controllers/analysis-workload-analysis-detail.js"></script>
     <script type="text/javascript" src="app/controllers/analysis-unused-db-objects-controller.js"></script>
 </head>
 <body layout="column" id="pageBody">
-    <div layout="row" class="header" layout-align="start center">
+    <div ng-hide="!viewModel.isLoading" layout="row" layout-align="space-around">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+    </div>
+    <div ng-hide="viewModel.isLoading" layout="row" class="header" layout-align="start center">
         <div flex="15">
             <span>{{'ROOT.PAGE_TITLE' | translate}}</span>
         </div>
         <div flex="20">
             <md-input-container>
-                <md-select class="headerSelect" ng-model="viewModel.currentDatabase" aria-label="select-current-database">
+                <md-select class="headerSelect" ng-model="viewModel.currentDatabase" aria-label="select-current-database" ng-change="actions.onDatabaseChanged()">
                     <md-option ng-repeat="db in viewModel.allDatabases" ng-value="db">
                         {{db.name}}
                     </md-option>
                 </md-select>
+                <md-tooltip>Database</md-tooltip>
             </md-input-container>
         </div>
         <div flex>
@@ -83,10 +99,10 @@
                 <md-tooltip>{{'ROOT.SETTINGS' | translate}}</md-tooltip>
                 <md-icon><i class="material-icons">more_vert</i></md-icon>
             </md-button>
-            
+
         </div>
     </div>
-    <div flex layout="row" class="body">
+    <div ng-hide="viewModel.isLoading" flex layout="row" class="body">
         <div flex="15" class="menuContent">
             <div layout="column">
                 <md-button ng-href="#!/stats-overview" class="btn-nav-menu">
