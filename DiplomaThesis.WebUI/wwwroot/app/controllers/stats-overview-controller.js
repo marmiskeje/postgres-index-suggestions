@@ -17,10 +17,6 @@
             dataset.data.push(graphData[i].dependentValue);
         }
         data.datasets.push(dataset);
-        if ($scope.viewModel.mostExecutedStatementsChart != null) {
-            $scope.viewModel.mostExecutedStatementsChart.destroy();
-            $scope.viewModel.mostExecutedStatementsChart = null;
-        }
         $scope.viewModel.mostExecutedStatementsChart = drawingService.drawBarGraph('div-stats-most-executed-statements', 'TOP 10 most frequently executed statements', data);
     }
     $scope.actions.drawSlowestStatementsChart = function (graphData) {
@@ -39,10 +35,6 @@
             dataset.data.push(graphData[i].dependentValue / 1000);
         }
         data.datasets.push(dataset);
-        if ($scope.viewModel.slowestStatementsChart != null) {
-            $scope.viewModel.slowestStatementsChart.destroy();
-            $scope.viewModel.slowestStatementsChart = null;
-        }
         $scope.viewModel.slowestStatementsChart = drawingService.drawBarGraph('div-stats-slowest-statements', 'TOP 10 slowest statements', data);
     }
     $scope.actions.drawMostAliveRelationsChart = function (graphData) {
@@ -61,10 +53,6 @@
             dataset.data.push(graphData[i].dependentValue);
         }
         data.datasets.push(dataset);
-        if ($scope.viewModel.mostAliveRelationsChart != null) {
-            $scope.viewModel.mostAliveRelationsChart.destroy();
-            $scope.viewModel.mostAliveRelationsChart = null;
-        }
         $scope.viewModel.mostAliveRelationsChart = drawingService.drawBarGraph('div-stats-most-alive-relations', 'TOP 10 alive relations', data);
     }
     $scope.actions.loadData = function () {
@@ -79,7 +67,7 @@
             statisticsService.getOverview(request, function (response) {
                 $scope.viewModel.isLoading = false;
                 if (response.data == null) {
-                    notificationsService.showError("An error occured during data loading.", errorResponse.status, errorResponse.statusText);
+                    notificationsService.showError("An error occured during data loading.", response.status, response.statusText);
                     resolve(null);
                 }
                 else if (response.data.isSuccess && response.data.data != null) {
@@ -93,21 +81,37 @@
             });
         });
     };
+    $scope.actions.clearData = function () {
+        $scope.viewModel.data = null;
+        if ($scope.viewModel.mostAliveRelationsChart != null) {
+            $scope.viewModel.mostAliveRelationsChart.destroy();
+            $scope.viewModel.mostAliveRelationsChart = null;
+        }
+        if ($scope.viewModel.slowestStatementsChart != null) {
+            $scope.viewModel.slowestStatementsChart.destroy();
+            $scope.viewModel.slowestStatementsChart = null;
+        }
+        if ($scope.viewModel.mostExecutedStatementsChart != null) {
+            $scope.viewModel.mostExecutedStatementsChart.destroy();
+            $scope.viewModel.mostExecutedStatementsChart = null;
+        }
+    }
     $scope.actions.refreshData = function (loadingEnforced) {
         var loadData = new Promise(function (resolve, reject) {
-            if (loadingEnforced || $scope.viewModel.graphData == null || moment.duration(moment().diff($scope.viewModel.graphDataLoadedDate)).asMinutes() > 1) {
+            if (loadingEnforced || $scope.viewModel.data == null || moment.duration(moment().diff($scope.viewModel.dataLoadedDate)).asMinutes() > 1) {
                 $scope.actions.loadData().then(function (result) {
                     resolve(result);
                 });
             }
             else {
-                resolve($scope.viewModel.graphData);
+                resolve($scope.viewModel.data);
             }
         });
         loadData.then(function (data) {
+            $scope.actions.clearData();
             if (data != null) {
-                $scope.viewModel.graphData = data;
-                $scope.viewModel.graphDataLoadedDate = moment();
+                $scope.viewModel.data = data;
+                $scope.viewModel.dataLoadedDate = moment();
                 $scope.actions.drawMostExecutedStatementsChart(data.mostExecutedStatements);
                 $scope.actions.drawSlowestStatementsChart(data.mostSlowestStatements);
                 $scope.actions.drawMostAliveRelationsChart(data.mostAliveRelations);
@@ -122,7 +126,12 @@
     }
     $scope.actions.refreshData(false);
     $rootScope.$on('onDatabaseChanged', function () {
-        $scope.actions.refreshData(true);
+        if ($state.is(Web.Constants.StateNames.STATS_OVERVIEW)) {
+            $scope.actions.refreshData(true);
+        }
+        else {
+            $scope.actions.clearData();
+        }
     })
 }
 

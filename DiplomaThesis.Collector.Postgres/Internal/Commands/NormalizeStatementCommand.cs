@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
+using DiplomaThesis.DAL.Contracts;
 
 namespace DiplomaThesis.Collector.Postgres
 {
@@ -31,6 +32,7 @@ namespace DiplomaThesis.Collector.Postgres
             {
                 foreach (TCustomSqlStatement s in parser.sqlstatements)
                 {
+                    context.StatementData.CommandType = Convert(s.sqlstatementtype);
                     foreach (TSourceToken t in s.sourcetokenlist)
                     {
                         if (t.tokentype == ETokenType.ttnumber || t.tokentype == ETokenType.ttsqstring)
@@ -52,6 +54,23 @@ namespace DiplomaThesis.Collector.Postgres
             {
                 context.StatementData.NormalizedStatement = result.Trim().ToUpper();
             }
+        }
+
+        private StatementQueryCommandType Convert(ESqlStatementType source)
+        {
+            switch (source)
+            {
+                case ESqlStatementType.sstselect:
+                    return StatementQueryCommandType.Select;
+                case ESqlStatementType.sstupdate:
+                    return StatementQueryCommandType.Update;
+                case ESqlStatementType.sstinsert:
+                case ESqlStatementType.sstmssqlbulkinsert:
+                    return StatementQueryCommandType.Insert;
+                case ESqlStatementType.sstdelete:
+                    return StatementQueryCommandType.Delete;
+            }
+            return StatementQueryCommandType.Unknown;
         }
     }
 }

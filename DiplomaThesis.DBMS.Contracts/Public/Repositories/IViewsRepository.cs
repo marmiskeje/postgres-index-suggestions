@@ -6,6 +6,6 @@ namespace DiplomaThesis.DBMS.Contracts
 {
     public interface IViewsRepository
     {
-        IEnumerable<IView> GetAllNonSystemViews();
+        IEnumerable<IView> GetAllNonSystems();
     }
 }

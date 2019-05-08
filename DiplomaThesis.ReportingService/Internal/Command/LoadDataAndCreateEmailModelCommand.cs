@@ -50,14 +50,14 @@ namespace DiplomaThesis.ReportingService
                     }
                     dbInfo.TopAliveRelations.AddRange(topAliveRelations);
                     // queries
-                    var topExecutedStats = normalizedStatementStatisticsRepository.GetSummaryTotalStatementStatistics(db.ID, context.DateFromInclusive, context.DateToExclusive, SummaryNormalizedStatementStatisticsOrderBy.ExecutionCount, TOP_COUNT);
+                    var topExecutedStats = normalizedStatementStatisticsRepository.GetSummaryTotalStatementStatistics(db.ID, context.DateFromInclusive, context.DateToExclusive, SummaryNormalizedStatementStatisticsOrderBy.ExecutionCount, null, TOP_COUNT);
                     var topExecuted = new List<SummaryEmailTopStatement>();
                     foreach (var item in topExecutedStats)
                     {
                         topExecuted.Add(Convert(item));
                     }
                     dbInfo.TopExecutedStatements.AddRange(topExecuted);
-                    var topSlowestStats = normalizedStatementStatisticsRepository.GetSummaryTotalStatementStatistics(db.ID, context.DateFromInclusive, context.DateToExclusive, SummaryNormalizedStatementStatisticsOrderBy.MaxDuration, TOP_COUNT);
+                    var topSlowestStats = normalizedStatementStatisticsRepository.GetSummaryTotalStatementStatistics(db.ID, context.DateFromInclusive, context.DateToExclusive, SummaryNormalizedStatementStatisticsOrderBy.MaxDuration, null, TOP_COUNT);
                     var topSlowest = new List<SummaryEmailTopStatement>();
                     foreach (var item in topSlowestStats)
                     {

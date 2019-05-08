@@ -156,7 +156,7 @@ md-select-value {
 }
 
 md-select {
-    min-width: 140px;
+    min-width: 180px;
 }
 
 .lighterText {
@@ -177,4 +177,28 @@ md-tabs md-ink-bar {
     /* IE Solution */
     display: -ms-grid;
     -ms-grid-columns: max-content;
+}
+
+.no-rows {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+.no-rows .msg {
+    opacity: 1;
+    position: absolute;
+    top: 20%;
+    left: 20%;
+    width: 60%;
+    height: 50%;
+    line-height: 200%;
+    text-align: center;
+    display: table;
+}
+
+.no-rows .msg span {
+    display: table-cell;
+    vertical-align: middle;
 }

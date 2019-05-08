@@ -58,6 +58,12 @@ namespace DiplomaThesis.Collector
                 }
                 statementDataAccumulator.PublishNormalizedStatementDefinition(context.StatementData.NormalizedStatementFingerprint, definition);
             }
+            else
+            {
+                StatementDefinition definition = new StatementDefinition();
+                definition.CommandType = context.StatementData.CommandType;
+                statementDataAccumulator.PublishNormalizedStatementDefinition(context.StatementData.NormalizedStatementFingerprint, definition);
+            }
         }
 
         private StatementQueryRelation Convert(QueryTreeRelation source)

@@ -32,6 +32,7 @@ namespace DiplomaThesis.Collector.Contracts
     public class LogEntryStatementData
     {
         public string NormalizedStatement { get; set; }
+        public DAL.Contracts.StatementQueryCommandType CommandType { get; set; }
         public string NormalizedStatementFingerprint { get; set; }
     }
 

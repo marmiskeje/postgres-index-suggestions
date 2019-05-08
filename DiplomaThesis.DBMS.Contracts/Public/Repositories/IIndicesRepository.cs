@@ -7,5 +7,6 @@ namespace DiplomaThesis.DBMS.Contracts
     public interface IIndicesRepository
     {
         IEnumerable<IIndex> GetAll();
+        IEnumerable<IIndex> GetAllNonSystems();
     }
 }

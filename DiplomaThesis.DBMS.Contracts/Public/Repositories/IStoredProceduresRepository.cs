@@ -6,6 +6,6 @@ namespace DiplomaThesis.DBMS.Contracts
 {
     public interface IStoredProceduresRepository
     {
-        IEnumerable<IStoredProcedure> GetAllNonSystemProcedures();
+        IEnumerable<IStoredProcedure> GetAllNonSystems();
     }
 }

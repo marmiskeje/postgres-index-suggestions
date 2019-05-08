@@ -61,7 +61,7 @@ Web.App.config(['$stateProvider', '$urlRouterProvider', '$translateProvider', '$
         url: "/stats-statement-detail",
         controller: "StatsStatementDetailController",
         templateUrl: "/app/views/stats-statement-detail.html",
-        params: { statementId: null, dateFrom: null, dateTo: null}
+        params: { statement: null, dateFrom: null, dateTo: null}
     });
     $stateProvider.state(Web.Constants.StateNames.ANALYSIS_WORKLOADS, {
         url: "/analysis-workloads",

@@ -8,5 +8,7 @@ namespace DiplomaThesis.DAL.Contracts
     {
         TotalViewStatistics GetByUniqueKey(TotalViewStatisticsUniqueKey key);
         IReadOnlyDictionary<uint, List<TotalViewStatistics>> GetAllGroupedByView(DateTime createdFrom, DateTime createdTo);
+        bool AreDataAvailableForWholePeriod(DateTime dateFrom, DateTime dateTo);
+        IReadOnlyDictionary<uint, DateTime> GetForAllLastKnownCollectionDate(uint databaseID);
     }
 }

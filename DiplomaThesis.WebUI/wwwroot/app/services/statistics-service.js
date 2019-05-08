@@ -7,8 +7,36 @@
         });
     }
 
-    this.getRelationTotalStats = function (request, onFinally) {
-        $http.post('api/stats/relation-total', request).then(function (response) {
+    this.getRelationStats = function (request, onFinally) {
+        $http.post('api/stats/relation', request).then(function (response) {
+            onFinally(response);
+        }, function (errorResponse) {
+            onFinally(errorResponse);
+        });
+    }
+    this.getIndexStats = function (request, onFinally) {
+        $http.post('api/stats/index', request).then(function (response) {
+            onFinally(response);
+        }, function (errorResponse) {
+            onFinally(errorResponse);
+        });
+    }
+    this.getStoredProcedureStats = function (request, onFinally) {
+        $http.post('api/stats/stored-procedure', request).then(function (response) {
+            onFinally(response);
+        }, function (errorResponse) {
+            onFinally(errorResponse);
+        });
+    }
+    this.getStatementsStats = function (request, onFinally) {
+        $http.post('api/stats/statements', request).then(function (response) {
+            onFinally(response);
+        }, function (errorResponse) {
+            onFinally(errorResponse);
+        });
+    }
+    this.getStatementStats = function (request, onFinally) {
+        $http.post('api/stats/statement', request).then(function (response) {
             onFinally(response);
         }, function (errorResponse) {
             onFinally(errorResponse);

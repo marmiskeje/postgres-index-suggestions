@@ -25,8 +25,8 @@ namespace DiplomaThesis.Collector.Postgres
         public IDatabaseDependencyHierarchy Build()
         {
             DatabaseDependencyHierarchy hierarchy = new DatabaseDependencyHierarchy();
-            var allViews = viewsRepository.GetAllNonSystemViews();
-            var allProcedures = proceduresRepository.GetAllNonSystemProcedures();
+            var allViews = viewsRepository.GetAllNonSystems();
+            var allProcedures = proceduresRepository.GetAllNonSystems();
             foreach (var view in allViews)
             {
                 var toAdd = BuildDependencyObject(allViews, allProcedures, new HashSet<IDependencyHierarchyObject>(),

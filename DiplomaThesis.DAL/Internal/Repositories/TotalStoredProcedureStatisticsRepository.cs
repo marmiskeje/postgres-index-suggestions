@@ -13,6 +13,24 @@ namespace DiplomaThesis.DAL
             
         }
 
+        public bool AreDataAvailableForWholePeriod(DateTime dateFrom, DateTime dateTo)
+        {
+            using (var context = CreateContextFunc())
+            {
+                return context.TotalStoredProcedureStatistics.Where(x => x.CreatedDate >= dateFrom && x.CreatedDate < dateTo)
+                                .GroupBy(x => x.CreatedDate.Date)
+                                .Select(x => new { Date = x.Key }).ToList().Count >= Math.Ceiling((dateTo - dateFrom).TotalDays);
+            }
+        }
+
+        public IEnumerable<TotalStoredProcedureStatistics> GetAllForProcedure(uint storedProcedureID, DateTime dateFromInclusive, DateTime dateToExclusive)
+        {
+            using (var context = CreateContextFunc())
+            {
+                return context.TotalStoredProcedureStatistics.Where(x => x.ProcedureID == storedProcedureID && x.Date >= dateFromInclusive && x.Date < dateToExclusive).ToList();
+            }
+        }
+
         public IReadOnlyDictionary<uint, List<TotalStoredProcedureStatistics>> GetAllGroupedByProcedure(DateTime createdFrom, DateTime createdTo)
         {
             using (var context = CreateContextFunc())
@@ -29,6 +47,16 @@ namespace DiplomaThesis.DAL
             using (var context = CreateContextFunc())
             {
                 return context.TotalStoredProcedureStatistics.Where(x => x.DatabaseID == key.DatabaseID && x.Date == key.Date && x.ProcedureID == key.ProcedureID).SingleOrDefault();
+            }
+        }
+
+        public IReadOnlyDictionary<uint, DateTime> GetForAllLastKnownCollectionDate(uint databaseID)
+        {
+            using (var context = CreateContextFunc())
+            {
+                return context.TotalStoredProcedureStatistics.Where(x => x.DatabaseID == databaseID)
+                                                   .GroupBy(x => x.ProcedureID)
+                                                   .ToDictionary(x => x.Key, x => x.Max(y => y.Date));
             }
         }
     }

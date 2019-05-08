@@ -5,39 +5,50 @@
         </div>
         <div>
             <md-input-container>
-                <md-select ng-model="viewModel.selectedCommandTypeFilter" aria-label="select-current-command-type-filter">
-                    <md-option ng-repeat="item in viewModel.allCommandTypeFilters" ng-value="item">
-                        {{item.name}}
-                    </md-option>
+                <md-select ng-model="viewModel.currentCommandType" aria-label="select-current-command-type-filter" required>
+                    <md-option value="0">Any</md-option>
+                    <md-option value="1">Delete</md-option>
+                    <md-option value="2">Insert</md-option>
+                    <md-option value="3">Select</md-option>
+                    <md-option value="4">Update</md-option>
                 </md-select>
             </md-input-container>
         </div>
         <div>
-            <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required
+            <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required ng-change="viewModel.validate()"
                    placeholder="Date from" show-todays-date="" minutes="true" min-date="date" show-icon="true"
                    ng-model="viewModel.dateFrom" class=" dtp-no-msclear dtp-input md-input">
         </div>
         <div>
-            <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required
+            <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required ng-change="viewModel.validate()"
                    placeholder="Date to" show-todays-date="" minutes="true" min-date="date" show-icon="true"
                    ng-model="viewModel.dateTo" class=" dtp-no-msclear dtp-input md-input">
         </div>
         <div>
-            <md-button ng-disabled="!viewModel.isValid || viewModel.isLoading" class="md-primary md-raised">Load</md-button>
+            <md-button ng-disabled="viewModel.isLoading || !viewModel.isValid" ng-click="actions.refreshData(true)" class="md-primary md-raised">Load</md-button>
         </div>
     </div>
 </div>
 <div class="mainContentBody" layout="column">
-    <div layout="column">
-        <div style="min-height: 500px" ui-grid="gridStatsStatements" ui-grid-pagination ui-grid-resize-columns class="grid"></div>
+    <div ng-hide="viewModel.isLoading" layout="column">
+        <div style="min-height: 500px" ui-grid="gridStatsStatements" ui-grid-pagination ui-grid-resize-columns class="grid">
+            <div class="no-rows" ng-show="!gridStatsStatements.data.length">
+                <div class="msg">
+                    <span>No data available</span>
+                </div>
+            </div>
+        </div>
         <div layout="row" layout-align="end center">
-            <md-button class="md-raised" ng-disabled="!viewModel.isValid || viewModel.isLoading" ng-click="gridApi.pagination.previousPage()">
+            <md-button class="md-raised" ng-disabled="!viewModel.isValid || viewModel.isLoading" ng-click="gridStatsStatementsApi.pagination.previousPage()">
                 Previous page
             </md-button>
-            <p>{{ gridApi.pagination.getPage() }} / {{ gridApi.pagination.getTotalPages() }}</p>
-            <md-button class="md-raised" ng-disabled="!viewModel.isValid || viewModel.isLoading" ng-click="gridApi.pagination.nextPage()">
+            <p>{{ gridStatsStatementsApi.pagination.getPage() }} / {{ gridStatsStatementsApi.pagination.getTotalPages() }}</p>
+            <md-button class="md-raised" ng-disabled="!viewModel.isValid || viewModel.isLoading" ng-click="gridStatsStatementsApi.pagination.nextPage()">
                 Next page
             </md-button>
         </div>
+    </div>
+    <div ng-hide="!viewModel.isLoading" layout="row" layout-align="space-around">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
     </div>
 </div>

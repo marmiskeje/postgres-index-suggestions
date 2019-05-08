@@ -80,5 +80,39 @@ namespace DiplomaThesis.WebUI
             }
             return result;
         }
+
+        internal IndexData Convert(IIndex source)
+        {
+            IndexData result = new IndexData();
+            result.ID = source.ID;
+            result.Name = source.Name;
+            result.FullName = $"{source.Name} ON {source.SchemaName}.{source.RelationName}";
+            return result;
+        }
+
+        internal StoredProcedureData Convert(IStoredProcedure source)
+        {
+            StoredProcedureData result = new StoredProcedureData();
+            result.ID = source.ID;
+            result.Name = source.Name;
+            result.SchemaName = source.SchemaName;
+            return result;
+        }
+
+        internal StatementQueryCommandType? CreateCommandTypeFilter(GetStatementsStatisticsCommandTypeFilter commandType)
+        {
+            switch (commandType)
+            {
+                case GetStatementsStatisticsCommandTypeFilter.Delete:
+                    return StatementQueryCommandType.Delete;
+                case GetStatementsStatisticsCommandTypeFilter.Insert:
+                    return StatementQueryCommandType.Insert;
+                case GetStatementsStatisticsCommandTypeFilter.Select:
+                    return StatementQueryCommandType.Select;
+                case GetStatementsStatisticsCommandTypeFilter.Update:
+                    return StatementQueryCommandType.Update;
+            }
+            return null;
+        }
     }
 }

@@ -3,10 +3,31 @@
         <div flex="20">
             <span>{{'ANALYSIS_UNUSED_DB_OBJECTS.PAGE_SUBTITLE' | translate}}</span>
         </div>
+        <div>
+            <md-button ng-disabled="viewModel.isLoading" ng-click="actions.refreshData(true)" class="md-primary md-raised">Analyze</md-button>
+        </div>
     </div>
 </div>
 <div class="mainContentBody" layout="column">
-    <div >
-        <div style="min-height: 500px" ui-grid="gridAnalysisUnusedDbObjects" ui-grid-pagination ui-grid-resize-columns class="grid"></div>
+    <div ng-hide="viewModel.isLoading">
+        <div style="min-height: 500px" ui-grid="gridAnalysisUnusedDbObjects" ui-grid-pagination ui-grid-resize-columns class="grid">
+            <div class="no-rows" ng-show="!gridAnalysisUnusedDbObjects.data.length">
+                <div class="msg">
+                    <span>Press analyze for results</span>
+                </div>
+            </div>
+        </div>
+        <div layout="row" layout-align="end center">
+            <md-button class="md-raised" ng-disabled="viewModel.isLoading" ng-click="gridAnalysisUnusedDbObjectsApi.pagination.previousPage()">
+                Previous page
+            </md-button>
+            <p>{{ gridAnalysisUnusedDbObjectsApi.pagination.getPage() }} / {{ gridAnalysisUnusedDbObjectsApi.pagination.getTotalPages() }}</p>
+            <md-button class="md-raised" ng-disabled="viewModel.isLoading" ng-click="gridAnalysisUnusedDbObjectsApi.pagination.nextPage()">
+                Next page
+            </md-button>
+        </div>
+    </div>
+    <div ng-hide="!viewModel.isLoading" layout="row" layout-align="space-around">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
     </div>
 </div>

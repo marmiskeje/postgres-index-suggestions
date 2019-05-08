@@ -24,36 +24,45 @@
                    ng-model="viewModel.dateTo" class=" dtp-no-msclear dtp-input md-input">
         </div>
         <div>
-            <md-button ng-disabled="viewModel.isLoading || !viewModel.isValid" ng-click="actions.refreshData()" class="md-primary md-raised">Load</md-button>
+            <md-button ng-disabled="viewModel.isLoading || !viewModel.isValid" ng-click="actions.refreshData(true)" class="md-primary md-raised">Load</md-button>
         </div>
     </div>
 </div>
 <div class="mainContentBody" layout="column">
-    <div>
+    <div ng-hide="viewModel.isLoading">
         <span>Total stats:</span>
     </div>
-    <div class="chart">
+    <div ng-hide="viewModel.isLoading" class="chart">
         <canvas id="div-stats-relations"></canvas>
     </div>
-    <div>
+    <div ng-hide="viewModel.isLoading">
         <br />
     </div>
-    <div>
+    <div ng-hide="viewModel.isLoading">
         <span>Used in statements:</span>
     </div>
-    <div>
+    <div ng-hide="viewModel.isLoading">
         <br />
     </div>
-    <div layout="column">
-        <div ui-grid="gridStatsRelationsStatements" ui-grid-pagination ui-grid-resize-columns class="grid"></div>
+    <div ng-hide="viewModel.isLoading" layout="column">
+        <div ui-grid="gridStatsRelationsStatements" ui-grid-pagination ui-grid-resize-columns class="grid">
+            <div class="no-rows" ng-show="!gridStatsRelationsStatements.data.length">
+                <div class="msg">
+                    <span>No data available</span>
+                </div>
+            </div>
+        </div>
         <div layout="row" layout-align="end center">
-            <md-button class="md-raised" ng-disabled="viewModel.isLoading" ng-click="gridApi.pagination.previousPage()">
+            <md-button class="md-raised" ng-disabled="!viewModel.isValid || viewModel.isLoading" ng-click="gridStatsRelationsStatementsApi.pagination.previousPage()">
                 Previous page
             </md-button>
-            <p>{{ gridApi.pagination.getPage() }} / {{ gridApi.pagination.getTotalPages() }}</p>
-            <md-button class="md-raised" ng-disabled="!viewModel.isLoading" ng-click="gridApi.pagination.nextPage()">
+            <p>{{ gridStatsRelationsStatementsApi.pagination.getPage() }} / {{ gridStatsRelationsStatementsApi.pagination.getTotalPages() }}</p>
+            <md-button class="md-raised" ng-disabled="!viewModel.isValid || viewModel.isLoading" ng-click="gridStatsRelationsStatementsApi.pagination.nextPage()">
                 Next page
             </md-button>
         </div>
+    </div>
+    <div ng-hide="!viewModel.isLoading" layout="row" layout-align="space-around">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
     </div>
 </div>

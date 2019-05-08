@@ -62,5 +62,76 @@ namespace DiplomaThesis.WebUI.Controllers
             }, ex => result.ErrorMessage = ex.Message);
             return Json(result);
         }
+
+        [Route("indices")]
+        [HttpGet]
+        public IActionResult GetIndices()
+        {
+            BaseResponse<Dictionary<uint, List<IndexData>>> result = new BaseResponse<Dictionary<uint, List<IndexData>>>();
+            HandleException(() =>
+            {
+                var databases = DBMSRepositories.GetDatabasesRepository().GetAll();
+                var indicesRepository = DBMSRepositories.GetIndicesRepository();
+                result.Data = new Dictionary<uint, List<IndexData>>();
+                foreach (var d in databases)
+                {
+                    try
+                    {
+                        using (var scope = Converter.CreateDatabaseScope(d.ID))
+                        {
+                            var indices = indicesRepository.GetAllNonSystems().OrderBy(x => x.Name);
+                            foreach (var i in indices)
+                            {
+                                if (!result.Data.ContainsKey(i.RelationID))
+                                {
+                                    result.Data.Add(i.RelationID, new List<IndexData>());
+                                }
+                                result.Data[i.RelationID].Add(Converter.Convert(i));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Trace.WriteLine(ex.Message);
+                    }
+                }
+                result.IsSuccess = result.Data != null;
+            }, ex => result.ErrorMessage = ex.Message);
+            return Json(result);
+        }
+
+        [Route("stored-procedures")]
+        [HttpGet]
+        public IActionResult GetStoredProcedures()
+        {
+            BaseResponse<Dictionary<uint, List<StoredProcedureData>>> result = new BaseResponse<Dictionary<uint, List<StoredProcedureData>>>();
+            HandleException(() =>
+            {
+                var databases = DBMSRepositories.GetDatabasesRepository().GetAll();
+                var proceduresRepository = DBMSRepositories.GetStoredProceduresRepository();
+                result.Data = new Dictionary<uint, List<StoredProcedureData>>();
+                foreach (var d in databases)
+                {
+                    try
+                    {
+                        using (var scope = Converter.CreateDatabaseScope(d.ID))
+                        {
+                            var procedures = proceduresRepository.GetAllNonSystems().OrderBy(x => x.Name);
+                            result.Data.Add(d.ID, new List<StoredProcedureData>());
+                            foreach (var p in procedures)
+                            {
+                                result.Data[d.ID].Add(Converter.Convert(p));
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Trace.WriteLine(ex.Message);
+                    }
+                }
+                result.IsSuccess = result.Data != null;
+            }, ex => result.ErrorMessage = ex.Message);
+            return Json(result);
+        }
     }
 }

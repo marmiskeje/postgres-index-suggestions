@@ -1,66 +1,33 @@
-﻿Web.Controllers.StatsRelationsController = function ($scope, $rootScope, $http, uiGridConstants, $state, statisticsService, drawingService) {
+﻿Web.Controllers.StatsRelationsController = function ($scope, $rootScope, $http, uiGridConstants, $state, statisticsService, drawingService, notificationsService) {
     $rootScope.pageSubtitle = 'STATS_RELATIONS.PAGE_SUBTITLE';
     $scope.actions = new Object();
     $scope.actions.showStatementDetail = function (statementId) {
         $state.go(Web.Constants.StateNames.STATS_STATEMENT_DETAIL, { statementId: statementId, dateFrom: $scope.viewModel.dateFrom, dateTo: $scope.viewModel.dateTo });
     };
-    var paginationOptions = {
-        pageNumber: 1,
-        pageSize: 25,
-        sort: null
-    };
     $scope.gridStatsRelationsStatements = {
+        paginationPageSize: 25,
         enablePaginationControls: false,
-        paginationPageSize: paginationOptions.pageSize,
-        useExternalPagination: true,
-        useExternalSorting: true,
+        useExternalPagination: false,
+        useExternalSorting: false,
         columnDefs: [
             {
                 name: 'Statement', displayName: 'Statement',
                 cellTemplate: '<div class="ui-grid-cell-contents">' +
-                    '  <a href="javascript:void(0)" ng-click="grid.appScope.actions.showStatementDetail(row.entity.Id)" >{{row.entity.Statement}}</a>' +
+                    '  <a href="javascript:void(0)" ng-click="grid.appScope.actions.showStatementDetail(row.entity.normalizedStatementID)" >{{row.entity.normalizedStatement}}</a>' +
                     '</div>',
-                field: 'Statement'
+                field: 'normalizedStatement'
             },
-            { name: 'SeqScansCount', displayName: 'Sequential scans count', maxWidth: 210, field: 'SeqScansCount' },
-            { name: 'MinCost', displayName: 'Min seq scan cost', maxWidth: 180, field: 'MinCost' },
-            { name: 'MaxCost', displayName: 'Max seq scan cost', maxWidth: 180, field: 'MaxCost' },
-            { name: 'AvgCost', displayName: 'Avg seq scan cost', maxWidth: 180, field: 'AvgCost' }
+            { name: 'SeqScansCount', displayName: 'Seq scans count', maxWidth: 210, field: 'seqScansCount' },
+            { name: 'MinCost', displayName: 'Min seq scan cost', maxWidth: 180, field: 'minCost' },
+            { name: 'MaxCost', displayName: 'Max seq scan cost', maxWidth: 180, field: 'maxCost' },
+            { name: 'AvgCost', displayName: 'Avg seq scan cost', maxWidth: 180, field: 'avgCost' }
         ],
         onRegisterApi: function (gridApi){
-            $scope.gridApi = gridApi;
-            $scope.gridApi.core.on.sortChanged($scope, function (grid, sortColumns) {
-                if (sortColumns.length == 0) {
-                    paginationOptions.sort = null;
-                } else {
-                    paginationOptions.sort = sortColumns[0].sort.direction;
-                }
-                getPage();
-            });
-            gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
-                paginationOptions.pageNumber = newPage;
-                paginationOptions.pageSize = pageSize;
-                getPage();
-            });
+            $scope.gridStatsRelationsStatementsApi = gridApi;
+            $scope.gridStatsRelationsStatementsApi.core.queueRefresh();
+            $scope.gridStatsRelationsStatementsApi.core.handleWindowResize();
         }
     };
-    var getPage = function () {
-        var data = [];
-        for (var i = 0; i < 100; i++) {
-            var toAdd = new Object();
-            toAdd.Id = i;
-            toAdd.Statement = "Select * from test" + i;
-            toAdd.SeqScansCount = i;
-            toAdd.MinCost = 1.2;
-            toAdd.MaxCost = 5.6;
-            toAdd.AvgCost = 3.1;
-            data.push(toAdd);
-        }
-        $scope.gridStatsRelationsStatements.totalItems = 100;
-        var firstRow = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
-        $scope.gridStatsRelationsStatements.data = data.slice(firstRow, firstRow + paginationOptions.pageSize);
-    }
-    getPage();
     $scope.actions.drawChart = function (graphData) {
         var data = {
             labels: [],
@@ -82,7 +49,7 @@
             fill: false
         };
         var indexTupleFetchCountDataset = {
-            label: 'Index tuple retch count',
+            label: 'Index tuple fetch count',
             data: [],
             fill: false
         };
@@ -118,38 +85,19 @@
         data.datasets.push(tupleInsertedCountDataset);
         data.datasets.push(tupleUpdatedCountDataset);
         data.datasets.push(tupleDeletedCountDataset);
-        if ($scope.viewModel.graph != null) {
-            $scope.viewModel.graph.destroy();
-            $scope.viewModel.graph = null;
-        }
         $scope.viewModel.graph = drawingService.drawTimeLineGraph('div-stats-relations', '', data);
     }
-    if ($state.current.data == null) {
-        $scope.viewModel = new Web.ViewModels.StatsRelationsViewModel();
-        $scope.viewModel.dateFrom = moment().startOf('day');
-        $scope.viewModel.dateTo = moment().startOf('day').add(1, 'days');
-        if ($rootScope.viewModel.currentDatabase.id in $rootScope.viewModel.databaseRelations) {
-            $scope.viewModel.allRelations = $rootScope.viewModel.databaseRelations[$rootScope.viewModel.currentDatabase.id];
-            if ($scope.viewModel.allRelations.length > 0) {
-                $scope.viewModel.currentRelation = $scope.viewModel.allRelations[0];
-            }
-        }
-        $state.current.data = $scope.viewModel;
-    } else {
-        $scope.viewModel = $state.current.data;
-    }
-    $scope.viewModel.validate();
     $scope.actions.loadData = function () {
         return new Promise(function (resolve, reject) {
             $scope.viewModel.isLoading = true;
-            var request = new Web.Data.StatsRelationTotalRequest();
+            var request = new Web.Data.StatsRelationRequest();
             request.relationID = $scope.viewModel.currentRelation.id;
             request.filter.dateFrom = $scope.viewModel.dateFrom;
             request.filter.dateTo = $scope.viewModel.dateTo;
-            statisticsService.getRelationTotalStats(request, function (response) {
+            statisticsService.getRelationStats(request, function (response) {
                 $scope.viewModel.isLoading = false;
                 if (response.data == null) {
-                    notificationsService.showError("An error occured during data loading.", errorResponse.status, errorResponse.statusText);
+                    notificationsService.showError("An error occured during data loading.", response.status, response.statusText);
                     resolve(null);
                 }
                 else if (response.data.isSuccess && response.data.data != null) {
@@ -163,24 +111,44 @@
             });
         });
     };
-    $scope.actions.refreshData = function () {
-        if ($scope.viewModel.validate()) {
-            $scope.actions.loadData().then(function (data) {
-                if (data != null) {
-                    $scope.viewModel.graphData = data;
-                    $scope.actions.drawChart(data);
-                }
-            });
+    $scope.actions.clearData = function () {
+        $scope.viewModel.data = null;
+        if ($scope.viewModel.graph != null) {
+            $scope.viewModel.graph.destroy();
+            $scope.viewModel.graph = null;
         }
-        else {
-            if ($scope.viewModel.graph != null) {
-                $scope.viewModel.graph.destroy();
-            }
-            $scope.gridStatsRelationsStatements.data = [];
-            $scope.gridStatsRelationsStatements.totalItems = 0;
-        }
+        $scope.gridStatsRelationsStatements.data = [];
+        $scope.gridStatsRelationsStatementsApi.core.queueRefresh();
+        $scope.gridStatsRelationsStatementsApi.core.handleWindowResize();
     }
-    $rootScope.$on('onDatabaseChanged', function () {
+    $scope.actions.refreshData = function (enforceLoading) {
+        var loadData = new Promise(function (resolve, reject) {
+            if ($scope.viewModel.validate()) {
+                if (enforceLoading || $scope.viewModel.data == null) {
+                    $scope.actions.loadData().then(function (result) {
+                        resolve(result);
+                    });
+                }
+                else {
+                    resolve($scope.viewModel.data)
+                }
+            }
+            else {
+                resolve(null);
+            }
+        });
+        loadData.then(function (data) {
+            $scope.actions.clearData();
+            if (data != null) {
+                $scope.viewModel.data = data;
+                $scope.actions.drawChart(data.totalRelationStatistics);
+                $scope.gridStatsRelationsStatements.data = data.relationSummaryStatementStatistics;
+                $scope.gridStatsRelationsStatementsApi.core.queueRefresh();
+                $scope.gridStatsRelationsStatementsApi.core.handleWindowResize();
+            }
+        });
+    }
+    $scope.actions.updateAvailableRelations = function () {
         $scope.viewModel.allRelations = [];
         $scope.viewModel.currentRelation = null;
         if ($rootScope.viewModel.currentDatabase.id in $rootScope.viewModel.databaseRelations) {
@@ -189,12 +157,29 @@
                 $scope.viewModel.currentRelation = $scope.viewModel.allRelations[0];
             }
         }
-        $scope.viewModel.validate();
-        $scope.actions.refreshData();
+    }
+    $rootScope.$on('onDatabaseChanged', function () {
+        $scope.actions.updateAvailableRelations();
+        if ($state.is(Web.Constants.StateNames.STATS_RELATIONS)) {
+            $scope.actions.refreshData(true);
+        }
+        else {
+            $scope.actions.clearData();
+        }
     })
-    $scope.actions.refreshData();
+
+    if ($state.current.data == null) {
+        $scope.viewModel = new Web.ViewModels.StatsRelationsViewModel();
+        $scope.viewModel.dateFrom = moment().startOf('day');
+        $scope.viewModel.dateTo = moment().startOf('day').add(1, 'days');
+        $scope.actions.updateAvailableRelations();
+        $state.current.data = $scope.viewModel;
+    } else {
+        $scope.viewModel = $state.current.data;
+    }
+    $scope.actions.refreshData(false);
 }
 
 
 
-angular.module('WebApp').controller('StatsRelationsController', ['$scope', '$rootScope', '$http', 'uiGridConstants', '$state', 'statisticsService', 'drawingService', Web.Controllers.StatsRelationsController]);
+angular.module('WebApp').controller('StatsRelationsController', ['$scope', '$rootScope', '$http', 'uiGridConstants', '$state', 'statisticsService', 'drawingService', 'notificationsService', Web.Controllers.StatsRelationsController]);

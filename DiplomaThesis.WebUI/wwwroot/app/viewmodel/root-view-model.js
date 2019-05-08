@@ -3,4 +3,8 @@
     this.currentDatabase = null;
     this.allDatabases = [];
     this.databaseRelations = {};
+    this.allRelations = {};
+    this.relationIndices = {};
+    this.allIndices = {};
+    this.databaseStoredProcedures = {};
 }

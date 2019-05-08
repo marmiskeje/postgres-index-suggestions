@@ -5,63 +5,74 @@
         </div>
         <div>
             <md-input-container>
-                <md-select ng-model="viewModel.currentDatabase" aria-label="select-current-indexrelation">
-                    <md-option ng-repeat="db in viewModel.allDatabases" ng-value="db">
-                        {{db.name}}
+                <md-select ng-model="viewModel.currentRelation" aria-label="select-current-relation" required ng-change="actions.onCurrentRelationChanged()">
+                    <md-option ng-repeat="r in viewModel.allRelations" ng-value="r">
+                        {{r.fullName}}
                     </md-option>
                 </md-select>
+                <md-tooltip>Relation</md-tooltip>
             </md-input-container>
         </div>
         <div>
             <md-input-container>
-                <md-select ng-model="viewModel.currentDatabase" aria-label="select-current-index">
-                    <md-option ng-repeat="db in viewModel.allDatabases" ng-value="db">
-                        {{db.name}}
+                <md-select ng-model="viewModel.currentIndex" aria-label="select-current-index" required ng-change="viewModel.validate()">
+                    <md-option ng-repeat="i in viewModel.allIndices" ng-value="i">
+                        {{i.name}}
                     </md-option>
                 </md-select>
+                <md-tooltip>Index</md-tooltip>
             </md-input-container>
         </div>
         <div>
-            <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required
+            <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required ng-change="viewModel.validate()"
                    placeholder="Date from" show-todays-date="" minutes="true" min-date="date" show-icon="true"
                    ng-model="viewModel.dateFrom" class=" dtp-no-msclear dtp-input md-input">
         </div>
         <div>
-            <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required
+            <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required ng-change="viewModel.validate()"
                    placeholder="Date to" show-todays-date="" minutes="true" min-date="date" show-icon="true"
                    ng-model="viewModel.dateTo" class=" dtp-no-msclear dtp-input md-input">
         </div>
         <div>
-            <md-button ng-disabled="!viewModel.isValid || viewModel.isLoading" class="md-primary md-raised">Load</md-button>
+            <md-button ng-disabled="viewModel.isLoading || !viewModel.isValid" ng-click="actions.refreshData(true)" class="md-primary md-raised">Load</md-button>
         </div>
     </div>
 </div>
 <div class="mainContentBody" layout="column">
-    <div>
+    <div ng-hide="viewModel.isLoading">
         <span>Total stats:</span>
     </div>
-    <div class="chart">
+    <div ng-hide="viewModel.isLoading" class="chart">
         <canvas id="div-stats-indices"></canvas>
     </div>
-    <div>
+    <div ng-hide="viewModel.isLoading">
         <br />
     </div>
-    <div>
+    <div ng-hide="viewModel.isLoading">
         <span>Used in statements:</span>
     </div>
-    <div>
+    <div ng-hide="viewModel.isLoading">
         <br />
     </div>
-    <div layout="column">
-        <div ui-grid="gridStatsIndicesStatements" ui-grid-pagination ui-grid-resize-columns class="grid"></div>
+    <div ng-hide="viewModel.isLoading" layout="column">
+        <div ui-grid="gridStatsIndicesStatements" ui-grid-pagination ui-grid-resize-columns class="grid">
+            <div class="no-rows" ng-show="!gridStatsIndicesStatements.data.length">
+                <div class="msg">
+                    <span>No data available</span>
+                </div>
+            </div>
+        </div>
         <div layout="row" layout-align="end center">
-            <md-button class="md-raised" ng-disabled="!viewModel.isValid || viewModel.isLoading" ng-click="gridApi.pagination.previousPage()">
+            <md-button class="md-raised" ng-disabled="!viewModel.isValid || viewModel.isLoading" ng-click="gridStatsIndicesStatementsApi.pagination.previousPage()">
                 Previous page
             </md-button>
-            <p>{{ gridApi.pagination.getPage() }} / {{ gridApi.pagination.getTotalPages() }}</p>
-            <md-button class="md-raised" ng-disabled="!viewModel.isValid || viewModel.isLoading" ng-click="gridApi.pagination.nextPage()">
+            <p>{{ gridStatsIndicesStatementsApi.pagination.getPage() }} / {{ gridStatsIndicesStatementsApi.pagination.getTotalPages() }}</p>
+            <md-button class="md-raised" ng-disabled="!viewModel.isValid || viewModel.isLoading" ng-click="gridStatsIndicesStatementsApi.pagination.nextPage()">
                 Next page
             </md-button>
         </div>
+    </div>
+    <div ng-hide="!viewModel.isLoading" layout="row" layout-align="space-around">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
     </div>
 </div>

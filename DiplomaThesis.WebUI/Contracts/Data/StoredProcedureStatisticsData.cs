@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace DiplomaThesis.WebUI
 {
-    public class GetTotalRelationStatisticsResponse : BaseResponse<List<TotalRelationStatistics>>
+    public class StoredProcedureStatisticsData
     {
+        public List<TotalStoredProcedureStatistics> TotalStoredProcedureStatistics { get; set; }
     }
 }

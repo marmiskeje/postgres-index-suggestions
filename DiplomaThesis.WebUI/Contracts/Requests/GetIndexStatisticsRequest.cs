@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace DiplomaThesis.WebUI
 {
-    public class GetTotalRelationStatisticsRequest
+    public class GetIndexStatisticsRequest
     {
-        public uint RelationID { get; set; }
+        public uint IndexID { get; set; }
         public BaseDateTimeFilter Filter { get; set; }
     }
 }

@@ -11,7 +11,7 @@ namespace DiplomaThesis.DBMS.Postgres
         {
 
         }
-        public IEnumerable<IView> GetAllNonSystemViews()
+        public IEnumerable<IView> GetAllNonSystems()
         {
             var sql = @"
 select d.oid as db_id, n.oid schema_id, v.schemaname schema_name, c.oid view_id, v.viewname view_name, v.definition view_definition from pg_views v

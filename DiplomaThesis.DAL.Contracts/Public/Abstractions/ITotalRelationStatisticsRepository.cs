@@ -11,5 +11,7 @@ namespace DiplomaThesis.DAL.Contracts
         IEnumerable<TotalRelationStatistics> GetAllForDatabase(uint databaseID, DateTime dateFromInclusive, DateTime dateToExclusive);
         IEnumerable<TotalRelationStatistics> GetAllForRelation(uint relationID, DateTime dateFromInclusive, DateTime dateToExclusive);
         IEnumerable<SummaryTotalRelationStatistics> GetSummaryTotalRelationStatistics(uint databaseID, DateTime dateFromInclusive, DateTime dateToExclusive, int count);
+        bool AreDataAvailableForWholePeriod(DateTime dateFrom, DateTime dateTo);
+        IReadOnlyDictionary<uint, DateTime> GetForAllLastKnownCollectionDate(uint databaseID);
     }
 }

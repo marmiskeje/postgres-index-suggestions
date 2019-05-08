@@ -8,6 +8,7 @@ namespace DiplomaThesis.DAL.Contracts
     {
         NormalizedStatementIndexStatistics GetByUniqueKey(NormalizedStatementIndexStatisticsUniqueKey key);
         IReadOnlyDictionary<long, List<NormalizedStatementIndexStatistics>> GetAllGroupedByStatement(DateTime createdFrom, DateTime createdTo);
-
+        IEnumerable<IndexSummaryStatementStatistics> GetIndexSummaryStatementStatistics(uint indexID, DateTime dateFromInclusive, DateTime dateToExclusive);
+        IEnumerable<NormalizedStatementIndexStatistics> GetAllForStatement(long normalizedStatementID, DateTime dateFromInclusive, DateTime dateToExclusive);
     }
 }

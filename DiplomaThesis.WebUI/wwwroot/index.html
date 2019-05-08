@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/angular-material.min.css" />
     <link rel="stylesheet" type="text/css" href="css/style.css" />
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.js"></script>
     <!--<script type="text/javascript" src="scripts/AngularJS/angular.min.js"></script>-->
     <script type="text/javascript" src="scripts/AngularJS/angular-cookies.min.js"></script>
@@ -35,7 +36,7 @@
     <script type="text/javascript" src="https://www.chartjs.org/dist/2.8.0/Chart.min.js"></script>
     <script type="text/javascript" src="https://unpkg.com/chartjs-plugin-colorschemes@latest/dist/chartjs-plugin-colorschemes.min.js"></script>
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/angular-ui/bower-ui-grid/ui-grid.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/gh/angular-ui/bower-ui-grid/ui-grid.js"></script>
     <link href="https://cdn.jsdelivr.net/gh/angular-ui/bower-ui-grid/ui-grid.min.css" rel="stylesheet" type="text/css" />
 
     <script type="text/javascript" src="app/app.js"></script>
@@ -47,17 +48,27 @@
     <script type="text/javascript" src="app/data/base-filters-data.js"></script>
     <script type="text/javascript" src="app/data/database-data.js"></script>
     <script type="text/javascript" src="app/data/stats-overview-request.js"></script>
-    <script type="text/javascript" src="app/data/stats-relation-total-request.js"></script>
+    <script type="text/javascript" src="app/data/stats-relation-request.js"></script>
+    <script type="text/javascript" src="app/data/stats-index-request.js"></script>
+    <script type="text/javascript" src="app/data/stats-stored-procedure-request.js"></script>
+    <script type="text/javascript" src="app/data/analysis-unused-objects-request.js"></script>
+    <script type="text/javascript" src="app/data/stats-statements-request.js"></script>
+    <script type="text/javascript" src="app/data/stats-statement-request.js"></script>
     <!--view models-->
     <script type="text/javascript" src="app/viewmodel/root-view-model.js"></script>
     <script type="text/javascript" src="app/viewmodel/stats-overview-view-model.js"></script>
     <script type="text/javascript" src="app/viewmodel/stats-relations-view-model.js"></script>
-
+    <script type="text/javascript" src="app/viewmodel/stats-indices-view-model.js"></script>
+    <script type="text/javascript" src="app/viewmodel/stats-stored-procedures-view-model.js"></script>
+    <script type="text/javascript" src="app/viewmodel/analysis-unused-objects-view-model.js"></script>
+    <script type="text/javascript" src="app/viewmodel/stats-statements-view-model.js"></script>
+    <script type="text/javascript" src="app/viewmodel/stats-statement-detail-view-model.js"></script>
     <!--services-->
     <script type="text/javascript" src="app/services/drawing-service.js"></script>
     <script type="text/javascript" src="app/services/notifications-service.js"></script>
     <script type="text/javascript" src="app/services/entities-service.js"></script>
     <script type="text/javascript" src="app/services/statistics-service.js"></script>
+    <script type="text/javascript" src="app/services/analysis-service.js"></script>
     <!--controllers-->
     <script type="text/javascript" src="app/controllers/root-controller.js"></script>
     <script type="text/javascript" src="app/controllers/stats-overview-controller.js"></script>

@@ -1,87 +1,134 @@
-﻿Web.Controllers.StatsStatementsController = function ($scope, $rootScope, $http, uiGridConstants, $state) {
+﻿Web.Controllers.StatsStatementsController = function ($scope, $rootScope, $http, uiGridConstants, $state, statisticsService, drawingService, notificationsService) {
     $rootScope.pageSubtitle = 'STATS_STATEMENTS.PAGE_SUBTITLE';
     $scope.actions = new Object();
-    $scope.actions.showStatementDetail = function (statementId) {
-        $state.go(Web.Constants.StateNames.STATS_STATEMENT_DETAIL, { statementId: statementId, dateFrom: $scope.viewModel.dateFrom, dateTo: $scope.viewModel.dateTo });
-    };
-    $scope.viewModel = new Object();
-    $scope.viewModel.isValid = true;
-    $scope.viewModel.isLoading = false;
-    $scope.viewModel.allCommandTypeFilters = [];
-    var filter = new Object();
-    filter.id = 0;
-    filter.name = "Any";
-    $scope.viewModel.allCommandTypeFilters.push(filter);
-    $scope.viewModel.selectedCommandTypeFilter = filter;
-    $scope.viewModel.dateFrom = moment().startOf('day');
-    $scope.viewModel.dateTo = moment().startOf('day').add(1, 'days');
-    var paginationOptions = {
-        pageNumber: 1,
-        pageSize: 25,
-        sort: null
+    $scope.actions.showStatementDetail = function (statement) {
+        $state.go(Web.Constants.StateNames.STATS_STATEMENT_DETAIL, { statement: statement, dateFrom: $scope.viewModel.dateFrom, dateTo: $scope.viewModel.dateTo });
     };
     $scope.gridStatsStatements = {
         enablePaginationControls: false,
-        paginationPageSize: paginationOptions.pageSize,
-        useExternalPagination: true,
-        useExternalSorting: true,
+        paginationPageSize: 25,
         columnDefs: [
-            { name: 'Command type', maxWidth: 150, field: 'CommandType' },
+            { name: 'Command type', maxWidth: 150, field: 'commandTypeStr' },
             {
                 name: 'Statement',
                 cellTemplate: '<div class="ui-grid-cell-contents">' +
-                    '  <a href="javascript:void(0)" ng-click="grid.appScope.actions.showStatementDetail(row.entity.Id)" >{{row.entity.Statement}}</a>' +
+                    '  <a href="javascript:void(0)" ng-click="grid.appScope.actions.showStatementDetail(row.entity)" >{{row.entity.statement}}</a>' +
                     '</div>',
-                field: 'Statement'
+                field: 'statement'
             },
-            { displayName: 'Total executions count', maxWidth: 220, name: 'TotalExecutionsCount', field: 'TotalExecutionsCount' },
-            { displayName: 'Min duration (s)', maxWidth: 170, field: 'MinDuration', name: 'MinDuration' },
-            { displayName: 'Max duration (s)', maxWidth: 170, field: 'MaxDuration', name: 'MaxDuration' },
-            { displayName: 'Avg duration (s)', maxWidth: 170, field: 'AvgDuration', name: 'AvgDuration' },
-            { displayName: 'Min cost', maxWidth: 100, field: 'MinCost', name: 'MinCost' },
-            { displayName: 'Max cost', maxWidth: 100, field: 'MaxCost', name: 'MaxCost' },
-            { displayName: 'Avg cost', maxWidth: 100, field: 'AvgCost', name: 'AvgCost' }
+            { displayName: 'Total executions count', maxWidth: 220, name: 'totalExecutionsCount', field: 'totalExecutionsCount' },
+            { displayName: 'Min duration', maxWidth: 170, field: 'minDuration', name: 'minDuration' },
+            { displayName: 'Max duration', maxWidth: 170, field: 'maxDuration', name: 'maxDuration' },
+            { displayName: 'Avg duration', maxWidth: 170, field: 'avgDuration', name: 'avgDuration' },
+            { displayName: 'Min cost', maxWidth: 100, field: 'minTotalCost', name: 'minTotalCost' },
+            { displayName: 'Max cost', maxWidth: 100, field: 'minTotalCost', name: 'maxTotalCost' },
+            { displayName: 'Avg cost', maxWidth: 100, field: 'minTotalCost', name: 'avgTotalCost' }
         ],
         onRegisterApi: function (gridApi){
-            $scope.gridApi = gridApi;
-            $scope.gridApi.core.on.sortChanged($scope, function (grid, sortColumns) {
-                if (sortColumns.length == 0) {
-                    paginationOptions.sort = null;
-                } else {
-                    paginationOptions.sort = sortColumns[0].sort.direction;
-                }
-                getPage();
-            });
-            gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
-                paginationOptions.pageNumber = newPage;
-                paginationOptions.pageSize = pageSize;
-                getPage();
-            });
+            $scope.gridStatsStatementsApi = gridApi;
+            $scope.gridStatsStatementsApi.core.queueRefresh();
+            $scope.gridStatsStatementsApi.core.handleWindowResize();
         }
     };
-    var getPage = function () {
-        var data = [];
-        for (var i = 0; i < 100; i++) {
-            var toAdd = new Object();
-            toAdd.Id = i;
-            toAdd.CommandType = "SELECT";
-            toAdd.Statement = "Select * from test" + i;
-            toAdd.TotalExecutionsCount = i;
-            toAdd.MinDuration = 1.2;
-            toAdd.MaxDuration = 5.6;
-            toAdd.AvgDuration = 3.1;
-            toAdd.MinCost = 1.2;
-            toAdd.MaxCost = 5.6;
-            toAdd.AvgCost = 3.1;
-            data.push(toAdd);
-        }
-        $scope.gridStatsStatements.totalItems = 100;
-        var firstRow = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
-        $scope.gridStatsStatements.data = data.slice(firstRow, firstRow + paginationOptions.pageSize);
+    $scope.actions.loadData = function () {
+        return new Promise(function (resolve, reject) {
+            $scope.viewModel.isLoading = true;
+            var request = new Web.Data.StatsStatementsRequest();
+            request.databaseID = $rootScope.viewModel.currentDatabase.id;
+            request.filter.dateFrom = $scope.viewModel.dateFrom;
+            request.filter.dateTo = $scope.viewModel.dateTo;
+            request.filter.commandType = $scope.viewModel.currentCommandType;
+            statisticsService.getStatementsStats(request, function (response) {
+                $scope.viewModel.isLoading = false;
+                if (response.data == null) {
+                    notificationsService.showError("An error occured during data loading.", response.status, response.statusText);
+                    resolve(null);
+                }
+                else if (response.data.isSuccess && response.data.data != null) {
+                    var result = response.data.data;
+                    resolve(result);
+                }
+                else {
+                    notificationsService.showError("An error occured during data loading.", 500, response.data.errorMessage);
+                    resolve(null);
+                }
+            });
+        });
+    };
+    $scope.actions.clearData = function () {
+        $scope.viewModel.data = null;
+        $scope.gridStatsStatements.data = [];
+        $scope.gridStatsStatementsApi.core.queueRefresh();
+        $scope.gridStatsStatementsApi.core.handleWindowResize();
     }
-    getPage();
+    $scope.actions.refreshData = function (enforceLoading) {
+        var loadData = new Promise(function (resolve, reject) {
+            if ($scope.viewModel.validate()) {
+                if (enforceLoading || $scope.viewModel.data == null) {
+                    $scope.actions.loadData().then(function (result) {
+                        resolve(result);
+                    });
+                }
+                else {
+                    resolve($scope.viewModel.data)
+                }
+            }
+            else {
+                resolve(null);
+            }
+        });
+        loadData.then(function (data) {
+            $scope.actions.clearData();
+            if (data != null) {
+                $scope.viewModel.data = data;
+                for (var i = 0; i < data.summaryNormalizedStatementStatistics.length; i++) {
+                    var item = data.summaryNormalizedStatementStatistics[i];
+                    if (item.commandType != null) {
+                        switch (item.commandType) {
+                            case 1:
+                                item.commandTypeStr = "Select";
+                                break;
+                            case 2:
+                                item.commandTypeStr = "Insert";
+                                break;
+                            case 3:
+                                item.commandTypeStr = "Update";
+                                break;
+                            case 4:
+                                item.commandTypeStr = "Delete";
+                                break;
+                            case 5:
+                                item.commandTypeStr = "Utility";
+                                break;
+                        }
+                    }
+                }
+                $scope.gridStatsStatements.data = data.summaryNormalizedStatementStatistics;
+                $scope.gridStatsStatementsApi.core.queueRefresh();
+                $scope.gridStatsStatementsApi.core.handleWindowResize();
+            }
+        });
+    }
+    $rootScope.$on('onDatabaseChanged', function () {
+        if ($state.is(Web.Constants.StateNames.STATS_STATEMENTS)) {
+            $scope.actions.refreshData(true);
+        }
+        else {
+            $scope.actions.clearData();
+        }
+    })
+
+    if ($state.current.data == null) {
+        $scope.viewModel = new Web.ViewModels.StatsStatementsViewModel();
+        $scope.viewModel.dateFrom = moment().startOf('day');
+        $scope.viewModel.dateTo = moment().startOf('day').add(1, 'days');
+        $state.current.data = $scope.viewModel;
+    } else {
+        $scope.viewModel = $state.current.data;
+    }
+    $scope.actions.refreshData(false);
 }
 
 
 
-angular.module('WebApp').controller('StatsStatementsController', ['$scope', '$rootScope', '$http', 'uiGridConstants', '$state', Web.Controllers.StatsStatementsController]);
+angular.module('WebApp').controller('StatsStatementsController', ['$scope', '$rootScope', '$http', 'uiGridConstants', '$state', 'statisticsService', 'drawingService', 'notificationsService', Web.Controllers.StatsStatementsController]);

@@ -13,5 +13,19 @@
             onFinally(errorResponse);
         });
     }
+    this.getAllIndices = function (onFinally) {
+        $http.get('api/entities/indices').then(function (response) {
+            onFinally(response);
+        }, function (errorResponse) {
+            onFinally(errorResponse);
+        });
+    }
+    this.getAllStoredProcedures = function (onFinally) {
+        $http.get('api/entities/stored-procedures').then(function (response) {
+            onFinally(response);
+        }, function (errorResponse) {
+            onFinally(errorResponse);
+        });
+    }
 }
 Web.App.service('entitiesService', ['$http', Web.Services.EntitiesService]);

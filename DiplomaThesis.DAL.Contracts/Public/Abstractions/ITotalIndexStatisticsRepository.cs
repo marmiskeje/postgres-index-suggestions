@@ -8,5 +8,8 @@ namespace DiplomaThesis.DAL.Contracts
     {
         TotalIndexStatistics GetByUniqueKey(TotalIndexStatisticsUniqueKey key);
         IReadOnlyDictionary<uint, List<TotalIndexStatistics>> GetAllGroupedByIndex(DateTime createdFrom, DateTime createdTo);
+        IEnumerable<TotalIndexStatistics> GetAllForIndex(uint indexID, DateTime dateFromInclusive, DateTime dateToExclusive);
+        bool AreDataAvailableForWholePeriod(DateTime dateFrom, DateTime dateTo);
+        IReadOnlyDictionary<uint, DateTime> GetForAllLastKnownCollectionDate(uint databaseID);
     }
 }

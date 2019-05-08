@@ -11,7 +11,7 @@ namespace DiplomaThesis.DBMS.Postgres
         {
 
         }
-        public IEnumerable<IStoredProcedure> GetAllNonSystemProcedures()
+        public IEnumerable<IStoredProcedure> GetAllNonSystems()
         {
             var sql = @"
 select d.oid db_id, p.oid proc_id, p.proname proc_name, n.oid schema_id, n.nspname schema_name, p.pronargs proc_args_count, p.prosrc proc_definition,

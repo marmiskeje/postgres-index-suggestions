@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace DiplomaThesis.WebUI
+{
+    public class GetStatementStatisticsRequest
+    {
+        public uint StatementID { get; set; }
+        public BaseDateTimeFilter Filter { get; set; }
+    }
+}

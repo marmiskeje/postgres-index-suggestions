@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiplomaThesis.ReportingServ
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UI", "UI", "{50889313-AE65-4F47-896A-965447B14DBB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiplomaThesis.WebUI", "DiplomaThesis.WebUI\DiplomaThesis.WebUI.csproj", "{193D4CEA-1031-4907-BD3C-A0A01572F933}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiplomaThesis.WebUI", "DiplomaThesis.WebUI\DiplomaThesis.WebUI.csproj", "{193D4CEA-1031-4907-BD3C-A0A01572F933}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
