@@ -54,6 +54,9 @@
     <script type="text/javascript" src="app/data/analysis-unused-objects-request.js"></script>
     <script type="text/javascript" src="app/data/stats-statements-request.js"></script>
     <script type="text/javascript" src="app/data/stats-statement-request.js"></script>
+    <script type="text/javascript" src="app/data/analysis-workloads-request.js"></script>
+    <script type="text/javascript" src="app/data/workload-data.js"></script>
+    <script type="text/javascript" src="app/data/analysis-delete-workload-request.js"></script>
     <!--view models-->
     <script type="text/javascript" src="app/viewmodel/root-view-model.js"></script>
     <script type="text/javascript" src="app/viewmodel/stats-overview-view-model.js"></script>
@@ -63,6 +66,8 @@
     <script type="text/javascript" src="app/viewmodel/analysis-unused-objects-view-model.js"></script>
     <script type="text/javascript" src="app/viewmodel/stats-statements-view-model.js"></script>
     <script type="text/javascript" src="app/viewmodel/stats-statement-detail-view-model.js"></script>
+    <script type="text/javascript" src="app/viewmodel/analysis-workloads-view-model.js"></script>
+    <script type="text/javascript" src="app/viewmodel/analysis-workload-detail-view-model.js"></script>
     <!--services-->
     <script type="text/javascript" src="app/services/drawing-service.js"></script>
     <script type="text/javascript" src="app/services/notifications-service.js"></script>
@@ -83,6 +88,7 @@
     <script type="text/javascript" src="app/controllers/analysis-workload-analysis-create.js"></script>
     <script type="text/javascript" src="app/controllers/analysis-workload-analysis-detail.js"></script>
     <script type="text/javascript" src="app/controllers/analysis-unused-db-objects-controller.js"></script>
+    <script type="text/javascript" src="app/controllers/help-detail-controller.js"></script>
 </head>
 <body layout="column" id="pageBody">
     <div ng-hide="!viewModel.isLoading" layout="row" layout-align="space-around">
@@ -94,7 +100,8 @@
         </div>
         <div flex="20">
             <md-input-container>
-                <md-select class="headerSelect" ng-model="viewModel.currentDatabase" aria-label="select-current-database" ng-change="actions.onDatabaseChanged()">
+                <md-select class="headerSelect" ng-model="viewModel.currentDatabase" aria-label="select-current-database" ng-change="actions.onDatabaseChanged()"
+                           ng-disabled="services.state.current.name.indexOf('detail') >= 0">
                     <md-option ng-repeat="db in viewModel.allDatabases" ng-value="db">
                         {{db.name}}
                     </md-option>
@@ -105,12 +112,15 @@
         <div flex>
 
         </div>
-        <div flex="5">
+        <div style="width:160px" layout="row">
             <md-button class="md-fab md-primary md-mini" aria-label="btn-settings">
                 <md-tooltip>{{'ROOT.SETTINGS' | translate}}</md-tooltip>
                 <md-icon><i class="material-icons">more_vert</i></md-icon>
             </md-button>
-
+            <md-button ng-href="#!/help-detail" class="md-fab md-primary md-mini" aria-label="btn-help">
+                <md-tooltip>Help</md-tooltip>
+                <md-icon><i class="material-icons">help_outline</i></md-icon>
+            </md-button>
         </div>
     </div>
     <div ng-hide="viewModel.isLoading" flex layout="row" class="body">
@@ -133,7 +143,7 @@
                            ng-href="#!/stats-statements" class="btn-nav-menu btn-nav-sub-menu">Statements</md-button>
                 <md-divider></md-divider>
                 <md-button ng-href="#!/analysis-workload-analyses" class="btn-nav-menu">
-                    <i class="material-icons">graphic_eq</i>
+                    <i class="material-icons">search</i>
                     <span>Analysis</span>
                 </md-button>
                 <md-button ng-class="{'menuContentItemSelected' : services.state.current.name == 'analysis-workloads'}"

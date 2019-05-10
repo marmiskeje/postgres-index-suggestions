@@ -90,6 +90,7 @@
                 $scope.actions.loadRelations().then(function (relationsPerDatabase) {
                     if (relationsPerDatabase) {
                         $rootScope.viewModel.databaseRelations = {};
+                        $rootScope.viewModel.allRelations = [];
                         for (var databaseId in relationsPerDatabase) {
                             $rootScope.viewModel.databaseRelations[databaseId] = [];
                             for (var i = 0; i < relationsPerDatabase[databaseId].length; i++) {
@@ -119,7 +120,7 @@
                                             }
                                         }
                                         $rootScope.viewModel.isLoading = false;
-                                        $state.go(Web.Constants.StateNames.STATS_STATEMENTS);
+                                        $state.go(Web.Constants.StateNames.HELP_DETAIL);
                                     }
                                 });
                             }

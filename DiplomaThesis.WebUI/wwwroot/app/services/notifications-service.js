@@ -11,5 +11,13 @@
             .hideDelay(this.hideDelay)
         );
     }
+    this.showMessage = function (message) {
+        var text = message;
+        $mdToast.show(
+            $mdToast.simple()
+                .textContent(text)
+                .hideDelay(this.hideDelay)
+        );
+    }
 }
 Web.App.service('notificationsService', ['$mdToast', Web.Services.NotificationsService]);

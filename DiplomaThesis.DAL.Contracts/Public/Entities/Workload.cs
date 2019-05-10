@@ -20,6 +20,7 @@ namespace DiplomaThesis.DAL.Contracts
         public WorkloadDefinition Definition { get; set; }
         [Required]
         public string DefinitionData { get; set; }
+        public DateTime? InactiveDate { get; set; }
         public List<WorkloadAnalysis> WorkloadAnalyses { get; set; }
     }
 

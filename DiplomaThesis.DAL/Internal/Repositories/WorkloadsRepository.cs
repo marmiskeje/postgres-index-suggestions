@@ -1,7 +1,7 @@
 ﻿using DiplomaThesis.DAL.Contracts;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace DiplomaThesis.DAL
 {
@@ -22,6 +22,21 @@ namespace DiplomaThesis.DAL
         {
             base.FillEntityGet(entity);
             entity.Definition = JsonSerializationUtility.Deserialize<WorkloadDefinition>(entity.DefinitionData);
+        }
+
+        public IEnumerable<Workload> GetForDatabase(uint databaseID, DateTime createdDateFromInclusive, DateTime createdDateToExlusive, bool onlyActive = true)
+        {
+            using (var context = CreateContextFunc())
+            {
+                var query = context.Workloads.Where(x => x.DatabaseID == databaseID && x.CreatedDate >= createdDateFromInclusive && x.CreatedDate < createdDateToExlusive);
+                if (onlyActive)
+                {
+                    query = query.Where(x => x.InactiveDate == null);
+                }
+                var result = query.ToList();
+                result.ForEach(x => FillEntityGet(x));
+                return result;
+            }
         }
     }
 }

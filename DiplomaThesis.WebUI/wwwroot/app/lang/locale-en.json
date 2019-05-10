@@ -39,5 +39,8 @@
   },
   "ANALYSIS_WORKLOAD_ANALYSIS_DETAIL": {
     "PAGE_SUBTITLE": "Workload analysis"
+  },
+  "HELP_DETAIL": {
+    "PAGE_SUBTITLE": "Help"
   }
 }

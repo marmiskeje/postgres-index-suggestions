@@ -1,0 +1,73 @@
+﻿<div class="mainContentMenu" layout="row">
+    <div class="mainContentMenuBody" layout="row" flex layout-align="start center">
+        <div flex="20" layout="row" layout-align="start center">
+            <md-button class="btn-nav-menu" style="min-width: inherit" ng-click="actions.goBack()">
+                <i class="material-icons">keyboard_backspace</i>
+            </md-button>
+            <div style="width: 7px"></div>
+            <span>{{'HELP_DETAIL.PAGE_SUBTITLE' | translate}}</span>
+        </div>
+    </div>
+</div>
+<div class="mainContentBody" layout="column">
+    <md-content>
+        <md-tabs class="md-primary md-dynamic-height">
+            <md-tab label="PostgreSQL">
+                <md-content class="md-padding">
+                    <div layout="column">
+                        <md-tabs class="md-primary md-dynamic-height">
+                            <md-tab label="Log configuration">
+                                <md-content class="md-padding">
+                                    <div layout="column">
+                                        <h2>Log format</h2>
+                                        <p>
+                                            Log line must have the following format: <code>log_line_prefix = '^]%n¤%p¤%a¤%u¤%d¤%r¤%c¤%l¤%v¤%x¤'</code><br />
+                                            Default separator is: ¤. Default indicator for log entry beginning is: ^]. These strings can be changed in Diploma thesis collector configuration. Also log file encoding.
+                                        </p>
+                                        <h2>STATISTICS</h2>
+                                        <h3>Relations, materialized views, indices, stored procedures</h3>
+                                        <p>
+                                            These statistics are generally collected only when The statistics collector is enabled:<br /><code>track_activities = on</code><br /><code>track_counts = on</code>
+                                        </p>
+                                        <p>
+                                            Collecting of functions / stored procedures statistics needs further configuration:<br /><code class="preserve">track_functions = all       # possibilities: none, pl, all</code><br /><br />
+                                            Be aware that PostgreSQL will never log inline functions, even when track_functions is enabled.
+                                        </p>
+                                        <h3>Statements</h3>
+                                        <p>
+                                            If statements are logged to file processed by Diploma thesis collector, statistics for statements will be generated.<br />
+                                            Enabling of logging to file: <code>logging_collector = on</code><br />
+                                            Specification of logged statements: <code class="preserve">log_statement = all       # possibilities: none, ddl, mod, all</code><br />
+                                            Enabling of logging duration for duration stats: <code>log_duration = on</code><br />
+                                            Enabling of logging of execution plan for cost stats: <code>debug_print_plan = on</code><br />
+                                            Enabling of logging of rewritten query tree for object usage in statement stats: <code>debug_print_rewritten = on</code><br /><br />
+                                            Be aware that when some debug_% option is enabled, pretty print must be disabled: <code>debug_pretty_print = off</code><br />
+                                            If you want to specify minimum duration for statement to be logged, use the following: <code class="preserve">log_min_duration_statement = number_in_milliseconds       # -1 = disabled, 0 = log all statements</code>
+                                        </p>
+                                        <h2>ANALYSIS</h2>
+                                        <p>
+                                            In order to be funcional, everything specified above must be enabled.<br />
+                                            Specifically:
+                                            <ul>
+                                                <li>Analysis of unused objects needs statistics for relations, mat. views, indices, stored procedures and also logging basic logging of statements.</li>
+                                                <li>Analysis for indices or horizontal partitionings needs complete logging of statements (only logging of execution plans is optional).</li>
+                                            </ul>
+                                        </p>
+
+                                    </div>
+                                </md-content>
+                            </md-tab>
+                            <md-tab label="Extensions">
+                                <md-content class="md-padding">
+                                    <div layout="column">
+                                        <p>For analyses purposes: <a href="https://github.com/HypoPG/hypopg">HypoPG</a> must be installed, at least in version 2.0.0. <br /></p>
+                                    </div>
+                                </md-content>
+                            </md-tab>
+                        </md-tabs>
+                    </div>
+                </md-content>
+            </md-tab>
+        </md-tabs>
+    </md-content>
+</div>

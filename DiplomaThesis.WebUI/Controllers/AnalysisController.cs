@@ -11,6 +11,76 @@ namespace DiplomaThesis.WebUI.Controllers
     [ApiController]
     public class AnalysisController : BaseApiController
     {
+        [Route("workloads")]
+        [HttpPost]
+        public IActionResult GetWorkloads(GetWorkloadsRequest request)
+        {
+            GetWorkloadsReponse result = new GetWorkloadsReponse();
+            if (request != null && request.Filter != null)
+            {
+                HandleException(() =>
+                {
+                    var repository = DALRepositories.GetWorkloadsRepository();
+                    var workloads = repository.GetForDatabase(request.DatabaseID, request.Filter.DateFrom, request.Filter.DateTo, onlyActive: true);
+                    result.Data = new List<WorkloadData>();
+                    foreach (var w in workloads)
+                    {
+                        result.Data.Add(Converter.Convert(w));
+                    }
+                    result.IsSuccess = result.Data != null;
+                }, ex => result.ErrorMessage = ex.Message);
+            }
+            return Json(result);
+        }
+
+        [Route("workload-create")]
+        [HttpPost]
+        public IActionResult GetWorkloads(WorkloadData workloadData)
+        {
+            BaseOperationResponse result = new BaseOperationResponse() { IsSuccess = false };
+            (bool isValid, string errorMessage) = WorkloadValidator.Validate(workloadData);
+            if (!isValid)
+            {
+                result.ErrorMessage = errorMessage;
+            }
+            else
+            {
+                HandleException(() =>
+                {
+                    var workload = Converter.CreateWorkload(workloadData);
+                    var repository = DALRepositories.GetWorkloadsRepository();
+                    repository.Create(workload);
+                    result.IsSuccess = true;
+                }, ex => result.ErrorMessage = ex.Message);
+            }
+            return Json(result);
+        }
+
+        [Route("workload-delete")]
+        [HttpPut]
+        public IActionResult DeleteWorkload(DeleteWorkloadRequest request)
+        {
+            BaseOperationResponse result = new BaseOperationResponse() { IsSuccess = false };
+            if (request != null)
+            {
+                HandleException(() =>
+                {
+                    var repository = DALRepositories.GetWorkloadsRepository();
+                    var workload = repository.GetByPrimaryKey(request.WorkloadID);
+                    if (workload != null)
+                    {
+                        if (workload.InactiveDate == null)
+                        {
+                            workload.InactiveDate = DateTime.Now;
+                            repository.Update(workload);
+                        }
+                        result.IsSuccess = true;
+                    }
+                }, ex => result.ErrorMessage = ex.Message); 
+            }
+            return Json(result);
+        }
+
         [Route("unused-objects")]
         [HttpPost]
         public IActionResult GetUnusedObjects(GetUnusedObjectsRequest request)

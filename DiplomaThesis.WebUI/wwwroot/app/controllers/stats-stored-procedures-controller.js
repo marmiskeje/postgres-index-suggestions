@@ -37,8 +37,8 @@
             $scope.viewModel.isLoading = true;
             var request = new Web.Data.StatsStoredProcedureRequest();
             request.storedProcedureID = $scope.viewModel.currentStoredProcedure.id;
-            request.filter.dateFrom = $scope.viewModel.dateFrom;
-            request.filter.dateTo = $scope.viewModel.dateTo;
+            request.filter.dateFrom = moment($scope.viewModel.dateFrom).format('YYYY-MM-DDTHH:mm:ss');
+            request.filter.dateTo = moment($scope.viewModel.dateTo).format('YYYY-MM-DDTHH:mm:ss');
             statisticsService.getStoredProcedureStats(request, function (response) {
                 $scope.viewModel.isLoading = false;
                 if (response.data == null) {

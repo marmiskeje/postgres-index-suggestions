@@ -35,8 +35,8 @@
             $scope.viewModel.isLoading = true;
             var request = new Web.Data.StatsStatementsRequest();
             request.databaseID = $rootScope.viewModel.currentDatabase.id;
-            request.filter.dateFrom = $scope.viewModel.dateFrom;
-            request.filter.dateTo = $scope.viewModel.dateTo;
+            request.filter.dateFrom = moment($scope.viewModel.dateFrom).format('YYYY-MM-DDTHH:mm:ss');
+            request.filter.dateTo = moment($scope.viewModel.dateTo).format('YYYY-MM-DDTHH:mm:ss');
             request.filter.commandType = $scope.viewModel.currentCommandType;
             statisticsService.getStatementsStats(request, function (response) {
                 $scope.viewModel.isLoading = false;

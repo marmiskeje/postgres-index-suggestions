@@ -62,8 +62,8 @@
             request.databaseID = $rootScope.viewModel.currentDatabase.id;
             var dateTo = moment();
             var dateFrom = moment(dateTo).add(-1 * $scope.viewModel.selectedPeriod, 'hours');
-            request.filter.dateFrom = dateFrom;
-            request.filter.dateTo = dateTo;
+            request.filter.dateFrom = dateFrom.format('YYYY-MM-DDTHH:mm:ss');
+            request.filter.dateTo = dateTo.format('YYYY-MM-DDTHH:mm:ss');
             statisticsService.getOverview(request, function (response) {
                 $scope.viewModel.isLoading = false;
                 if (response.data == null) {

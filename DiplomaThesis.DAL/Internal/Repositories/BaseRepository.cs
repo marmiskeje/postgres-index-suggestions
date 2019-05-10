@@ -72,7 +72,15 @@ namespace DiplomaThesis.DAL
                 }
                 return value;
             }
-            return loadFromDbFunc();
+            else
+            {
+                var result = loadFromDbFunc();
+                if (result != null)
+                {
+                    FillEntityGet(result);
+                }
+                return result;
+            }
         }
 
         protected virtual void FillEntityGet(TEntity entity)

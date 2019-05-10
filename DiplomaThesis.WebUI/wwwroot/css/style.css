@@ -202,3 +202,41 @@ md-tabs md-ink-bar {
     display: table-cell;
     vertical-align: middle;
 }
+
+.dtp table.dtp-picker-days tr > td > a.selected,
+.dtp table.dtp-picker-days tr > td > a.selected.hilite,
+.dtp div.dtp-date, .dtp div.dtp-time, .dtp .dtp-hand.on,
+.dtp .dtp-actual-meridien a.selected,
+.dtp .dtp-picker-time > a.dtp-select-hour.selected {
+    background: #1976D2 !important;
+}
+
+.dtp table.dtp-picker-days tr > td > a.hilite:not(.selected),
+.dtp div.dtp-actual-time.p60 span.selected {
+    color: #1976D2 !important;
+}
+
+.dtp div.dtp-year-btn, .dtp div.dtp-actual-year, .dtp div.dtp-actual-maxtime {
+    color: #BBDEFB !important;
+}
+
+.dtp > .dtp-content > .dtp-date-view > header.dtp-header {
+    background: #106cc8 !important;
+}
+
+md-menu-content.dtp-month-list {
+    background-color: #d0f0f0;
+}
+
+md-menu-content.dtp-year-list {
+    background-color: #d0f0f0;
+}
+
+code {
+    color: #1565C0;
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.preserve {
+    white-space: pre
+}

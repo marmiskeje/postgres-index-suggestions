@@ -67,6 +67,7 @@ Web.App.config(['$stateProvider', '$urlRouterProvider', '$translateProvider', '$
         url: "/analysis-workloads",
         controller: "AnalysisWorkloadsController",
         templateUrl: "/app/views/analysis-workloads.html",
+        params: { enforceLoading: null }
     });
     $stateProvider.state(Web.Constants.StateNames.ANALYSIS_WORKLOAD_DETAIL, {
         url: "/analysis-workload-detail",
@@ -88,12 +89,17 @@ Web.App.config(['$stateProvider', '$urlRouterProvider', '$translateProvider', '$
         url: "/analysis-workload-analysis-detail",
         controller: "AnalysisWorkloadAnalysisDetailController",
         templateUrl: "/app/views/analysis-workload-analysis-detail.html",
-        params: { workloadAnalysis: null}
+        params: { workloadAnalysis: null }
     });
     $stateProvider.state(Web.Constants.StateNames.ANALYSIS_UNUSED_DB_OBJECTS, {
         url: "/analysis-unused-db-objects",
         controller: "AnalysisUnusedDbObjectsController",
-        templateUrl: "/app/views/analysis-unused-db-objects.html",
+        templateUrl: "/app/views/analysis-unused-db-objects.html"
+    });
+    $stateProvider.state(Web.Constants.StateNames.HELP_DETAIL, {
+        url: "/help-detail",
+        controller: "HelpDetailController",
+        templateUrl: "/app/views/help-detail.html"
     });
     
     $translateProvider.useStaticFilesLoader({
@@ -112,6 +118,8 @@ Web.App.config(['$stateProvider', '$urlRouterProvider', '$translateProvider', '$
 Web.App.run(['$rootScope', '$state', '$translate', '$transitions', function ($rootScope, $state, $translate, $transitions) {
     $rootScope.viewModel = new Web.ViewModels.RootViewModel();
     $rootScope.actions = new Object();
+    $rootScope.services = new Object();
+    $rootScope.services.state = $state;
     $transitions.onBefore({}, function (transition) {
         if (transition.to().name != Web.Constants.StateNames.IMPLICIT) {
             if ($rootScope.viewModel.isLoading) { // global data are not loaded

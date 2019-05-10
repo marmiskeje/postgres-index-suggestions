@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using DiplomaThesis.Common;
 using DiplomaThesis.DAL.Contracts;
 using DiplomaThesis.DBMS.Contracts;
 using DiplomaThesis.DBMS.Postgres;
@@ -30,6 +30,57 @@ namespace DiplomaThesis.WebUI
             DatabaseData result = new DatabaseData();
             result.ID = source.ID;
             result.Name = source.Name;
+            return result;
+        }
+
+        internal WorkloadData Convert(Workload source)
+        {
+            WorkloadData result = new WorkloadData();
+            result.CreatedDate = source.CreatedDate;
+            result.DatabaseID = source.DatabaseID;
+            result.Definition = new WorkloadDefinitionData();
+            result.Definition.ForbiddenApplications = new HashSet<string>();
+            result.Definition.ForbiddenDateTimeSlots = new List<WorkloadDateTimeSlotData>();
+            result.Definition.ForbiddenRelations = new HashSet<uint>();
+            result.Definition.ForbiddenUsers = new HashSet<string>();
+            if (source.Definition != null)
+            {
+                if (source.Definition.Applications != null)
+                {
+                    result.Definition.ForbiddenApplications.AddRange(source.Definition.Applications.ForbiddenValues);
+                }
+                if (source.Definition.DateTimeSlots != null)
+                {
+                    foreach (var slot in source.Definition.DateTimeSlots.ForbiddenValues)
+                    {
+                        result.Definition.ForbiddenDateTimeSlots.Add(Convert(slot));
+                    }
+                }
+                if (source.Definition.Relations != null)
+                {
+                    result.Definition.ForbiddenRelations.AddRange(source.Definition.Relations.ForbiddenValues);
+                }
+                if (source.Definition.Users != null)
+                {
+                    result.Definition.ForbiddenUsers.AddRange(source.Definition.Users.ForbiddenValues);
+                }
+                if (source.Definition.QueryThresholds != null)
+                {
+                    result.Definition.StatementMinDurationInMs = System.Convert.ToInt32(source.Definition.QueryThresholds.MinDuration?.TotalMilliseconds ?? 0.0);
+                    result.Definition.StatementMinExectutionCount = System.Convert.ToInt32(source.Definition.QueryThresholds.MinExectutionCount ?? 0);
+                }
+            }
+            result.ID = source.ID;
+            result.Name = source.Name;
+            return result;
+        }
+
+        private WorkloadDateTimeSlotData Convert(WorkloadDateTimeSlot source)
+        {
+            WorkloadDateTimeSlotData result = new WorkloadDateTimeSlotData();
+            result.DayOfWeek = source.DayOfWeek;
+            result.EndTime = source.EndTime;
+            result.StartTime = source.StartTime;
             return result;
         }
 

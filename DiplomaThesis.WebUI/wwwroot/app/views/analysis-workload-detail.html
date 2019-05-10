@@ -17,39 +17,40 @@
         <div flex="33">
             <md-input-container style="min-width:300px">
                 <label>Name</label>
-                <input ng-model="viewModel.Workload.Name" ng-readonly="viewModel.isReadonly">
+                <input ng-model="viewModel.workload.name" ng-change="viewModel.validate()" ng-readonly="viewModel.isReadonly" required>
             </md-input-container>
         </div>
         <div flex="33">
             <md-input-container style="min-width:300px">
                 <label>Min statement duration (ms)</label>
-                <input type="number" min="0" ng-model="viewModel.Workload.Tresholds.MinDuration" ng-readonly="viewModel.isReadonly">
+                <input type="number" min="0" ng-change="viewModel.validate()" change="viewModel.validate()"
+                       ng-model="viewModel.workload.definition.statementMinDurationInMs" ng-readonly="viewModel.isReadonly">
             </md-input-container>
         </div>
         <div flex="33">
             <md-input-container style="min-width:300px">
                 <label>Min execution count</label>
-                <input type="number" min="0" ng-model="viewModel.Workload.Tresholds.MinExectutionCount" ng-readonly="viewModel.isReadonly">
+                <input type="number" min="0" ng-change="viewModel.validate()" ng-model="viewModel.workload.definition.statementMinExectutionCount" ng-readonly="viewModel.isReadonly">
             </md-input-container>
         </div>
     </div>
     <div><br /></div>
     <div>
         <div>Forbidden relations:</div>
-        <md-chips ng-model="viewModel.Workload.ForbiddenRelations" md-autocomplete-snap
-                  md-require-match="true"
+        <md-chips ng-model="viewModel.forbiddenRelations" md-autocomplete-snap
+                  md-require-match="true" ng-change="viewModel.validate()"
                   input-aria-label="Forbidden Relations" readonly="viewModel.isReadonly">
-            <md-autocomplete md-selected-item="viewModel.ForbiddenRelationToAdd"
-                             md-search-text="viewModel.ForbiddenRelationSearch"
+            <md-autocomplete md-selected-item="viewModel.forbiddenRelationToAdd"
+                             md-search-text="viewModel.forbiddenRelationSearch"
                              md-no-cache="true"
-                             md-items="item in actions.searchRelation(viewModel.ForbiddenRelationSearch)"
+                             md-items="item in actions.searchRelation(viewModel.forbiddenRelationSearch)"
                              input-aria-describedby="autocompleteTitle"
                              placeholder="Type in relation name...">
-                <span>{{item.FullName}}</span>
+                <span>{{item.fullName}}</span>
             </md-autocomplete>
             <md-chip-template>
                 <span>
-                    {{$chip.FullName}}
+                    {{$chip.fullName}}
                 </span>
             </md-chip-template>
         </md-chips>
@@ -57,14 +58,14 @@
     <div><br /></div>
     <div>
         <div>Forbidden users:</div>
-        <md-chips ng-model="viewModel.Workload.ForbiddenUsers" placeholder="Type in username..."
+        <md-chips ng-model="viewModel.workload.definition.forbiddenUsers" placeholder="Type in username..." ng-change="viewModel.validate()"
                   input-aria-label="Forbidden Relations" readonly="viewModel.isReadonly">
         </md-chips>
     </div>
     <div><br /></div>
     <div>
         <div>Forbidden applications:</div>
-        <md-chips ng-model="viewModel.Workload.ForbiddenApplications" placeholder="Type in application name..."
+        <md-chips ng-model="viewModel.workload.definition.forbiddenApplications" placeholder="Type in application name..." ng-change="viewModel.validate()"
                   input-aria-label="Forbidden Relations" readonly="viewModel.isReadonly">
         </md-chips>
     </div>
@@ -72,46 +73,50 @@
     <div>
         <div>Forbidden datetime slots:</div>
         <div layout="row">
-            <md-list>
-                <md-list-item ng-repeat="item in viewModel.Workload.ForbiddenDateTimeSlots">
+            <md-list style="min-width: 300px">
+                <md-list-item ng-repeat="item in viewModel.workload.definition.forbiddenDateTimeSlots">
                     <div class="md-list-item-text" layout="row" layout-align="start center">
-                        <div style="min-width: 130px">{{item.DayName}}:</div>
-                        <div>{{item.StartTime}} - {{item.EndTime}}</div>
+                        <div style="min-width: 130px">{{$parent.viewModel.days[item.dayOfWeek].name}}:</div>
+                        <div>{{item.startTime}} - {{item.endTime}}</div>
                         <div style="padding-left: 10px" ng-hide="viewModel.isReadonly">
-                            <md-button class="md-fab md-primary md-tiny">
+                            <md-button class="md-fab md-primary md-tiny" ng-disabled="viewModel.isLoading" ng-click="actions.removeForbiddenDateTimeSlot(item)">
                                 <md-tooltip>Remove</md-tooltip>
-                                <md-icon><i class="material-icons">remove</i></md-icon></md-button>
+                                <md-icon><i class="material-icons">remove</i></md-icon>
+                            </md-button>
                         </div>
                     </div>
                     <md-divider></md-divider>
                 </md-list-item>
+                <div style="color: rgba(0,0,0,0.18)" ng-show="!viewModel.workload.definition.forbiddenDateTimeSlots.length">
+                    <span>None</span>
+                </div>
             </md-list>
             <div style="width:1px; background: rgba(0,0,0,0.12)"></div>
             <div ng-hide="viewModel.isReadonly">
                 <md-content style="padding: 15px; min-width: 250px">
                     <div layout="column">
                         <div>
-                            <md-select ng-model="viewModel.ForbiddenDateTimeSlotDay" required>
-                                <md-option ng-repeat="item in viewModel.DayNames" ng-value="item">
-                                    {{item}}
+                            <md-select ng-model="viewModel.forbiddenDateTimeSlotDay" required ng-change="viewModel.validateForbiddenSlot()" aria-label="forbiddenDateTimeSlotDay">
+                                <md-option ng-repeat="item in viewModel.days" ng-value="item">
+                                    {{item.name}}
                                 </md-option>
                             </md-select>
                         </div>
                         <div layout="row" layout-aligen="center center">
                             <md-input-container style="min-width: 100px">
                                 <label>Start time</label>
-                                <input type="time" ng-model="viewModel.ForbiddenDateTimeSlotStartTime" step="1" required>
+                                <input type="time" ng-model="viewModel.forbiddenDateTimeSlotStartTime" step="1" required ng-change="viewModel.validateForbiddenSlot()">
                             </md-input-container>
                             <div style="width: 30px; text-align: center">
                                 <div style="margin-top: 7px">-</div>
                             </div>
                             <md-input-container style="min-width: 100px">
                                 <label>End time</label>
-                                <input type="time" ng-model="viewModel.ForbiddenDateTimeSlotStartTime" step="1" required>
+                                <input type="time" ng-model="viewModel.forbiddenDateTimeSlotEndTime" step="1" required ng-change="viewModel.validateForbiddenSlot()">
                             </md-input-container>
                         </div>
                         <div layout="column" layout-aligen="center center">
-                            <md-button class="md-raised">
+                            <md-button class="md-raised" ng-disabled="!viewModel.isValidForbiddenDateTimeSlot" ng-click="actions.addForbiddenDateTimeSlot()">
                                 <i style="vertical-align: middle;" class="material-icons">keyboard_arrow_left</i>
                                 <span>Add</span>
                             </md-button>
@@ -129,7 +134,7 @@
         <br />
         <br />
         <div flex layout="column" layout-align="center center">
-            <md-button class="md-primary md-raised">Create</md-button>
+            <md-button ng-disabled="viewModel.isLoading || !viewModel.isValid" class="md-primary md-raised" ng-click="actions.createWorkload()">Create</md-button>
         </div>
     </div>
 </div>

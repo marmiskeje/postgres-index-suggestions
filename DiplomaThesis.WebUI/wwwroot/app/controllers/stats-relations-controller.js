@@ -92,8 +92,8 @@
             $scope.viewModel.isLoading = true;
             var request = new Web.Data.StatsRelationRequest();
             request.relationID = $scope.viewModel.currentRelation.id;
-            request.filter.dateFrom = $scope.viewModel.dateFrom;
-            request.filter.dateTo = $scope.viewModel.dateTo;
+            request.filter.dateFrom = moment($scope.viewModel.dateFrom).format('YYYY-MM-DDTHH:mm:ss');
+            request.filter.dateTo = moment($scope.viewModel.dateTo).format('YYYY-MM-DDTHH:mm:ss');
             statisticsService.getRelationStats(request, function (response) {
                 $scope.viewModel.isLoading = false;
                 if (response.data == null) {

@@ -4,12 +4,46 @@
             <span>{{'ANALYSIS_WORKLOADS.PAGE_SUBTITLE' | translate}}</span>
         </div>
         <div>
-            <md-button class="md-primary md-raised" ng-click="actions.showWorkloadDetail(null)">Create new</md-button>
+            <input mdc-datetime-picker="" auto-ok="true" edit-input="true" click-outside-to-close="true" date="true" time="true" type="text" required ng-change="viewModel.validate()"
+                   placeholder="Date from" show-todays-date="" minutes="true" min-date="date" show-icon="true"
+                   ng-model="viewModel.dateFrom" class=" dtp-no-msclear dtp-input md-input">
+        </div>
+        <div>
+            <input mdc-datetime-picker="" auto-ok="true" edit-input="true" click-outside-to-close="true" date="true" time="true" type="text" required ng-change="viewModel.validate()"
+                   placeholder="Date to" show-todays-date="" minutes="true" min-date="date" show-icon="true"
+                   ng-model="viewModel.dateTo" class=" dtp-no-msclear dtp-input md-input">
+        </div>
+        <div>
+            <md-button ng-disabled="viewModel.isLoading || !viewModel.isValid" ng-click="actions.refreshData(true)" class="md-primary md-raised">Load</md-button>
+        </div>
+        <div flex="10">
+
+        </div>
+        <div>
+            <md-button ng-disabled="viewModel.isLoading" class="md-primary md-raised" ng-click="actions.showWorkloadDetail(null)">Create</md-button>
         </div>
     </div>
 </div>
 <div class="mainContentBody" layout="column">
-    <div>
-        <div style="min-height: 500px" ui-grid="gridAnalysisWorkloads" ui-grid-pagination ui-grid-resize-columns class="grid"></div>
+    <div ng-hide="viewModel.isLoading">
+        <div style="min-height: 500px" ui-grid="gridAnalysisWorkloads" ui-grid-pagination ui-grid-resize-columns class="grid">
+            <div class="no-rows" ng-show="!gridAnalysisWorkloads.data.length">
+                <div class="msg">
+                    <span>No data available</span>
+                </div>
+            </div>
+        </div>
+        <div layout="row" layout-align="end center">
+            <md-button class="md-raised" ng-disabled="!viewModel.isValid || viewModel.isLoading" ng-click="gridAnalysisWorkloadsApi.pagination.previousPage()">
+                Previous page
+            </md-button>
+            <p>{{ gridAnalysisWorkloadsApi.pagination.getPage() }} / {{ gridAnalysisWorkloadsApi.pagination.getTotalPages() }}</p>
+            <md-button class="md-raised" ng-disabled="!viewModel.isValid || viewModel.isLoading" ng-click="gridAnalysisWorkloadsApi.pagination.nextPage()">
+                Next page
+            </md-button>
+        </div>
+    </div>
+    <div ng-hide="!viewModel.isLoading" layout="row" layout-align="space-around">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
     </div>
 </div>

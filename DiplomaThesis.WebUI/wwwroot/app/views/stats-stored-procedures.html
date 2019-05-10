@@ -14,12 +14,12 @@
             </md-input-container>
         </div>
         <div>
-            <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required ng-change="viewModel.validate()"
+            <input mdc-datetime-picker="" auto-ok="true" edit-input="true" click-outside-to-close="true" date="true" time="true" type="text" required ng-change="viewModel.validate()"
                    placeholder="Date from" show-todays-date="" minutes="true" min-date="date" show-icon="true"
                    ng-model="viewModel.dateFrom" class=" dtp-no-msclear dtp-input md-input">
         </div>
         <div>
-            <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required ng-change="viewModel.validate()"
+            <input mdc-datetime-picker="" auto-ok="true" edit-input="true" click-outside-to-close="true" date="true" time="true" type="text" required ng-change="viewModel.validate()"
                    placeholder="Date to" show-todays-date="" minutes="true" min-date="date" show-icon="true"
                    ng-model="viewModel.dateTo" class=" dtp-no-msclear dtp-input md-input">
         </div>

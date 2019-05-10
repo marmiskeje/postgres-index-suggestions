@@ -27,7 +27,7 @@
         <div style="padding-left:15px">
             <md-input-container>
                 <label>Period from:</label>
-                <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required
+                <input mdc-datetime-picker="" auto-ok="true" edit-input="true" click-outside-to-close="true" date="true" time="true" type="text" required
                        placeholder="Period from" show-todays-date="" minutes="true" min-date="date" show-icon="false"
                        ng-model="viewModel.dateFrom" class=" dtp-no-msclear md-input">
             </md-input-container>
@@ -35,7 +35,7 @@
         <div style="padding-left:15px">
             <md-input-container>
                 <label>Period to:</label>
-                <input mdc-datetime-picker="" date="true" time="true" type="text" id="datetime" required
+                <input mdc-datetime-picker="" auto-ok="true" edit-input="true" click-outside-to-close="true" date="true" time="true" type="text" required
                        placeholder="Period to" show-todays-date="" minutes="true" min-date="date" show-icon="false"
                        ng-model="viewModel.dateTo" class=" dtp-no-msclear md-input">
             </md-input-container>
