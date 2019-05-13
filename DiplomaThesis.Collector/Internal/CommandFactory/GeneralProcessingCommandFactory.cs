@@ -45,7 +45,7 @@ namespace DiplomaThesis.Collector
 
         public IChainableCommand LoadDatabaseInfoForLogEntryCommand(LogEntryProcessingContext context)
         {
-            return new LoadDatabaseInfoForLogEntryCommand(log, context, dbmsRepositories.GetDatabasesRepository());
+            return new LoadDatabaseInfoForLogEntryCommand(log, context, dbmsRepositories.GetDatabasesRepository(), dalRepositories.GetSettingPropertiesRepository());
         }
 
         public IChainableCommand PersistDataAccumulatorsCommand()

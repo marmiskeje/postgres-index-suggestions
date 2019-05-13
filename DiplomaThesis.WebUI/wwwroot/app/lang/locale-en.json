@@ -42,5 +42,8 @@
   },
   "HELP_DETAIL": {
     "PAGE_SUBTITLE": "Help"
+  },
+  "SETTINGS_DETAIL": {
+    "PAGE_SUBTITLE": "Settings"
   }
 }

@@ -3,6 +3,7 @@ using System;
 using DiplomaThesis.Common;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace DiplomaThesis.WebUI
 {
@@ -44,6 +45,54 @@ namespace DiplomaThesis.WebUI
                 result.Definition.QueryThresholds.MinExectutionCount = source.Definition.StatementMinExectutionCount;
             }
             result.Name = source.Name;
+            return result;
+        }
+
+        internal ConfigurationCollectorData Convert(CollectorConfiguration source)
+        {
+            ConfigurationCollectorData result = new ConfigurationCollectorData();
+            if (source != null)
+            {
+                if (source.Databases != null)
+                {
+                    foreach (var d in source.Databases.Values)
+                    {
+                        result.Databases.Add(Convert(d));
+                    }
+                }
+            }
+            return result;
+        }
+
+        private ConfigurationCollectorDatabaseData Convert(CollectorDatabaseConfiguration source)
+        {
+            ConfigurationCollectorDatabaseData result = new ConfigurationCollectorDatabaseData();
+            result.DatabaseID = source.DatabaseID;
+            result.IsEnabledGeneralCollection = source.IsEnabledGeneralCollection;
+            result.IsEnabledStatementCollection = source.IsEnabledStatementCollection;
+            return result;
+        }
+
+        internal ConfigurationReportsData Convert(ReportingSettings source)
+        {
+            ConfigurationReportsData result = new ConfigurationReportsData();
+            if (source != null)
+            {
+                result.EmailAddresses = String.Join(", ", source.Recipients);
+            }
+            return result;
+        }
+
+        internal ConfigurationSmtpData Convert(SmtpConfiguration source)
+        {
+            ConfigurationSmtpData result = new ConfigurationSmtpData();
+            if (source != null)
+            {
+                result.Host = source.SmtpHost;
+                result.Password = null;
+                result.Port = source.SmtpPort;
+                result.Username = source.SmtpUsername;
+            }
             return result;
         }
 

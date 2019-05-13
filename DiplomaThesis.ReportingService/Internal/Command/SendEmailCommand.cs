@@ -24,14 +24,17 @@ namespace DiplomaThesis.ReportingService
         protected override void OnExecute()
         {
             var configuration = settingPropertiesRepository.GetObject<SmtpConfiguration>(SettingPropertyKeys.SMTP_CONFIGURATION);
-            if (configuration != null)
+            if (configuration != null && !String.IsNullOrEmpty(configuration.SmtpHost)
+                && !String.IsNullOrEmpty(configuration.SmtpPasswordCipher) && !String.IsNullOrEmpty(configuration.SmtpUsername)
+                && configuration.SmtpPort > 0)
             {
                 using (SmtpClient client = new SmtpClient(configuration.SmtpHost, configuration.SmtpPort))
                 {
                     client.EnableSsl = true;
-                    if (!String.IsNullOrEmpty(configuration.SmtpUsername) && !String.IsNullOrEmpty(configuration.SmtpPassword))
+                    string password = Common.Cryptography.EncryptionSupport.Instance.Decrypt(configuration.SmtpPasswordCipher);
+                    if (!String.IsNullOrEmpty(configuration.SmtpUsername) && !String.IsNullOrEmpty(password))
                     {
-                        client.Credentials = new NetworkCredential(configuration.SmtpUsername, configuration.SmtpPassword);
+                        client.Credentials = new NetworkCredential(configuration.SmtpUsername, password);
                     }
                     else
                     {

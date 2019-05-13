@@ -13,11 +13,14 @@ namespace DiplomaThesis.Collector
         private readonly ILog log;
         private readonly LogEntryProcessingContext context;
         private readonly IDatabasesRepository databasesRepository;
-        public LoadDatabaseInfoForLogEntryCommand(ILog log, LogEntryProcessingContext context, IDatabasesRepository databasesRepository)
+        private readonly DAL.Contracts.ISettingPropertiesRepository settingPropertiesRepository;
+        public LoadDatabaseInfoForLogEntryCommand(ILog log, LogEntryProcessingContext context, IDatabasesRepository databasesRepository,
+                                                  DAL.Contracts.ISettingPropertiesRepository settingPropertiesRepository)
         {
             this.log = log;
             this.context = context;
             this.databasesRepository = databasesRepository;
+            this.settingPropertiesRepository = settingPropertiesRepository;
         }
         protected override void OnExecute()
         {
@@ -25,6 +28,15 @@ namespace DiplomaThesis.Collector
             if (dbInfo != null)
             {
                 context.DatabaseID = dbInfo.ID;
+                var collectorConfiguration = settingPropertiesRepository.GetObject<DAL.Contracts.CollectorConfiguration>(DAL.Contracts.SettingPropertyKeys.COLLECTOR_CONFIGURATION, true);
+                if (collectorConfiguration != null && collectorConfiguration.Databases.ContainsKey(dbInfo.ID))
+                {
+                    context.DatabaseCollectingConfiguration = collectorConfiguration.Databases[dbInfo.ID];
+                }
+                else
+                {
+                    context.DatabaseCollectingConfiguration = new DAL.Contracts.CollectorDatabaseConfiguration() { DatabaseID = dbInfo.ID };
+                }
             }
             else
             {

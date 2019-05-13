@@ -131,6 +131,7 @@
                 $scope.viewModel.currentRelation = $scope.viewModel.allRelations[0];
             }
         }
+        $scope.actions.onCurrentRelationChanged();
     }
     $scope.actions.onCurrentRelationChanged = function () {
         $scope.viewModel.allIndices = [];

@@ -16,3 +16,4 @@ Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSIS_CREATE = "analysis-workload-
 Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSIS_DETAIL = "analysis-workload-analysis-detail";
 Web.Constants.StateNames.ANALYSIS_UNUSED_DB_OBJECTS = "analysis-unused-db-objects";
 Web.Constants.StateNames.HELP_DETAIL = "help-detail";
+Web.Constants.StateNames.SETTINGS_DETAIL = "settings-detail";

@@ -1,0 +1,106 @@
+﻿<div class="mainContentMenu" layout="row">
+    <div class="mainContentMenuBody" layout="row" flex layout-align="start center">
+        <div flex="20" layout="row" layout-align="start center">
+            <md-button class="btn-nav-menu" style="min-width: inherit" ng-click="actions.goBack()">
+                <i class="material-icons">keyboard_backspace</i>
+            </md-button>
+            <div style="width: 7px"></div>
+            <span>{{'SETTINGS_DETAIL.PAGE_SUBTITLE' | translate}}</span>
+        </div>
+    </div>
+</div>
+<div class="mainContentBody" layout="column" flex>
+    <md-content flex ng-hide="viewModel.isLoading">
+        <div ng-hide="!viewModel.isUpdating" style="position:absolute; background: rgba(0,0,0,0.03); width:100%; height:100%; z-index:999"></div>
+        <md-tabs class="md-primary md-dynamic-height">
+            <md-tab label="Collector">
+                <md-content class="md-padding">
+                    <div layout="column">
+                        <h2>Databases:</h2>
+                        <md-grid-list md-cols-gt-md="5" md-cols="2" md-cols-md="3"
+                                      md-row-height-gt-md="4:3" md-row-height="4:3"
+                                      md-gutter-gt-md="16px" md-gutter-md="8px" md-gutter="4px">
+                            <md-grid-tile ng-repeat="db in viewModel.configuration.collector.databases" style="border: 1px solid rgba(0,0,0,0.12)">
+                                <div layout="column" style="text-align:center">
+                                    <div layout="column" layout-align="center center" class="infoContainer">
+                                        <md-icon><i class="material-icons">storage</i></md-icon>
+                                        <h3>{{db.name}}</h3>
+                                    </div>
+
+                                    <md-checkbox ng-model="db.isEnabledGeneralCollection" ng-change="viewModel.validate()">
+                                        <span>General statistics</span>
+                                        <md-tooltip>Relation, mat. views, indices, stored procedures statistics collection</md-tooltip>
+                                    </md-checkbox>
+                                    <md-checkbox ng-model="db.isEnabledStatementCollection" ng-change="viewModel.validate()">
+                                        <span>Statement statistics</span>
+                                        <md-tooltip>Statement statistics collection</md-tooltip>
+                                    </md-checkbox>
+                                </div>
+                            </md-grid-tile>
+                        </md-grid-list>
+                        <div style="height: 10px"></div>
+                        <div layout="column" layout-align="center center" class="infoContainer">
+                            <md-icon><i class="material-icons">info</i></md-icon>
+                            <span>It may take up to 5 minutes before these changes take effect.</span>
+                        </div>
+                    </div>
+                </md-content>
+            </md-tab>
+            <md-tab label="Reports">
+                <md-content class="md-padding" style="margin-top:10px">
+                    <div layout="row">
+                        <md-input-container style="min-width:300px">
+                            <label>Email addresses</label>
+                            <input ng-model="viewModel.configuration.reports.emailAddresses" ng-change="viewModel.validate()" />
+                            <md-tooltip>Type in email addresses separated by comma.</md-tooltip>
+                        </md-input-container>
+                    </div>
+                    <br />
+                    <div layout="column" layout-align="center center" class="infoContainer">
+                        <md-icon><i class="material-icons">info</i></md-icon>
+                        <span>Reports are sent daily at 2:00 AM.</span>
+                    </div>
+                </md-content>
+            </md-tab>
+            <md-tab label="SMTP">
+                <md-content class="md-padding" style="margin-top:10px">
+                    <div layout="row">
+                        <md-input-container style="min-width:300px">
+                            <label>Host</label>
+                            <input ng-model="viewModel.configuration.smtp.host" ng-change="viewModel.validate()">
+                        </md-input-container>
+                        <div style="width:10px"></div>
+                        <md-input-container style="min-width:300px">
+                            <label>Port</label>
+                            <input type="number" min="1" max="65535" ng-init="587" ng-change="viewModel.validate()"
+                                   ng-model="viewModel.configuration.smtp.port">
+                        </md-input-container>
+                    </div>
+                    <div layout="row">
+                        <md-input-container style="min-width:300px">
+                            <label>Smtp username</label>
+                            <input ng-model="viewModel.configuration.smtp.username" ng-change="viewModel.validate()">
+                        </md-input-container>
+                        <div style="width:10px"></div>
+                        <md-input-container style="min-width:300px">
+                            <label>Smtp password</label>
+                            <input type="password" ng-model="viewModel.configuration.smtp.password" ng-change="viewModel.validate()">
+                        </md-input-container>
+                    </div>
+                    <br />
+                    <div layout="column" layout-align="center center" class="infoContainer">
+                        <md-icon><i class="material-icons">info</i></md-icon>
+                        <span>Leave smtp username and password empty for default network credentials.</span>
+                    </div>
+                </md-content>
+            </md-tab>
+        </md-tabs>
+    </md-content>
+    <md-divider ng-hide="viewModel.isLoading"></md-divider>
+    <div ng-hide="viewModel.isLoading" layout="column" layout-align="center center">
+        <md-button ng-disabled="viewModel.isLoading || !viewModel.isValid" ng-click="actions.saveData()" class="md-primary md-raised">Save</md-button>
+    </div>
+    <div ng-hide="!(viewModel.isLoading || viewModel.isUpdating)" layout="row" layout-align="space-around">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+    </div>
+</div>

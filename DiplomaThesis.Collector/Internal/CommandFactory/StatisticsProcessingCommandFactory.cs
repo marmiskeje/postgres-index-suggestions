@@ -39,7 +39,7 @@ namespace DiplomaThesis.Collector
 
         public IChainableCommand LoadDatabasesForTotalStatisticsCommand(TotalStatisticsCollectNextSampleContext context)
         {
-            return new LoadDatabasesForTotalStatisticsCommand(context, dbmsRepositories.GetDatabasesRepository());
+            return new LoadDatabasesForTotalStatisticsCommand(context, dbmsRepositories.GetDatabasesRepository(), dalRepositories.GetSettingPropertiesRepository());
         }
 
         public IChainableCommand PersistDataAccumulatorsCommand()

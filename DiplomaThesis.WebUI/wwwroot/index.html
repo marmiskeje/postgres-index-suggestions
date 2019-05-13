@@ -68,12 +68,14 @@
     <script type="text/javascript" src="app/viewmodel/stats-statement-detail-view-model.js"></script>
     <script type="text/javascript" src="app/viewmodel/analysis-workloads-view-model.js"></script>
     <script type="text/javascript" src="app/viewmodel/analysis-workload-detail-view-model.js"></script>
+    <script type="text/javascript" src="app/viewmodel/settings-detail-view-model.js"></script>
     <!--services-->
     <script type="text/javascript" src="app/services/drawing-service.js"></script>
     <script type="text/javascript" src="app/services/notifications-service.js"></script>
     <script type="text/javascript" src="app/services/entities-service.js"></script>
     <script type="text/javascript" src="app/services/statistics-service.js"></script>
     <script type="text/javascript" src="app/services/analysis-service.js"></script>
+    <script type="text/javascript" src="app/services/settings-service.js"></script>
     <!--controllers-->
     <script type="text/javascript" src="app/controllers/root-controller.js"></script>
     <script type="text/javascript" src="app/controllers/stats-overview-controller.js"></script>
@@ -89,10 +91,11 @@
     <script type="text/javascript" src="app/controllers/analysis-workload-analysis-detail.js"></script>
     <script type="text/javascript" src="app/controllers/analysis-unused-db-objects-controller.js"></script>
     <script type="text/javascript" src="app/controllers/help-detail-controller.js"></script>
+    <script type="text/javascript" src="app/controllers/settings-detail-controller.js"></script>
 </head>
 <body layout="column" id="pageBody">
-    <div ng-hide="!viewModel.isLoading" layout="row" layout-align="space-around">
-        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+    <div ng-hide="!viewModel.isLoading" layout="row" layout-align="center center" flex>
+        <md-progress-linear style="max-width:300px" md-mode="determinate" value="{{viewModel.initializationProgress}}"></md-progress-linear>
     </div>
     <div ng-hide="viewModel.isLoading" layout="row" class="header" layout-align="start center">
         <div flex="15">

@@ -15,7 +15,6 @@ namespace DiplomaThesis.Collector
         public IExecutableCommand TotalStatisticsCollectNextSampleChain(TotalStatisticsCollectNextSampleContext context)
         {
             CommandChainCreator chain = new CommandChainCreator();
-            // TODO: load only filtered databases
             chain.Add(commands.LoadDatabasesForTotalStatisticsCommand(context));
             chain.Add(commands.CollectTotalDatabaseStatisticsCommand(context));
             chain.Add(commands.PublishTotalDatabaseStatisticsCommand(context));

@@ -101,6 +101,11 @@ Web.App.config(['$stateProvider', '$urlRouterProvider', '$translateProvider', '$
         controller: "HelpDetailController",
         templateUrl: "/app/views/help-detail.html"
     });
+    $stateProvider.state(Web.Constants.StateNames.SETTINGS_DETAIL, {
+        url: "/settings-detail",
+        controller: "SettingsDetailController",
+        templateUrl: "/app/views/settings-detail.html"
+    });
     
     $translateProvider.useStaticFilesLoader({
         prefix: 'app/lang/locale-',

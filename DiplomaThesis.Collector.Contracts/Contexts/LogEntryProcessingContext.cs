@@ -9,6 +9,7 @@ namespace DiplomaThesis.Collector.Contracts
     {
         public LoggedEntry Entry { get; set; }
         public uint DatabaseID { get; set; }
+        public DAL.Contracts.CollectorDatabaseConfiguration DatabaseCollectingConfiguration { get; set; }
         public LogEntryStatementData StatementData { get; private set; }
         public QueryPlanNode QueryPlan { get; set; }
         public QueryTreeData QueryTree { get; set; }

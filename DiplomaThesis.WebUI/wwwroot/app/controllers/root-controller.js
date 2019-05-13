@@ -76,8 +76,9 @@
     }
     if ($state.current.data == null) {
         $state.current.data = $rootScope.viewModel;
+        $rootScope.viewModel.initializationProgress = 0;
         $scope.actions.loadDatabases().then(function (databases) {
-
+            $rootScope.viewModel.initializationProgress = 10;
             if (databases != null) {
                 $rootScope.viewModel.allDatabases = [];
                 for (var i = 0; i < databases.length; i++) {
@@ -86,8 +87,9 @@
                 if ($rootScope.viewModel.allDatabases.length > 0) {
                     $rootScope.viewModel.currentDatabase = $rootScope.viewModel.allDatabases[0];
                 }
-
+                $rootScope.viewModel.initializationProgress = 30;
                 $scope.actions.loadRelations().then(function (relationsPerDatabase) {
+                    $rootScope.viewModel.initializationProgress = 40;
                     if (relationsPerDatabase) {
                         $rootScope.viewModel.databaseRelations = {};
                         $rootScope.viewModel.allRelations = [];
@@ -99,7 +101,9 @@
                                 $rootScope.viewModel.allRelations[relation.id] = relation;
                             }
                         }
+                        $rootScope.viewModel.initializationProgress = 50;
                         $scope.actions.loadIndices().then(function (indicesPerRelation) {
+                            $rootScope.viewModel.initializationProgress = 60;
                             if (indicesPerRelation) {
                                 $rootScope.viewModel.relationIndices = {};
                                 for (var relationId in indicesPerRelation) {
@@ -110,7 +114,9 @@
                                         $rootScope.viewModel.allIndices[index.id] = index;
                                     }
                                 }
+                                $rootScope.viewModel.initializationProgress = 75;
                                 $scope.actions.loadStoredProcedures().then(function (proceduresPerDatabase) {
+                                    $rootScope.viewModel.initializationProgress = 99;
                                     if (proceduresPerDatabase) {
                                         $rootScope.viewModel.databaseStoredProcedures = {};
                                         for (var databaseId in proceduresPerDatabase) {
@@ -119,8 +125,9 @@
                                                 $rootScope.viewModel.databaseStoredProcedures[databaseId].push(proceduresPerDatabase[databaseId][i]);
                                             }
                                         }
+                                        $rootScope.viewModel.initializationProgress = 100;
                                         $rootScope.viewModel.isLoading = false;
-                                        $state.go(Web.Constants.StateNames.HELP_DETAIL);
+                                        $state.go(Web.Constants.StateNames.SETTINGS_DETAIL);
                                     }
                                 });
                             }

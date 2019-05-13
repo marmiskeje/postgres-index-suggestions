@@ -18,6 +18,59 @@ namespace DiplomaThesis.WebUI
                 return String.Format("{0}.{1}", relation?.SchemaName ?? "UnknownSchema", relation?.Name ?? "UnknownRelation");
             }
         }
+        internal CollectorConfiguration CreateCollectorConfiguration(ConfigurationCollectorData source)
+        {
+            CollectorConfiguration result = new CollectorConfiguration();
+            if (source.Databases.Count > 0)
+            {
+                foreach (var d in source.Databases)
+                {
+                    result.Databases.Add(d.DatabaseID, Convert(d));
+                }
+            }
+            return result;
+        }
+
+        private CollectorDatabaseConfiguration Convert(ConfigurationCollectorDatabaseData source)
+        {
+            CollectorDatabaseConfiguration result = new CollectorDatabaseConfiguration();
+            result.DatabaseID = source.DatabaseID;
+            result.IsEnabledGeneralCollection = source.IsEnabledGeneralCollection;
+            result.IsEnabledStatementCollection = source.IsEnabledStatementCollection;
+            return result;
+        }
+
+        internal ReportingSettings CreateReportingSettings(ConfigurationReportsData source)
+        {
+            ReportingSettings result = new ReportingSettings();
+            if (!String.IsNullOrWhiteSpace(source.EmailAddresses))
+            {
+                var emails = source.EmailAddresses.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim());
+                if (emails.Count() > 0)
+                {
+                    result.Recipients.AddRange(emails);
+                }
+            }
+            return result;
+        }
+
+        internal SmtpConfiguration CreateSmtpConfiguration(ConfigurationSmtpData source, SmtpConfiguration original)
+        {
+            SmtpConfiguration result = new SmtpConfiguration();
+            result.SmtpHost = source.Host;
+            if (source.Password != null)
+            {
+                result.SmtpPasswordCipher = Common.Cryptography.EncryptionSupport.Instance.Encrypt(source.Password);
+            }
+            else
+            {
+                result.SmtpPasswordCipher = original?.SmtpPasswordCipher;
+            }
+            result.SmtpPort = source.Port;
+            result.SmtpUsername = source.Username;
+            result.SystemEmailSender = original?.SystemEmailSender;
+            return result;
+        }
 
         internal DatabaseScope CreateDatabaseScope(uint databaseID)
         {

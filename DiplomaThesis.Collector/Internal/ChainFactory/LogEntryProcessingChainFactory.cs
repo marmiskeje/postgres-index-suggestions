@@ -27,30 +27,11 @@ namespace DiplomaThesis.Collector
             this.repositoriesFactory = repositoriesFactory;
             this.statementDataAccumulator = statementDataAccumulator;
         }
-        /*
-        private IChainableCommand CreateWorkloadProcessingChain(LogEntryProcessingContext context)
-        {
-            CommandChainCreator chain = new CommandChainCreator();
-            chain.Add(new LoadWorkloadToContextCommand(context, repositoriesFactory));
-            chain.Add(new ApplyLogEntryWorkloadDefinitionCommand(context));
-            chain.Add(commandFactory.LoadQueryTreeToContextCommand(context));
-            chain.Add(new ApplyQueryTreeWorkloadDefinitionCommand(context));
-            chain.Add(new SaveStatementDefinitionIfNotExistsCommand(context, repositoriesFactory));
-            chain.Add(new CreateOrUpdateNormalizedWorkloadStatementCommand(context, repositoriesFactory));
-            return chain.AsChainableCommand();
-        }
-
-        private IChainableCommand CreateStatementIndexUsageStatsChain(LogEntryProcessingContext context)
-        {
-            CommandChainCreator chain = new CommandChainCreator();
-            chain.Add(new SaveStatementIndexUsageCommand(context, repositoriesFactory));
-            return chain.AsChainableCommand();
-        }*/
 
         private IChainableCommand CreateStatementProcessingChain(LogEntryProcessingContext context)
         {
             CommandChainCreator chain = new CommandChainCreator();
-            // if enabled for database
+            chain.Add(new ActionCommand(() => context.DatabaseCollectingConfiguration.IsEnabledStatementCollection));
             chain.Add(new ActionCommand(() =>
             {
                 generalCommands.ExternalStatementNormalizationCommand(context).Execute();
@@ -90,6 +71,7 @@ namespace DiplomaThesis.Collector
         private IChainableCommand CreateViewStatisticsProcessingChain(LogEntryProcessingContext context)
         {
             CommandChainCreator chain = new CommandChainCreator();
+            chain.Add(new ActionCommand(() => context.DatabaseCollectingConfiguration.IsEnabledGeneralCollection));
             chain.Add(statisticsProcessingCommands.EnqueueCommand());
             chain.Add(statisticsProcessingCommands.PublishTotalViewStatisticsCommand(context));
             return chain.AsChainableCommand();
@@ -104,20 +86,6 @@ namespace DiplomaThesis.Collector
             CommandChainCreator chain = new CommandChainCreator();
             chain.Add(generalCommands.LoadDatabaseInfoForLogEntryCommand(context));
             chain.Add(parallelSteps.CreateParallelCommand());
-            /*
-            ParallelCommandStepsCreator parallelSteps = new ParallelCommandStepsCreator();
-            parallelSteps.AddParallelStep(CreateWorkloadProcessingChain(context));
-            parallelSteps.AddParallelStep(CreateStatementIndexUsageStatsChain(context));
-
-            CommandChainCreator chain = new CommandChainCreator();
-            chain.Add(new HandleExceptionCommand(finallyAction: () => lastProcessedEvidence.Publish(context.Entry.Timestamp)));
-            chain.Add(new IgnoreOwnLogEntriesCommand(context));
-            chain.Add(commandFactory.NormalizeStatementCommand(log, context));
-            chain.Add(new ComputeNormalizedStatementFingerprintCommand(context));
-            chain.Add(new EnsureNormalizedStatementExistsCommand(context, repositoriesFactory));
-            chain.Add(commandFactory.LoadQueryPlanToContextCommand(context));
-            chain.Add(parallelSteps.CreateParallelCommand());
-            */
 
             return chain.FirstCommand;
         }

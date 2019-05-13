@@ -192,7 +192,7 @@ namespace DiplomaThesis.WebUI.Controllers
                     }
                     result.Data.Objects.Sort((x, y) =>
                     {
-                        var cmp = (y.LastKnownUsageDate?.Ticks ?? 0).CompareTo(x.LastKnownUsageDate?.Ticks ?? 0);
+                        var cmp = (x.LastKnownUsageDate?.Ticks ?? 0).CompareTo(y.LastKnownUsageDate?.Ticks ?? 0);
                         if (cmp == 0)
                         {
                             cmp = x.SchemaName.CompareTo(y.SchemaName);

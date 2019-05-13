@@ -38,7 +38,7 @@ namespace DiplomaThesis.DAL
 
             SmtpConfiguration smtpConfiguration = new SmtpConfiguration();
             smtpConfiguration.SmtpHost = "smtp.gmail.com";
-            smtpConfiguration.SmtpPassword = "mm.d1pl0ma.thes1s.p$$s";
+            smtpConfiguration.SmtpPasswordCipher = Common.Cryptography.EncryptionSupport.Instance.Encrypt("mm.d1pl0ma.thes1s.p$$s");
             smtpConfiguration.SmtpPort = 587;
             smtpConfiguration.SmtpUsername = "mm.diploma.thesis@gmail.com";
             smtpConfiguration.SystemEmailSender = "mm.diploma.thesis@gmail.com";
