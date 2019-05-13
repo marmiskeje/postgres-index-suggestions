@@ -130,7 +130,7 @@ namespace DiplomaThesis.WebUI.Controllers
                         {
                             bool? isUnused = null;
                             DateTime? lastKnownUsageDate = null;
-                            if (indicesLastKnownCollectionDate.TryGetValue(r.ID, out var lastKnownCollectionDate))
+                            if (relationsLastKnownCollectionDate.TryGetValue(r.ID, out var lastKnownCollectionDate))
                             {
                                 lastKnownUsageDate = lastKnownCollectionDate;
                                 if (areDataAvailableForWholePeriod)
@@ -151,7 +151,7 @@ namespace DiplomaThesis.WebUI.Controllers
                         {
                             bool? isUnused = null;
                             DateTime? lastKnownUsageDate = null;
-                            if (indicesLastKnownCollectionDate.TryGetValue(p.ID, out var lastKnownCollectionDate))
+                            if (proceduresLastKnownCollectionDate.TryGetValue(p.ID, out var lastKnownCollectionDate))
                             {
                                 lastKnownUsageDate = lastKnownCollectionDate;
                                 if (areDataAvailableForWholePeriod)
@@ -172,7 +172,7 @@ namespace DiplomaThesis.WebUI.Controllers
                         {
                             bool? isUnused = null;
                             DateTime? lastKnownUsageDate = null;
-                            if (indicesLastKnownCollectionDate.TryGetValue(v.ID, out var lastKnownCollectionDate))
+                            if (viewsLastKnownCollectionDate.TryGetValue(v.ID, out var lastKnownCollectionDate))
                             {
                                 lastKnownUsageDate = lastKnownCollectionDate;
                                 if (areDataAvailableForWholePeriod)
@@ -192,7 +192,7 @@ namespace DiplomaThesis.WebUI.Controllers
                     }
                     result.Data.Objects.Sort((x, y) =>
                     {
-                        var cmp = (x.LastKnownUsageDate?.Ticks ?? 0).CompareTo(y.LastKnownUsageDate?.Ticks ?? 0);
+                        var cmp = (x.LastKnownUsageDate?.Ticks ?? double.MaxValue).CompareTo(y.LastKnownUsageDate?.Ticks ?? double.MaxValue);
                         if (cmp == 0)
                         {
                             cmp = x.SchemaName.CompareTo(y.SchemaName);
