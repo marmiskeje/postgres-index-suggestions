@@ -19,18 +19,18 @@ namespace DiplomaThesis.DBMS.Postgres
         {
             var relation = indexDefinition.Relation;
             var attributes = indexDefinition.Attributes.Select(x => x.Name);
-            var includeAttributes = indexDefinition.IncludeAttributes.Select(x => x.Name);
+            var includeAttributes = indexDefinition.IncludeAttributes.Select(x => x.Name).ToList();
             if (!supportsInclude)
             {
                 attributes = attributes.Concat(includeAttributes);
             }
             var builder = new StringBuilder();
-            builder.Append("CREATE INDEX ON");
+            builder.Append("CREATE INDEX ON ");
             builder.Append($"{relation.SchemaName}.{relation.Name} ");
             builder.Append($"({ String.Join(", ", attributes)})");
-            if (supportsInclude)
+            if (supportsInclude && includeAttributes.Count > 0)
             {
-                builder.Append($" INCLUDE({ String.Join(", ", includeAttributes)})");
+                builder.Append($" INCLUDE ({ String.Join(", ", includeAttributes)})");
             }
             if (!String.IsNullOrEmpty(filterExpression))
             {
@@ -42,6 +42,7 @@ namespace DiplomaThesis.DBMS.Postgres
         public VirtualHPartitioningDefinition Generate(HPartitioningDefinition hPartitioningDefinition)
         {
             var result = new VirtualHPartitioningDefinition();
+            result.PartitionStatements = new HashSet<string>();
             var relation = hPartitioningDefinition.Relation;
             if (hPartitioningDefinition.PartitioningAttributes.First() is RangeHPartitioningAttributeDefinition)
             {
@@ -62,6 +63,7 @@ namespace DiplomaThesis.DBMS.Postgres
                                                   );
                 }
             }
+            result.SchemaName = hPartitioningDefinition.Relation.SchemaName;
             result.RelationName = hPartitioningDefinition.Relation.Name;
             return result;
         }
@@ -83,8 +85,8 @@ namespace DiplomaThesis.DBMS.Postgres
             {
                 result.PartitionStatements.Add(String.Format("PARTITION OF {0}.{1} FOR VALUES FROM ({2}) TO ({3})",
                                                                 relation.SchemaName, relation.Name,
-                                                                String.Join(",", partitionParts.Select(x => toSqlValueStringConverter.Convert(x.DbType, x.FromValueInclusive))),
-                                                                String.Join(",", partitionParts.Select(x => toSqlValueStringConverter.Convert(x.DbType, x.FromValueInclusive)))
+                                                                String.Join(",", partitionParts.Select(x => toSqlValueStringConverter.ConvertStringRepresentation(x.DbType, x.FromValueInclusive))),
+                                                                String.Join(",", partitionParts.Select(x => toSqlValueStringConverter.ConvertStringRepresentation(x.DbType, x.ToValueExclusive)))
                                                             )
                                               );
             }

@@ -30,6 +30,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                     executionPlansRepository.Create(createdPlan);
                     analysisRealStatementEvaluationsRepository.Create(Convert(context.WorkloadAnalysis.ID, statementID, createdPlan));
                 }
+                scope.Complete();
             }
         }
 

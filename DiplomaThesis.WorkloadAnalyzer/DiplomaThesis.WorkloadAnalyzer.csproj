@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <AssemblyName>IndexSuggestions.WorkloadAnalyzer</AssemblyName>
-    <RootNamespace>IndexSuggestions.WorkloadAnalyzer</RootNamespace>
+    <AssemblyName>DiplomaThesis.WorkloadAnalyzer</AssemblyName>
+    <RootNamespace>DiplomaThesis.WorkloadAnalyzer</RootNamespace>
     <ApplicationIcon />
     <OutputType>Exe</OutputType>
     <StartupObject>DiplomaThesis.WorkloadAnalyzer.Program</StartupObject>

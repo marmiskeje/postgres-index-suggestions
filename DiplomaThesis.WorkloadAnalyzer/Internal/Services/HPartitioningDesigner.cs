@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 
 namespace DiplomaThesis.WorkloadAnalyzer
@@ -85,7 +86,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
 
         private bool IsTypeSuitableForRange(bool isNullable, DbType type)
         {
-            if (isNullable)
+            if (!isNullable)
             {
                 switch (type)
                 {
@@ -115,17 +116,24 @@ namespace DiplomaThesis.WorkloadAnalyzer
         private HPartitioningAttributeDefinition DesignRange(AttributeData attribute)
         {
             RangeHPartitioningAttributeDefinition result = null;
-            var histogramBounds = new List<object>(attribute.HistogramBounds ?? new object[0]);
+            List<string> histogramBounds = new List<string>();
+            if (attribute.HistogramBounds != null && attribute.HistogramBounds.Length > 0)
+            {
+                histogramBounds.AddRange(attribute.HistogramBounds);
+            }
+            else if (attribute.MostCommonValues != null && attribute.MostCommonValues.Length > 0)
+            {
+                histogramBounds.AddRange(attribute.MostCommonValues);
+            }
             if (histogramBounds.Count >= MIN_COUNTS_OF_PARTITIONS)
             {
                 result = new RangeHPartitioningAttributeDefinition(attribute);
-                var additionalPartitionsCount = Math.Min(Math.Max(MAX_COUNT_OF_PARTITIONS - histogramBounds.Count, 0), POSSIBLE_ADDITIONAL_PARTITIONS_COUNT);
-                int partitionsCount = Math.Max(histogramBounds.Count + additionalPartitionsCount, MAX_COUNT_OF_PARTITIONS);
+                int partitionsCount = Math.Min(histogramBounds.Count, MAX_COUNT_OF_PARTITIONS);
                 int takeCount = Math.Max((int)Math.Ceiling(histogramBounds.Count / (double)partitionsCount), 1);
                 int counter = 0;
                 while (counter < partitionsCount)
                 {
-                    var bounds = attribute.HistogramBounds.Skip(counter).Take(takeCount);
+                    var bounds = histogramBounds.Skip(counter).Take(takeCount);
                     var startBoundary = bounds.First();
                     if (counter > 0)
                     {
@@ -138,10 +146,10 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 if (result.Partitions.Count < MAX_COUNT_OF_PARTITIONS)
                 {
                     int anotherAdditionalPartitionsCount = Math.Min(MAX_COUNT_OF_PARTITIONS - result.Partitions.Count, POSSIBLE_ADDITIONAL_PARTITIONS_COUNT);
-                    object startBoundary = result.Partitions.Last().ToValueExclusive;
-                    object endBoundary = GetNextEndBoundary(attribute.DbType, result.Partitions.Last().FromValueInclusive, result.Partitions.Last().ToValueExclusive);
+                    string startBoundary = result.Partitions.Last().ToValueExclusive;
+                    string endBoundary = GetNextEndBoundary(attribute.DbType, result.Partitions.Last().FromValueInclusive, result.Partitions.Last().ToValueExclusive);
                     int additionalPartitionsCounter = 0;
-                    while (endBoundary != null && additionalPartitionsCounter < anotherAdditionalPartitionsCount && IsMaxValue(attribute.DbType, endBoundary))
+                    while (endBoundary != null && additionalPartitionsCounter < anotherAdditionalPartitionsCount && !IsMaxValue(attribute.DbType, endBoundary))
                     {
                         result.Partitions.Add(new RangeHPartitionAttributeDefinition(attribute.DbType, startBoundary, endBoundary));
                         additionalPartitionsCounter++;
@@ -154,41 +162,54 @@ namespace DiplomaThesis.WorkloadAnalyzer
             return result;
         }
 
-        private object GetNextEndBoundary(DbType type, object previousStartBoundary, object previousEndBoundary)
+        private string GetNextEndBoundary(DbType type, string previousStartBoundary, string previousEndBoundary)
         {
+            CultureInfo cultureInfo = new CultureInfo("en-US");
             try
             {
                 switch (type)
                 {
                     case DbType.Byte:
-                        return ((byte)previousEndBoundary * 2) - (byte)previousStartBoundary;
+                    case DbType.UInt16:
+                    case DbType.UInt32:
+                    case DbType.UInt64:
+                        {
+                            var end = UInt64.Parse(previousEndBoundary);
+                            var start = UInt64.Parse(previousStartBoundary);
+                            return $"{end + (end - start)}";
+                        }
+                    case DbType.Int16:
+                    case DbType.Int32:
+                    case DbType.Int64:
+                    case DbType.SByte:
+                        {
+                            var end = Int64.Parse(previousEndBoundary);
+                            var start = Int64.Parse(previousStartBoundary);
+                            return $"{end + (end - start)}";
+                        }
                     case DbType.Date:
                     case DbType.DateTime:
                     case DbType.DateTime2:
                     case DbType.DateTimeOffset:
-                        return new DateTime(((DateTime)previousEndBoundary).Ticks * 2 - ((DateTime)previousStartBoundary).Ticks);
+                        {
+                            var end = DateTime.Parse(previousEndBoundary, cultureInfo);
+                            var start = DateTime.Parse(previousStartBoundary, cultureInfo);
+                            return $"{new DateTime(end.Ticks + (end.Ticks - start.Ticks)).ToString("yyyy-MM-dd HH:mm:ss.fff")}";
+                        }
                     case DbType.Decimal:
-                        return ((decimal)previousEndBoundary * 2) - (decimal)previousStartBoundary;
                     case DbType.Double:
-                        return ((double)previousEndBoundary * 2) - (double)previousStartBoundary;
-                    case DbType.Int16:
-                        return ((Int16)previousEndBoundary * 2) - (Int16)previousStartBoundary;
-                    case DbType.Int32:
-                        return ((Int32)previousEndBoundary * 2) - (Int32)previousStartBoundary;
-                    case DbType.Int64:
-                        return ((Int64)previousEndBoundary * 2) - (Int64)previousStartBoundary;
-                    case DbType.SByte:
-                        return ((sbyte)previousEndBoundary * 2) - (sbyte)previousStartBoundary;
                     case DbType.Single:
-                        return ((float)previousEndBoundary * 2) - (float)previousStartBoundary;
+                        {
+                            var end = Decimal.Parse(previousEndBoundary, cultureInfo);
+                            var start = Decimal.Parse(previousStartBoundary, cultureInfo);
+                            return $"{end + (end - start)}";
+                        }
                     case DbType.Time:
-                        return new TimeSpan(((TimeSpan)previousEndBoundary).Ticks * 2 - ((TimeSpan)previousStartBoundary).Ticks);
-                    case DbType.UInt16:
-                        return ((UInt16)previousEndBoundary * 2) - (UInt16)previousStartBoundary;
-                    case DbType.UInt32:
-                        return ((UInt32)previousEndBoundary * 2) - (UInt32)previousStartBoundary;
-                    case DbType.UInt64:
-                        return ((UInt64)previousEndBoundary * 2) - (UInt64)previousStartBoundary;
+                        {
+                            var end = TimeSpan.Parse(previousEndBoundary, cultureInfo);
+                            var start = TimeSpan.Parse(previousStartBoundary, cultureInfo);
+                            return $"{(end + (end - start)).ToString("HH:mm:ss.fff")}";
+                        }
                 }
             }
             catch (OverflowException)
@@ -198,39 +219,40 @@ namespace DiplomaThesis.WorkloadAnalyzer
             return null;
         }
 
-        private bool IsMaxValue(DbType type, object obj)
+        private bool IsMaxValue(DbType type, string obj)
         {
+            CultureInfo cultureInfo = new CultureInfo("en-US");
             switch (type)
             {
                 case DbType.Byte:
-                    return byte.MaxValue == (byte)obj;
+                    return byte.MaxValue == byte.Parse(obj);
                 case DbType.Date:
                 case DbType.DateTime:
                 case DbType.DateTime2:
                 case DbType.DateTimeOffset:
-                    return DateTime.MaxValue.Date == ((DateTime)obj).Date;
+                    return DateTime.MaxValue.Date == (DateTime.Parse(obj, cultureInfo)).Date;
                 case DbType.Decimal:
-                    return decimal.MaxValue == (decimal)obj;
+                    return decimal.MaxValue == decimal.Parse(obj);
                 case DbType.Double:
-                    return double.MaxValue == (double)obj;
+                    return double.MaxValue == double.Parse(obj);
                 case DbType.Int16:
-                    return Int16.MaxValue == (Int16)obj;
+                    return Int16.MaxValue == Int16.Parse(obj);
                 case DbType.Int32:
-                    return Int32.MaxValue == (Int32)obj;
+                    return Int32.MaxValue == Int32.Parse(obj);
                 case DbType.Int64:
-                    return Int64.MaxValue == (Int64)obj;
+                    return Int64.MaxValue == Int64.Parse(obj);
                 case DbType.SByte:
-                    return sbyte.MaxValue == (sbyte)obj;
+                    return sbyte.MaxValue == sbyte.Parse(obj);
                 case DbType.Single:
-                    return float.MaxValue == (float)obj;
+                    return float.MaxValue == float.Parse(obj);
                 case DbType.Time:
-                    return TimeSpan.MaxValue.TotalSeconds == ((TimeSpan)obj).TotalSeconds;
+                    return TimeSpan.MaxValue.TotalSeconds == (TimeSpan.Parse(obj, cultureInfo)).TotalSeconds;
                 case DbType.UInt16:
-                    return UInt16.MaxValue == (UInt16)obj;
+                    return UInt16.MaxValue == UInt16.Parse(obj);
                 case DbType.UInt32:
-                    return UInt32.MaxValue == (UInt32)obj;
+                    return UInt32.MaxValue == UInt32.Parse(obj);
                 case DbType.UInt64:
-                    return UInt64.MaxValue == (UInt64)obj;
+                    return UInt64.MaxValue == UInt64.Parse(obj);
             }
             throw new NotSupportedException(type.ToString());
         }

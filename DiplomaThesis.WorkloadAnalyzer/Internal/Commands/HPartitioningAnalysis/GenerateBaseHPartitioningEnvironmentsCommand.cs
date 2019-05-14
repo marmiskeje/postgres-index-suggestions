@@ -32,12 +32,15 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 foreach (var attributesPartitioningsByType in relationAttributesPartitionings.GroupBy(x => x.Value.GetType()))
                 {
                     var attributePartitionings = new ElementSet<HPartitioningAttributeDefinition>(attributesPartitioningsByType.Select(x => x.Value));
-                    var combinations = new Combinations<HPartitioningAttributeDefinition>(attributePartitionings, 2);
-                    foreach (var combination in combinations)
+                    if (attributePartitionings.Count >= 2)
                     {
-                        var partitioning = new HPartitioningDefinition(relation);
-                        partitioning.PartitioningAttributes.AddRange(combination);
-                        context.HPartitioningDesignData.Environments.Add(new VirtualHPartitioningEnvironment(partitioning));
+                        var combinations = new Combinations<HPartitioningAttributeDefinition>(attributePartitionings, 2);
+                        foreach (var combination in combinations)
+                        {
+                            var partitioning = new HPartitioningDefinition(relation);
+                            partitioning.PartitioningAttributes.AddRange(combination);
+                            context.HPartitioningDesignData.Environments.Add(new VirtualHPartitioningEnvironment(partitioning));
+                        } 
                     }
                 }
             }

@@ -36,11 +36,17 @@ namespace DiplomaThesis.Common.CommandProcessing
 
         public ParallelCommandStepsCreator(int maxDegreeOfParallelism)
         {
-            if (maxDegreeOfParallelism < 1)
-            {
-                maxDegreeOfParallelism = 1;
-            }
             this.maxDegreeOfParallelism = maxDegreeOfParallelism;
+            if (this.maxDegreeOfParallelism < 1)
+            {
+                this.maxDegreeOfParallelism = 1;
+            }
+#if DEBUG
+            if (System.Diagnostics.Debugger.IsAttached)
+            {
+                this.maxDegreeOfParallelism = 1;
+            }
+#endif
         }
         public void AddParallelStep(params IChainableCommand[] multileCommandsAsSingleStep)
         {

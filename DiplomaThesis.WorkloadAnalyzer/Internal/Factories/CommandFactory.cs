@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using DiplomaThesis.Common.CommandProcessing;
+using DiplomaThesis.Common.Logging;
 using DiplomaThesis.DAL.Contracts;
 
 namespace DiplomaThesis.WorkloadAnalyzer
@@ -9,14 +10,16 @@ namespace DiplomaThesis.WorkloadAnalyzer
     internal class CommandFactory : ICommandFactory
     {
         private readonly IRepositoriesFactory dalRepositories;
+        private readonly ILog log;
         private readonly DBMS.Contracts.IRepositoriesFactory dbmsRepositories;
         private readonly DBMS.Contracts.IDbObjectDefinitionGenerator dbObjectDefinitionGenerator;
         private readonly DBMS.Contracts.IToSqlValueStringConverter toSqlValueStringConverter;
         private readonly IAttributeHPartitioningDesigner attributeHPartitioningDesigner;
-        public CommandFactory(IRepositoriesFactory dalRepositories, DBMS.Contracts.IRepositoriesFactory dbmsRepositories,
+        public CommandFactory(ILog log, IRepositoriesFactory dalRepositories, DBMS.Contracts.IRepositoriesFactory dbmsRepositories,
                               DBMS.Contracts.IDbObjectDefinitionGenerator dbObjectDefinitionGenerator, DBMS.Contracts.IToSqlValueStringConverter toSqlValueStringConverter,
                               IAttributeHPartitioningDesigner attributeHPartitioningDesigner)
         {
+            this.log = log;
             this.dalRepositories = dalRepositories;
             this.dbmsRepositories = dbmsRepositories;
             this.dbObjectDefinitionGenerator = dbObjectDefinitionGenerator;
@@ -29,7 +32,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
         }
         public IChainableCommand EvaluateIndicesEnvironmentsCommand(WorkloadAnalysisContext context)
         {
-            return new EvaluateIndicesEnvironmentsCommand(context, dbmsRepositories.GetVirtualIndicesRepository(), dbmsRepositories.GetExplainRepository(),
+            return new EvaluateIndicesEnvironmentsCommand(log, context, dbmsRepositories.GetVirtualIndicesRepository(), dbmsRepositories.GetExplainRepository(),
                                                       dbObjectDefinitionGenerator);
         }
 
@@ -69,9 +72,9 @@ namespace DiplomaThesis.WorkloadAnalyzer
                                                   dbmsRepositories.GetRelationAttributesRepository());
         }
 
-        public IChainableCommand GenerateCoveringIndicesCommand(WorkloadAnalysisContext context)
+        public IChainableCommand GenerateCoveringBTreeIndicesCommand(WorkloadAnalysisContext context)
         {
-            return new GenerateCoveringIndicesCommand(context);
+            return new GenerateCoveringBTreeIndicesCommand(context);
         }
 
         public IChainableCommand GenerateBaseIndicesEnvironmentsCommand(WorkloadAnalysisContext context)
@@ -136,7 +139,8 @@ namespace DiplomaThesis.WorkloadAnalyzer
 
         public IChainableCommand EvaluateHPartitioningEnvironmentsCommand(WorkloadAnalysisContext context)
         {
-            return new EvaluateHPartitioningEnvironmentsCommand(context, dbmsRepositories.GetVirtualHPartitioningsRepository(), dbmsRepositories.GetExplainRepository(), dbObjectDefinitionGenerator);
+            return new EvaluateHPartitioningEnvironmentsCommand(log, context, dbmsRepositories.GetVirtualHPartitioningsRepository(), dbmsRepositories.GetExplainRepository(),
+                                                                dbObjectDefinitionGenerator);
         }
 
         public IChainableCommand CleanUpNotImprovingHPartitioningAndTheirEnvsCommand(WorkloadAnalysisContext context)

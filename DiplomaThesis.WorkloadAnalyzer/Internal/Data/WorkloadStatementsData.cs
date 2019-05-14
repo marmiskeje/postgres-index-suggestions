@@ -78,7 +78,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                     {
                         if (query.CommandType == StatementQueryCommandType.Select)
                         {
-                            if (!mostSignificantSelectQueriesByRelation.ContainsKey(r.ID))
+                            if (!allSelectQueriesByRelation.ContainsKey(r.ID))
                             {
                                 allSelectQueriesByRelation.Add(r.ID, new List<NormalizedStatementQueryPair>());
                             }

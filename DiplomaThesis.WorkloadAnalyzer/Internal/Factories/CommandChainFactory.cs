@@ -23,7 +23,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             chain.Add(commands.LoadWorkloadStatementsDataCommand(context));
             chain.Add(commands.LoadWorkloadRelationsDataCommand(context));
             chain.Add(commands.ExtractStatementsQueryDataCommand(context));
-
+            
             // horizontal partitioning design
             chain.Add(commands.InitializeHPartitioningEnvironmentCommand(context));
             chain.Add(commands.PrepareHPartitioningAttributeDefinitionsCommand(context));
@@ -31,7 +31,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             chain.Add(commands.EvaluateHPartitioningEnvironmentsCommand(context));
             chain.Add(commands.CleanUpNotImprovingHPartitioningAndTheirEnvsCommand(context));
             chain.Add(commands.PersistsHPartitioningsDesignDataCommand(context));
-
+            
             // indices design
             chain.Add(commands.InitializeVirtualIndicesEnvironmentCommand(context));
             chain.Add(commands.LoadExistingIndicesCommand(context));
@@ -41,7 +41,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             chain.Add(commands.GenerateBaseIndicesEnvironmentsCommand(context));
             chain.Add(commands.EvaluateIndicesEnvironmentsCommand(context));
             chain.Add(commands.CleanUpNotImprovingIndiciesAndTheirEnvsCommand(context));
-            chain.Add(commands.GenerateCoveringIndicesCommand(context));
+            chain.Add(commands.GenerateCoveringBTreeIndicesCommand(context));
             chain.Add(commands.GenerateFinalIndicesEnvironmentsCommand(context));
             chain.Add(commands.EvaluateIndicesEnvironmentsCommand(context));
             chain.Add(commands.CleanUpNotImprovingIndiciesAndTheirEnvsCommand(context));

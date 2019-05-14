@@ -4,9 +4,8 @@ using System.Text;
 
 namespace DiplomaThesis.DBMS.Contracts
 {
-    public interface IViewsRepository
+    public interface IRawSqlExecutionRepository
     {
-        IEnumerable<IView> GetAllNonSystems();
-        IEnumerable<IView> GetAll();
+        IEnumerable<T> ExecuteQuery<T>(string sql);
     }
 }

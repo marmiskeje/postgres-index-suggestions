@@ -19,5 +19,6 @@ namespace DiplomaThesis.DBMS.Contracts
         IExpressionOperatorsRepository GetExpressionOperatorsRepository();
         IDatabaseSystemInfoRepository GetDatabaseSystemInfoRepository();
         IVirtualHPartitioningsRepository GetVirtualHPartitioningsRepository();
+        IRawSqlExecutionRepository GetRawSqlExecutionRepository();
     }
 }

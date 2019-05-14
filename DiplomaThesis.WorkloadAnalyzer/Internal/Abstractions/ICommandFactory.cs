@@ -26,7 +26,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
         IChainableCommand PersistsHPartitioningsDesignDataCommand(WorkloadAnalysisContext context);
         IChainableCommand EvaluateHPartitioningEnvironmentsCommand(WorkloadAnalysisContext context);
         IChainableCommand ExtractStatementsQueryDataCommand(WorkloadAnalysisContext context);
-        IChainableCommand GenerateCoveringIndicesCommand(WorkloadAnalysisContext context);
+        IChainableCommand GenerateCoveringBTreeIndicesCommand(WorkloadAnalysisContext context);
         IChainableCommand ExcludeExistingIndicesCommand(WorkloadAnalysisContext context);
         IChainableCommand GenerateBaseIndicesEnvironmentsCommand(WorkloadAnalysisContext context);
         IChainableCommand CleanUpNotImprovingIndiciesAndTheirEnvsCommand(WorkloadAnalysisContext context);

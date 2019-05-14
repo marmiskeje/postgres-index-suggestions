@@ -26,6 +26,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             this.chainFactory = chainFactory;
             this.timer = new Timer(60000);
             this.timer.Elapsed += Timer_Elapsed;
+            Timer_Elapsed(null, null);
         }
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)

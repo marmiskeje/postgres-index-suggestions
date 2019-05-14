@@ -45,9 +45,9 @@ namespace DiplomaThesis.WorkloadAnalyzer
         private void GenerateIndices(StatementQueryExtractedData extractedData, NormalizedStatement normalizedStatement, StatementQuery query)
         {
             var possibleIndices = context.IndicesDesignData.PossibleIndices;
-            var whereJoinAttributesToUse = GroupAttributesByRelationAndPrepare(extractedData.WhereAttributes.Union(extractedData.JoinAttributes));
-            var groupByAttributesToUse = GroupAttributesByRelationAndPrepare(extractedData.GroupByAttributes);
-            var orderByAttributesToUse = GroupAttributesByRelationAndPrepare(extractedData.OrderByAttributes);
+            var whereJoinAttributesToUse = GroupAttributesByRelationAndPrepare(extractedData.WhereAttributes.BTreeApplicable.Union(extractedData.JoinAttributes.BTreeApplicable));
+            var groupByAttributesToUse = GroupAttributesByRelationAndPrepare(extractedData.GroupByAttributes.BTreeApplicable);
+            var orderByAttributesToUse = GroupAttributesByRelationAndPrepare(extractedData.OrderByAttributes.BTreeApplicable);
 
             // order by indices
             foreach (var kv in orderByAttributesToUse)

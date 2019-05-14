@@ -9,8 +9,9 @@ namespace DiplomaThesis.WorkloadAnalyzer
     internal class GenerateAndEvaluateFilteredIndicesCommand : ChainableCommand
     {
         private const int MOST_COMMON_VALUES_MAX_COUNT = 6;
-        private const decimal MOST_COMMON_VALUE_MIN_FREQUENCY = 10m;
-        private const decimal MOST_COMMON_VALUES_MIN_FREQUENCIES_SUM = 15m;
+        private const decimal MOST_COMMON_VALUE_MIN_FREQUENCY = 0.10m; // 10%
+        private const decimal MOST_COMMON_VALUES_MIN_FREQUENCIES_SUM = 0.15m; // 15%
+        private const decimal MOST_COMMON_VALUES_MAX_FREQUENCIES_SUM = 0.60m; // 60%
         private readonly WorkloadAnalysisContext context;
         private readonly IToSqlValueStringConverter toSqlValueStringConverter;
         private readonly IVirtualIndicesRepository virtualIndicesRepository;
@@ -34,6 +35,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                     foreach (var a in index.Attributes)
                     {
                         List<string> mostSignificantValues = new List<string>();
+                        List<string> leastSignificantValues = new List<string>();
                         if (a.MostCommonValuesFrequencies != null && a.MostCommonValuesFrequencies.Length >= 2)// we need at least two values
                         {
                             decimal frequenciesSum = 0;
@@ -41,7 +43,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                             {
                                 if (a.MostCommonValuesFrequencies[i] >= MOST_COMMON_VALUE_MIN_FREQUENCY)
                                 {
-                                    var sqlStringValue = toSqlValueStringConverter.Convert(a.DbType, a.MostCommonValues[i]);
+                                    var sqlStringValue = toSqlValueStringConverter.ConvertStringRepresentation(a.DbType, a.MostCommonValues[i]);
                                     if (sqlStringValue != null)
                                     {
                                         mostSignificantValues.Add(sqlStringValue);
@@ -49,14 +51,33 @@ namespace DiplomaThesis.WorkloadAnalyzer
                                     }
                                 }
                             }
-                            if (frequenciesSum < MOST_COMMON_VALUES_MIN_FREQUENCIES_SUM)
+                            if (frequenciesSum < MOST_COMMON_VALUES_MIN_FREQUENCIES_SUM || frequenciesSum > MOST_COMMON_VALUES_MAX_FREQUENCIES_SUM)
                             {
                                 mostSignificantValues.Clear();
+                            }
+
+                            frequenciesSum = 0;
+                            for (int i = a.MostCommonValuesFrequencies.Length - 1; i >= Math.Max(1, a.MostCommonValuesFrequencies.Length - MOST_COMMON_VALUES_MAX_COUNT + 1); i--)
+                            {
+                                var sqlStringValue = toSqlValueStringConverter.ConvertStringRepresentation(a.DbType, a.MostCommonValues[i]);
+                                if (sqlStringValue != null)
+                                {
+                                    leastSignificantValues.Add(sqlStringValue);
+                                    frequenciesSum += a.MostCommonValuesFrequencies[i];
+                                }
+                            }
+                            if (frequenciesSum > MOST_COMMON_VALUES_MIN_FREQUENCIES_SUM)
+                            {
+                                leastSignificantValues.Clear();
                             }
                         }
                         if (mostSignificantValues.Count > 0)
                         {
                             possibleFilteredAttributeValues.Add(a, mostSignificantValues);
+                        }
+                        else if (leastSignificantValues.Count > 0)
+                        {
+                            possibleFilteredAttributeValues.Add(a, leastSignificantValues);
                         }
                     }
                     if (possibleFilteredAttributeValues.Count > 0)
@@ -91,7 +112,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 {
                     if (valuesCounter > 0)
                     {
-                        builder.Append("OR ");
+                        builder.Append(" OR ");
                     }
                     builder.Append($"{attribute.Name} = {val}");
                     valuesCounter++;

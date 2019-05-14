@@ -90,7 +90,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             {
                 allPerQuery[query].ExceptWith(indices);
             }
-            foreach (var query in allPerQuery.Keys)
+            foreach (var query in allCoveringPerQuery.Keys)
             {
                 allCoveringPerQuery[query].ExceptWith(indices);
             }
@@ -107,7 +107,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             {
                 allPerQuery[query].IntersectWith(indices);
             }
-            foreach (var query in allPerQuery.Keys)
+            foreach (var query in allCoveringPerQuery.Keys)
             {
                 allCoveringPerQuery[query].IntersectWith(indices);
             }
@@ -140,7 +140,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                     allPerQuery.Add(query, toAdd);
                 }
             }
-            foreach (var query in allCoveringPerQuery.Keys)
+            foreach (var query in this.allCoveringPerQuery.Keys)
             {
                 var toAdd = new HashSet<IndexDefinition>(this.allCoveringPerQuery[query].Intersect(indices));
                 if (toAdd.Count > 0)
@@ -148,7 +148,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                     allCoveringPerQuery.Add(query, toAdd);
                 }
             }
-            return new IndicesData(this.all, allPerStatement, allPerQuery, allCoveringPerQuery);
+            return new IndicesData(all, allPerStatement, allPerQuery, allCoveringPerQuery);
         }
     }
 }

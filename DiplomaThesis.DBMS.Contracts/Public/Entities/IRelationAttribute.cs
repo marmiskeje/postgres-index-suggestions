@@ -22,8 +22,8 @@ namespace DiplomaThesis.DBMS.Contracts
         /// More than 0 = count of rows / count of unique values (this is for fixed count of unique values)
         /// </summary>
         decimal CardinalityIndicator { get; }
-        object[] MostCommonValues { get; }
+        string[] MostCommonValues { get; }
         decimal[] MostCommonValuesFrequencies { get; }
-        object[] HistogramBounds { get; }
+        string[] HistogramBounds { get; }
     }
 }

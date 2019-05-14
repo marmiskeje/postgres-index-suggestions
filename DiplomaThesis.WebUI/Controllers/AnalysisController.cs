@@ -108,7 +108,7 @@ namespace DiplomaThesis.WebUI.Controllers
                     var viewsLastKnownCollectionDate = totalViewsStatsRepo.GetForAllLastKnownCollectionDate(request.DatabaseID);
                     using (var scope = Converter.CreateDatabaseScope(request.DatabaseID))
                     {
-                        foreach (var i in DBMSRepositories.GetIndicesRepository().GetAllNonSystems())
+                        foreach (var i in DBMSRepositories.GetIndicesRepository().GetAll())
                         {
                             bool? isUnused = null;
                             DateTime? lastKnownUsageDate = null;
@@ -126,7 +126,7 @@ namespace DiplomaThesis.WebUI.Controllers
                                 Name = i.Name + $" ON {i.SchemaName}.{i.RelationName}", ObjectType = "Index", SchemaName = i.SchemaName
                             });
                         }
-                        foreach (var r in DBMSRepositories.GetRelationsRepository().GetAllNonSystems())
+                        foreach (var r in DBMSRepositories.GetRelationsRepository().GetAll())
                         {
                             bool? isUnused = null;
                             DateTime? lastKnownUsageDate = null;
@@ -147,7 +147,7 @@ namespace DiplomaThesis.WebUI.Controllers
                                 SchemaName = r.SchemaName
                             });
                         }
-                        foreach (var p in DBMSRepositories.GetStoredProceduresRepository().GetAllNonSystems())
+                        foreach (var p in DBMSRepositories.GetStoredProceduresRepository().GetAll())
                         {
                             bool? isUnused = null;
                             DateTime? lastKnownUsageDate = null;
@@ -168,7 +168,7 @@ namespace DiplomaThesis.WebUI.Controllers
                                 SchemaName = p.SchemaName
                             });
                         }
-                        foreach (var v in DBMSRepositories.GetViewsRepository().GetAllNonSystems())
+                        foreach (var v in DBMSRepositories.GetViewsRepository().GetAll())
                         {
                             bool? isUnused = null;
                             DateTime? lastKnownUsageDate = null;

@@ -15,7 +15,7 @@ namespace DiplomaThesis.DBMS.Contracts
         SpGist = 5,
         Brin = 6
     }
-    public class IndexDefinition
+    public class IndexDefinition : IComparable<IndexDefinition>
     {
         private readonly string identificationString;
         public IndexStructureType StructureType { get;}
@@ -65,6 +65,11 @@ namespace DiplomaThesis.DBMS.Contracts
         public IndexDefinition WithReplacedRelation(RelationData relation)
         {
             return new IndexDefinition(StructureType, relation, Attributes, IncludeAttributes);
+        }
+
+        public int CompareTo(IndexDefinition other)
+        {
+            return GetHashCode().CompareTo(other.GetHashCode());
         }
     }
 }

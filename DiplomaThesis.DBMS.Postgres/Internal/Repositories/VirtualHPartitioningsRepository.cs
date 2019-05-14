@@ -15,9 +15,10 @@ namespace DiplomaThesis.DBMS.Postgres
         public IVirtualHPartitioning Create(VirtualHPartitioningDefinition definition)
         {
             string partitioningQuery = "SELECT hypopg_partition_table(@RelationName, @PartitioningStatement)";
+            string relationFullName = definition.SchemaName + "." + definition.RelationName;
             var param = new
             {
-                RelationName = definition.RelationName,
+                RelationName = relationFullName,
                 PartitioningStatement = definition.PartitioningStatement
             };
             Execute(partitioningQuery, param);
@@ -25,7 +26,7 @@ namespace DiplomaThesis.DBMS.Postgres
             foreach (var partitionStatement in definition.PartitionStatements)
             {
                 string query = "SELECT * FROM hypopg_add_partition(@Name, @PartitionStatement)";
-                string partitionName = $"hypo_partition_{definition.RelationName}_{counter})";
+                string partitionName = $"hypo_partition_{relationFullName}_{counter})";
                 var param2 = new
                 {
                     Name = partitionName,

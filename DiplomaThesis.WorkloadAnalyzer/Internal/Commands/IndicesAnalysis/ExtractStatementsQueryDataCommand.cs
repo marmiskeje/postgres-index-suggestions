@@ -29,31 +29,45 @@ namespace DiplomaThesis.WorkloadAnalyzer
                     var statement = kv.Value;
                     foreach (var query in statement.NormalizedStatement.StatementDefinition.IndependentQueries)
                     {
-                        var whereOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
-                        var joinOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
-                        var groupByOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
-                        var orderByOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
-                        FillAllAttributesAndOperatorsFromExpressions(whereOperatorsByAttribute, query.WhereExpressions, new HashSet<string>());
-                        FillAllAttributesAndOperatorsFromExpressions(joinOperatorsByAttribute, query.JoinExpressions, new HashSet<string>());
-                        FillAllAttributesAndOperatorsFromExpressions(groupByOperatorsByAttribute, query.GroupByExpressions, new HashSet<string>());
-                        FillAllAttributesAndOperatorsFromExpressions(orderByOperatorsByAttribute, query.OrderByExpressions, new HashSet<string>());
-                        HashSet<AttributeData> projectionAttributes = new HashSet<AttributeData>();
+                        var allWhereOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
+                        var btreeWhereAttributes = new HashSet<AttributeData>();
+                        var allJoinOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
+                        var btreeJoinAttributes = new HashSet<AttributeData>();
+                        var allGroupByOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
+                        var btreeGroupByAttributes = new HashSet<AttributeData>();
+                        var allOrderByOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
+                        var btreeOrderByAttributes = new HashSet<AttributeData>();
+                        FillAllAttributesAndOperatorsFromExpressions(allWhereOperatorsByAttribute, btreeWhereAttributes, query.WhereExpressions, new HashSet<string>());
+                        FillAllAttributesAndOperatorsFromExpressions(allJoinOperatorsByAttribute, btreeJoinAttributes, query.JoinExpressions, new HashSet<string>());
+                        FillAllAttributesAndOperatorsFromExpressions(allGroupByOperatorsByAttribute, btreeGroupByAttributes, query.GroupByExpressions, new HashSet<string>());
+                        FillAllAttributesAndOperatorsFromExpressions(allOrderByOperatorsByAttribute, btreeOrderByAttributes, query.OrderByExpressions, new HashSet<string>());
+                        var allProjectionOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
+                        var btreeProjectionAttributes = new HashSet<AttributeData>();
                         foreach (var t in query.ProjectionAttributes)
                         {
                             var attribute = attributesRepository.Get(t.RelationID, t.AttributeNumber);
                             if (attribute != null)
                             {
-                                if (supportedOperators.Intersect(attribute.SupportedOperators).Count() > 0 // is comparable operator
-                                                        && !context.Workload.Definition.Relations.ForbiddenValues.Contains(t.RelationID)) // relation is not forbidden
+                                if (context.RelationsData.TryGetRelation(t.RelationID, out var relationData))
                                 {
-                                    if (context.RelationsData.TryGetRelation(t.RelationID, out var relationData))
+                                    var toAdd = CreateIndexAttribute(relationData, attribute);
+                                    if (!allProjectionOperatorsByAttribute.ContainsKey(toAdd))
                                     {
-                                        projectionAttributes.Add(CreateIndexAttribute(relationData, attribute));
+                                        allProjectionOperatorsByAttribute.Add(toAdd, new HashSet<string>());
                                     }
-                                } 
+                                    if (supportedOperators.Intersect(attribute.SupportedOperators).Count() > 0 // is comparable operator
+                                        && !context.Workload.Definition.Relations.ForbiddenValues.Contains(t.RelationID)) // relation is not forbidden
+                                    {
+                                        btreeProjectionAttributes.Add(toAdd);
+                                    }
+                                }
                             }
                         }
-                        var data = new StatementQueryExtractedData(whereOperatorsByAttribute, joinOperatorsByAttribute, groupByOperatorsByAttribute, orderByOperatorsByAttribute, projectionAttributes);
+                        var data = new StatementQueryExtractedData(new SetOfAttributes(allWhereOperatorsByAttribute, btreeWhereAttributes),
+                                                                   new SetOfAttributes(allJoinOperatorsByAttribute, btreeJoinAttributes),
+                                                                   new SetOfAttributes(allGroupByOperatorsByAttribute, btreeGroupByAttributes),
+                                                                   new SetOfAttributes(allOrderByOperatorsByAttribute, btreeOrderByAttributes),
+                                                                   new SetOfAttributes(allProjectionOperatorsByAttribute, btreeProjectionAttributes));
                         context.StatementsExtractedData.Add(statement.NormalizedStatement, query, data);
                     }
                 }
@@ -61,7 +75,8 @@ namespace DiplomaThesis.WorkloadAnalyzer
         }
 
         private void FillAllAttributesAndOperatorsFromExpressions(Dictionary<AttributeData, ISet<string>> allOperatorsByAttribute,
-                                                           IEnumerable<StatementQueryExpression> expressions, IEnumerable<string> operators)
+                                                                  HashSet<AttributeData> bTreeApplicableAttributes,
+                                                                  IEnumerable<StatementQueryExpression> expressions, IEnumerable<string> operators)
         {
             foreach (var e in expressions)
             {
@@ -71,17 +86,19 @@ namespace DiplomaThesis.WorkloadAnalyzer
                     var attribute = attributesRepository.Get(t.RelationID, t.AttributeNumber);
                     if (attribute != null)
                     {
-                        if (supportedOperators.Intersect(attribute.SupportedOperators).Count() > 0 // is comparable operator
-                                        && !context.Workload.Definition.Relations.ForbiddenValues.Contains(t.RelationID)) // relation is not forbidden
+                        if (context.RelationsData.TryGetRelation(t.RelationID, out var relationData))
                         {
-                            if (context.RelationsData.TryGetRelation(t.RelationID, out var relationData))
+                            var toAdd = CreateIndexAttribute(relationData, attribute);
+                            if (!allOperatorsByAttribute.ContainsKey(toAdd))
                             {
-                                var toAdd = CreateIndexAttribute(relationData, attribute);
-                                if (!allOperatorsByAttribute.ContainsKey(toAdd))
-                                {
-                                    allOperatorsByAttribute.Add(toAdd, new HashSet<string>());
-                                }
-                                allOperatorsByAttribute[toAdd].AddRange(operators);
+                                allOperatorsByAttribute.Add(toAdd, new HashSet<string>());
+                            }
+                            allOperatorsByAttribute[toAdd].AddRange(operators);
+                            if (supportedOperators.Intersect(attribute.SupportedOperators).Count() > 0 // is comparable operator
+                                && !context.Workload.Definition.Relations.ForbiddenValues.Contains(t.RelationID) // relation is not forbidden
+                                && operators.Except(supportedOperators).Count() == 0) // was applied comparable operator
+                            {
+                                bTreeApplicableAttributes.Add(toAdd);
                             }
                         }
                     }
@@ -89,26 +106,23 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 else if (e is StatementQueryBooleanExpression)
                 {
                     var t = (StatementQueryBooleanExpression)e;
-                    FillAllAttributesAndOperatorsFromExpressions(allOperatorsByAttribute, t.Arguments, operators); // ignore boolean operators
+                    FillAllAttributesAndOperatorsFromExpressions(allOperatorsByAttribute, bTreeApplicableAttributes, t.Arguments, operators); // ignore boolean operators
                 }
                 else if (e is StatementQueryFunctionExpression)
                 {
                     var t = (StatementQueryFunctionExpression)e;
-                    FillAllAttributesAndOperatorsFromExpressions(allOperatorsByAttribute, t.Arguments, operators);
+                    FillAllAttributesAndOperatorsFromExpressions(allOperatorsByAttribute, bTreeApplicableAttributes, t.Arguments, operators);
                 }
                 else if (e is StatementQueryNullTestExpression)
                 {
                     var t = (StatementQueryNullTestExpression)e;
-                    FillAllAttributesAndOperatorsFromExpressions(allOperatorsByAttribute, new[] { t.Argument }, operators);
+                    FillAllAttributesAndOperatorsFromExpressions(allOperatorsByAttribute, bTreeApplicableAttributes, new[] { t.Argument }, operators);
                 }
                 else if (e is StatementQueryOperatorExpression)
                 {
                     var t = (StatementQueryOperatorExpression)e;
                     var expressionOperator = expressionsRepository.Get(t.OperatorID);
-                    if (expressionOperator != null && supportedOperators.Contains(expressionOperator.Name)) // is comparable operator
-                    {
-                        FillAllAttributesAndOperatorsFromExpressions(allOperatorsByAttribute, t.Arguments, operators.Union(new[] { expressionOperator.Name }));
-                    }
+                    FillAllAttributesAndOperatorsFromExpressions(allOperatorsByAttribute, bTreeApplicableAttributes, t.Arguments, operators.Union(new[] { expressionOperator.Name }));
                 }
             }
         }

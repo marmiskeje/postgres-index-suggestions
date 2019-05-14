@@ -60,7 +60,7 @@ namespace DiplomaThesis.DAL
                 {
                     NormalizedStatementsRepository.FillEntityForGet(item.NormalizedStatement);
                 }
-                return result;
+                return result.ToList();
             }
         }
     }

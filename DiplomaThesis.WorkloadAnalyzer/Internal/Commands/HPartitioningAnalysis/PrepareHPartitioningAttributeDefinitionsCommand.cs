@@ -32,8 +32,8 @@ namespace DiplomaThesis.WorkloadAnalyzer
                         {
                             var extractedData = context.StatementsExtractedData.DataPerQuery[statementQuery];
                             var clausulesAndTheirData = new List<IReadOnlyDictionary<AttributeData, ISet<string>>>();
-                            clausulesAndTheirData.Add(extractedData.WhereOperatorsByAttribute);
-                            clausulesAndTheirData.Add(extractedData.JoinOperatorsByAttribute);
+                            clausulesAndTheirData.Add(extractedData.WhereAttributes.AllOperatorsByAttribute);
+                            clausulesAndTheirData.Add(extractedData.JoinAttributes.AllOperatorsByAttribute);
                             foreach (var operatorsByAttribute in clausulesAndTheirData)
                             {
                                 foreach (var kv2 in operatorsByAttribute)

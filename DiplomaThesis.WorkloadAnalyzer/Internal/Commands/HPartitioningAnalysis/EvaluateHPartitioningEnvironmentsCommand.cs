@@ -1,4 +1,5 @@
 ﻿using DiplomaThesis.Common.CommandProcessing;
+using DiplomaThesis.Common.Logging;
 using DiplomaThesis.DBMS.Contracts;
 using System;
 using System.Collections.Generic;
@@ -9,13 +10,15 @@ namespace DiplomaThesis.WorkloadAnalyzer
     internal class EvaluateHPartitioningEnvironmentsCommand : ChainableCommand
     {
         private const decimal MIN_COST_PERCENTAGE_IMPROVEMENT = 0.75m; //75%
+        private readonly ILog log;
         private readonly WorkloadAnalysisContext context;
         private readonly IVirtualHPartitioningsRepository virtualHPartitioningsRepository;
         private readonly IExplainRepository explainRepository;
         private readonly IDbObjectDefinitionGenerator dbObjectDefinitionGenerator;
-        public EvaluateHPartitioningEnvironmentsCommand(WorkloadAnalysisContext context, IVirtualHPartitioningsRepository virtualHPartitioningsRepository,
+        public EvaluateHPartitioningEnvironmentsCommand(ILog log, WorkloadAnalysisContext context, IVirtualHPartitioningsRepository virtualHPartitioningsRepository,
                                                         IExplainRepository explainRepository, IDbObjectDefinitionGenerator dbObjectDefinitionGenerator)
         {
+            this.log = log;
             this.context = context;
             this.virtualHPartitioningsRepository = virtualHPartitioningsRepository;
             this.explainRepository = explainRepository;
@@ -30,28 +33,40 @@ namespace DiplomaThesis.WorkloadAnalyzer
                     try
                     {
                         virtualHPartitioningsRepository.DestroyAll();
-                        var targetRelationData = context.RelationsData.GetReplacementOrOriginal(env.Partitioning.Relation.ID);
-                        virtualHPartitioningsRepository.Create(dbObjectDefinitionGenerator.Generate(env.Partitioning.WithReplacedRelation(targetRelationData)));
-                        decimal latestWeightedTotalCost = 0;
-                        decimal originalWeightedTotalCost = 0;
-                        foreach (var queryPair in context.StatementsData.AllSelectQueriesByRelation[env.Partitioning.Relation.ID])
+                        bool hPartitioningCreated = false;
+                        try
                         {
-                            var statementID = queryPair.NormalizedStatementID;
-                            if (!env.PlansPerStatement.ContainsKey(statementID))
-                            {
-                                var normalizedStatement = context.StatementsData.AllSelects[statementID].NormalizedStatement;
-                                var representativeStatement = context.StatementsData.AllSelects[statementID].RepresentativeStatistics.RepresentativeStatement;
-                                var statementToUse = RepresentativeStatementReplacementUtility.Provide(normalizedStatement, representativeStatement, context.RelationsData);
-                                var explainResult = explainRepository.Eplain(statementToUse);
-                                var latestPlan = explainResult.Plan;
-                                env.PlansPerStatement.Add(statementID, explainResult);
-
-                                decimal weight = context.StatementsData.All[statementID].TotalExecutionsCount;
-                                latestWeightedTotalCost += weight * latestPlan.TotalCost;
-                                originalWeightedTotalCost += weight * context.RealExecutionPlansForStatements[statementID].Plan.TotalCost;
-                            }
+                            var targetRelationData = context.RelationsData.GetReplacementOrOriginal(env.Partitioning.Relation.ID);
+                            virtualHPartitioningsRepository.Create(dbObjectDefinitionGenerator.Generate(env.Partitioning.WithReplacedRelation(targetRelationData)));
+                            hPartitioningCreated = true;
                         }
-                        env.IsImproving = latestWeightedTotalCost <= originalWeightedTotalCost * MIN_COST_PERCENTAGE_IMPROVEMENT;
+                        catch (Exception ex)
+                        {
+                            log.Write(ex);
+                        }
+                        if (hPartitioningCreated)
+                        {
+                            decimal latestWeightedTotalCost = 0;
+                            decimal originalWeightedTotalCost = 0;
+                            foreach (var queryPair in context.StatementsData.AllSelectQueriesByRelation[env.Partitioning.Relation.ID])
+                            {
+                                var statementID = queryPair.NormalizedStatementID;
+                                if (!env.PlansPerStatement.ContainsKey(statementID))
+                                {
+                                    var normalizedStatement = context.StatementsData.AllSelects[statementID].NormalizedStatement;
+                                    var representativeStatement = context.StatementsData.AllSelects[statementID].RepresentativeStatistics.RepresentativeStatement;
+                                    var statementToUse = RepresentativeStatementReplacementUtility.Provide(normalizedStatement, representativeStatement, context.RelationsData);
+                                    var explainResult = explainRepository.Eplain(statementToUse);
+                                    var latestPlan = explainResult.Plan;
+                                    env.PlansPerStatement.Add(statementID, explainResult);
+
+                                    decimal weight = context.StatementsData.All[statementID].TotalExecutionsCount;
+                                    latestWeightedTotalCost += weight * latestPlan.TotalCost;
+                                    originalWeightedTotalCost += weight * context.RealExecutionPlansForStatements[statementID].Plan.TotalCost;
+                                }
+                            }
+                            env.IsImproving = latestWeightedTotalCost <= originalWeightedTotalCost * MIN_COST_PERCENTAGE_IMPROVEMENT;
+                        }
                     }
                     finally
                     {

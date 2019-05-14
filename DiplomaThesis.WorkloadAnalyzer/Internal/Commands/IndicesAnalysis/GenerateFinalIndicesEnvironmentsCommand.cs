@@ -20,7 +20,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
         {
             context.IndicesDesignData.Environments.Clear();
             var allIndices = new ElementSet<IndexDefinition>(context.IndicesDesignData.PossibleIndices.All);
-            for (int combinationLength = 1; combinationLength < allIndices.Count; combinationLength++)
+            for (int combinationLength = 1; combinationLength <= allIndices.Count; combinationLength++)
             {
                 var combinations = new Combinations<IndexDefinition>(allIndices, combinationLength);
                 foreach (var c in combinations)

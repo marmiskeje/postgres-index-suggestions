@@ -47,9 +47,9 @@ select a.attrelid attr_rel_id, a.attname attr_name, a.atttypid attr_typeid, a.at
 (select string_agg(oprname, ',') from (select distinct o.oprname from pg_catalog.pg_operator o where o.oprleft = a.atttypid or o.oprright = a.atttypid) t) attr_operators,
 (case when stats.n_distinct > 0 and rel.reltuples > 0 then rel.reltuples / stats.n_distinct
 else stats.n_distinct end) attr_stats_n_distinct,
-stats.most_common_vals attr_stats_most_common_vals,
+(select string_agg(val, '¤') from (select unnest(stats.most_common_vals::text::text[]) val) mcv) attr_stats_most_common_vals,
 stats.most_common_freqs attr_stats_most_common_freqs,
-stats.histogram_bounds attr_stats_histogram_bounds,
+ (select string_agg(val, '¤') from (select unnest(stats.histogram_bounds::text::text[]) val) hb) attr_stats_histogram_bounds,
 (not a.attnotnull) attr_is_nullable
 from pg_catalog.pg_attribute a
 inner join pg_class rel on rel.oid = a.attrelid
@@ -72,9 +72,9 @@ select a.attrelid attr_rel_id, a.attname attr_name, a.atttypid attr_typeid, a.at
 (select string_agg(oprname, ',') from (select distinct o.oprname from pg_catalog.pg_operator o where o.oprleft = a.atttypid or o.oprright = a.atttypid) t) attr_operators,
 (case when stats.n_distinct > 0 and rel.reltuples > 0 then rel.reltuples / stats.n_distinct
 else stats.n_distinct end) attr_stats_n_distinct,
-stats.most_common_vals attr_stats_most_common_vals,
+(select string_agg(val, '¤') from (select unnest(stats.most_common_vals::text::text[]) val) mcv) attr_stats_most_common_vals,
 stats.most_common_freqs attr_stats_most_common_freqs,
-stats.histogram_bounds attr_stats_histogram_bounds,
+ (select string_agg(val, '¤') from (select unnest(stats.histogram_bounds::text::text[]) val) hb) attr_stats_histogram_bounds,
 (not a.attnotnull) attr_is_nullable
 from pg_catalog.pg_attribute a
 inner join pg_class rel on rel.oid = a.attrelid

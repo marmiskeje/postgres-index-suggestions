@@ -45,7 +45,7 @@ namespace DiplomaThesis.WebUI.Controllers
                     {
                         using (var scope = Converter.CreateDatabaseScope(d.ID))
                         {
-                            var relations = relationsRepository.GetAllNonSystems().OrderBy(x => x.Name);
+                            var relations = relationsRepository.GetAll().OrderBy(x => x.Name);
                             result.Data.Add(d.ID, new List<RelationData>());
                             foreach (var r in relations)
                             {
@@ -79,7 +79,7 @@ namespace DiplomaThesis.WebUI.Controllers
                     {
                         using (var scope = Converter.CreateDatabaseScope(d.ID))
                         {
-                            var indices = indicesRepository.GetAllNonSystems().OrderBy(x => x.Name);
+                            var indices = indicesRepository.GetAll().OrderBy(x => x.Name);
                             foreach (var i in indices)
                             {
                                 if (!result.Data.ContainsKey(i.RelationID))
@@ -116,7 +116,7 @@ namespace DiplomaThesis.WebUI.Controllers
                     {
                         using (var scope = Converter.CreateDatabaseScope(d.ID))
                         {
-                            var procedures = proceduresRepository.GetAllNonSystems().OrderBy(x => x.Name);
+                            var procedures = proceduresRepository.GetAll().OrderBy(x => x.Name);
                             result.Data.Add(d.ID, new List<StoredProcedureData>());
                             foreach (var p in procedures)
                             {

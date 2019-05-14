@@ -69,10 +69,10 @@ namespace DiplomaThesis.WorkloadAnalyzer
 
         private bool IsIndexApplicableForQuery(StatementQueryExtractedData extractedData, IndexDefinition index)
         {
-            return extractedData.WhereAttributes
-                .Union(extractedData.JoinAttributes)
-                .Union(extractedData.GroupByAttributes)
-                .Union(extractedData.OrderByAttributes).Contains(index.Attributes.First());
+            return extractedData.WhereAttributes.All
+                .Union(extractedData.JoinAttributes.All)
+                .Union(extractedData.GroupByAttributes.All)
+                .Union(extractedData.OrderByAttributes.All).Contains(index.Attributes.First());
         }
 
         private bool IsIncludedAttribute(string indexDefinition, string attributeName)

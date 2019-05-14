@@ -32,7 +32,7 @@ namespace DiplomaThesis.DBMS.Postgres
             var query = "select * from hypopg_relation_size(@IndexID)";
             var param = new
             {
-                IndexID = indexID
+                IndexID = (long)indexID
             };
             return ExecuteQuery<VirtualIndexSize>(query, param).Single().Bytes;
         }

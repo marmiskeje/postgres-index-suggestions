@@ -25,7 +25,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             {
                 allImprovingIndices.AddRange(env.ImprovingPossibleIndices.All);
             }
-            var notImprovingIndices = context.IndicesDesignData.PossibleIndices.All.Intersect(allImprovingIndices);
+            var notImprovingIndices = context.IndicesDesignData.PossibleIndices.All.Except(allImprovingIndices).ToHashSet();
             List<VirtualIndicesEnvironment> environmentsToDel = new List<VirtualIndicesEnvironment>();
             foreach (var env in context.IndicesDesignData.Environments)
             {

@@ -12,7 +12,7 @@ namespace DiplomaThesis.DBMS.Postgres
         {
             var result = new ExplainResult();
             result.PlanJson = jsonPlan;
-            var jObject = new JObject(jsonPlan);
+            var jObject = JObject.Parse(jsonPlan.Substring(1, jsonPlan.Length - 2));
             var plan = jObject.SelectToken("..Plan");
             if (plan != null)
             {
@@ -33,15 +33,11 @@ namespace DiplomaThesis.DBMS.Postgres
             if (nodeType.Contains("INDEX") && jObject.SelectToken("['Index Name']") != null)
             {
                 var indexName = jObject.SelectToken("['Index Name']").Value<string>();
-                //var relationName = jObject.SelectToken("['Relation Name']").Value<string>();
+                node.ScanOperation = new AnyIndexScanOperation();
                 allIndices.Add(indexName);
             }
-            /*
-            else if (nodeType == "Seq Scan" && jObject.SelectToken("['Relation Name']") != null)
-            {
-                var relationName = jObject.SelectToken("['Relation Name']").Value<string>();
-            }
-            */
+            node.StartupCost = jObject.SelectToken("['Startup Cost']").Value<decimal>();
+            node.TotalCost = jObject.SelectToken("['Total Cost']").Value<decimal>();
             var plans = jObject.SelectToken("Plans");
             if (plans != null)
             {

@@ -14,10 +14,10 @@ namespace DiplomaThesis.DBMS.Contracts
         public string Name => attribute.Name;
         public DbType DbType => attribute.DbType;
         public decimal CardinalityIndicator => attribute.CardinalityIndicator;
-        public object[] MostCommonValues => attribute.MostCommonValues;
+        public string[] MostCommonValues => attribute.MostCommonValues;
         public decimal[] MostCommonValuesFrequencies => attribute.MostCommonValuesFrequencies;
         public bool IsNullable => attribute.IsNullable;
-        public object[] HistogramBounds => attribute.HistogramBounds;
+        public string[] HistogramBounds => attribute.HistogramBounds;
         public AttributeData(RelationData relation, IRelationAttribute attribute)
         {
             Relation = relation;

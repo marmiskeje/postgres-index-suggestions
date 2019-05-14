@@ -22,12 +22,17 @@ namespace DiplomaThesis.DBMS.Contracts
             return result;
         }
     }
-    public abstract class HPartitioningAttributeDefinition
+    public abstract class HPartitioningAttributeDefinition : IComparable<HPartitioningAttributeDefinition>
     {
         public AttributeData Attribute { get; }
         public HPartitioningAttributeDefinition(AttributeData attribute)
         {
             Attribute = attribute;
+        }
+
+        public int CompareTo(HPartitioningAttributeDefinition other)
+        {
+            return GetHashCode().CompareTo(other.GetHashCode());
         }
     }
 
@@ -52,10 +57,10 @@ namespace DiplomaThesis.DBMS.Contracts
     public class RangeHPartitionAttributeDefinition
     {
         public DbType DbType { get; }
-        public object FromValueInclusive { get; } 
-        public object ToValueExclusive { get; }
+        public string FromValueInclusive { get; }
+        public string ToValueExclusive { get; }
 
-        public RangeHPartitionAttributeDefinition(DbType dbType, object fromValueInclusive, object toValueExclusive)
+        public RangeHPartitionAttributeDefinition(DbType dbType, string fromValueInclusive, string toValueExclusive)
         {
             DbType = dbType;
             FromValueInclusive = fromValueInclusive;

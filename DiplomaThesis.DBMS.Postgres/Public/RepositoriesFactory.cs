@@ -18,7 +18,7 @@ namespace DiplomaThesis.DBMS.Postgres
             Dapper.SqlMapper.SetTypeMap(typeof(Relation), new DapperColumnAttributeTypeMapper<Relation>());
             Dapper.SqlMapper.SetTypeMap(typeof(RelationAttribute), new DapperColumnAttributeTypeMapper<RelationAttribute>());
             Dapper.SqlMapper.SetTypeMap(typeof(Index), new DapperColumnAttributeTypeMapper<Index>());
-            Dapper.SqlMapper.SetTypeMap(typeof(ExplainResult), new DapperColumnAttributeTypeMapper<ExplainResult>());
+            Dapper.SqlMapper.SetTypeMap(typeof(ExplainResultDbData), new DapperColumnAttributeTypeMapper<ExplainResultDbData>());
             Dapper.SqlMapper.SetTypeMap(typeof(VirtualIndex), new DapperColumnAttributeTypeMapper<VirtualIndex>());
             Dapper.SqlMapper.SetTypeMap(typeof(Database), new DapperColumnAttributeTypeMapper<Database>());
             Dapper.SqlMapper.SetTypeMap(typeof(DatabaseStatistics), new DapperColumnAttributeTypeMapper<DatabaseStatistics>());
@@ -119,6 +119,11 @@ namespace DiplomaThesis.DBMS.Postgres
         public IVirtualHPartitioningsRepository GetVirtualHPartitioningsRepository()
         {
             return new VirtualHPartitioningsRepository(settings.DBConnection.ConnectionString);
+        }
+
+        public IRawSqlExecutionRepository GetRawSqlExecutionRepository()
+        {
+            return new RawSqlExecutionRepository(settings.DBConnection.ConnectionString);
         }
     }
 }
