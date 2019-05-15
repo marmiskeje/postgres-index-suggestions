@@ -9,9 +9,9 @@ namespace DiplomaThesis.Collector.Tests.Scenarios
 {
     public class ScenariosStatements
     {
-        private DatabaseScope CreateDatabaseScope()
+        private DatabaseScope CreateDatabaseScope(string databaseName = null)
         {
-            return new DatabaseScope("tpcc");
+            return new DatabaseScope(databaseName ?? "tpcc");
         }
 
         private IRawSqlExecutionRepository Repository
@@ -55,5 +55,15 @@ namespace DiplomaThesis.Collector.Tests.Scenarios
                 var result = Repository.ExecuteQuery<dynamic>(query);
             }
         }
+        [Test]
+        public void Scenario_BaseTeeest()
+        {
+            string query = "select max(temperature) from test.temperature_log where sensor_id = 3";
+            using (var scope = CreateDatabaseScope("test"))
+            {
+                var result = Repository.ExecuteQuery<dynamic>(query);
+            }
+        }
+        
     }
 }

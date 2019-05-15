@@ -83,10 +83,12 @@ namespace DiplomaThesis.DBMS.Postgres
             }
             else
             {
+                var toPart = partitionParts.Take(partitionParts.Count - 1).Select(x => toSqlValueStringConverter.ConvertStringRepresentation(x.DbType, x.FromValueInclusive)).ToList();
+                toPart.Add(partitionParts.Select(x => toSqlValueStringConverter.ConvertStringRepresentation(x.DbType, x.ToValueExclusive)).Last());
                 result.PartitionStatements.Add(String.Format("PARTITION OF {0}.{1} FOR VALUES FROM ({2}) TO ({3})",
                                                                 relation.SchemaName, relation.Name,
                                                                 String.Join(",", partitionParts.Select(x => toSqlValueStringConverter.ConvertStringRepresentation(x.DbType, x.FromValueInclusive))),
-                                                                String.Join(",", partitionParts.Select(x => toSqlValueStringConverter.ConvertStringRepresentation(x.DbType, x.ToValueExclusive)))
+                                                                String.Join(",", toPart)
                                                             )
                                               );
             }

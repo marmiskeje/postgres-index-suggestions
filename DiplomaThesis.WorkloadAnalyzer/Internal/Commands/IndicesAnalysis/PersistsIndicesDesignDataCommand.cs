@@ -47,7 +47,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                             possibleIndicesRepository.Create(createdIndex);
                             createdIndices.Add(i, createdIndex);
                         }
-                        virtualEnvPossibleIndicesRepository.Create(Convert(createdEnvironment, createdIndices[i]));
+                        virtualEnvPossibleIndicesRepository.Create(Convert(createdEnvironment, createdIndices[i], env.IndicesEvaluation[i]));
                     }
                     Dictionary<long, HashSet<long>> coveringIndicesPerStatement = new Dictionary<long, HashSet<long>>();
                     foreach (var kv in env.PossibleIndices.AllCoveringPerQuery)
@@ -68,13 +68,13 @@ namespace DiplomaThesis.WorkloadAnalyzer
                             }
                         }
                     }
-                    foreach (var kv in env.PlansPerStatement)
+                    foreach (var kv in env.StatementsEvaluation)
                     {
                         var statementID = kv.Key;
-                        var explainResult = kv.Value;
-                        var createdPlan = Convert(statementID, explainResult);
+                        var eval = kv.Value;
+                        var createdPlan = Convert(statementID, eval.ExecutionPlan);
                         executionPlansRepository.Create(createdPlan);
-                        virtualEnvStatementEvalsRepository.Create(Convert(createdEnvironment, statementID, createdPlan));
+                        virtualEnvStatementEvalsRepository.Create(Convert(createdEnvironment, statementID, createdPlan, eval));
                     }
                 }
                 scope.Complete();
@@ -83,7 +83,12 @@ namespace DiplomaThesis.WorkloadAnalyzer
 
         private VirtualEnvironmentPossibleCoveringIndex Convert(VirtualEnvironment env, long statementID, PossibleIndex createdIndex)
         {
-            return new VirtualEnvironmentPossibleCoveringIndex() { VirtualEnvironmentID = env.ID, PossibleIndexID = createdIndex.ID, NormalizedStatementID = statementID };
+            return new VirtualEnvironmentPossibleCoveringIndex()
+            {
+                VirtualEnvironmentID = env.ID,
+                PossibleIndexID = createdIndex.ID,
+                NormalizedStatementID = statementID,
+            };
         }
 
         private ExecutionPlan Convert(long statementID, DBMS.Contracts.IExplainResult explainResult)
@@ -91,20 +96,23 @@ namespace DiplomaThesis.WorkloadAnalyzer
             return new ExecutionPlan() { Json = explainResult.PlanJson, TotalCost = explainResult.Plan.TotalCost };
         }
 
-        private VirtualEnvironmentStatementEvaluation Convert(VirtualEnvironment env, long statementID, ExecutionPlan plan)
+        private DAL.Contracts.VirtualEnvironmentStatementEvaluation Convert(VirtualEnvironment env, long statementID, ExecutionPlan plan, VirtualEnvironmentStatementEvaluation eval)
         {
-            VirtualEnvironmentStatementEvaluation result = new VirtualEnvironmentStatementEvaluation();
+            DAL.Contracts.VirtualEnvironmentStatementEvaluation result = new DAL.Contracts.VirtualEnvironmentStatementEvaluation();
             result.ExecutionPlanID = plan.ID;
             result.NormalizedStatementID = statementID;
             result.VirtualEnvironmentID = env.ID;
+            result.GlobalImprovementRatio = eval.GlobalImprovementRatio;
+            result.LocalImprovementRatio = eval.LocalImprovementRatio;
             return result;
         }
 
-        private VirtualEnvironmentPossibleIndex Convert(VirtualEnvironment environment, PossibleIndex possibleIndex)
+        private VirtualEnvironmentPossibleIndex Convert(VirtualEnvironment environment, PossibleIndex possibleIndex, VirtualIndicesEnvironmentIndexEvaluation indexEval)
         {
             VirtualEnvironmentPossibleIndex result = new VirtualEnvironmentPossibleIndex();
             result.PossibleIndexID = possibleIndex.ID;
             result.VirtualEnvironemntID = environment.ID;
+            result.ImprovementRatio = indexEval.ImprovementRatio;
             return result;
         }
 

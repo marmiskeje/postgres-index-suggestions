@@ -24,53 +24,57 @@ namespace DiplomaThesis.WorkloadAnalyzer
         {
             using (var scope = new DatabaseScope(context.Database.Name))
             {
-                foreach (var kv in context.StatementsData.AllSelects)
+                foreach (var kv in context.StatementsData.All)
                 {
-                    var statement = kv.Value;
-                    foreach (var query in statement.NormalizedStatement.StatementDefinition.IndependentQueries)
+                    ExtractDataFromStatement(kv.Value);
+                }
+            }
+        }
+
+        private void ExtractDataFromStatement(NormalizedWorkloadStatement statement)
+        {
+            foreach (var query in statement.NormalizedStatement.StatementDefinition.IndependentQueries)
+            {
+                var allWhereOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
+                var btreeWhereAttributes = new HashSet<AttributeData>();
+                var allJoinOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
+                var btreeJoinAttributes = new HashSet<AttributeData>();
+                var allGroupByOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
+                var btreeGroupByAttributes = new HashSet<AttributeData>();
+                var allOrderByOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
+                var btreeOrderByAttributes = new HashSet<AttributeData>();
+                FillAllAttributesAndOperatorsFromExpressions(allWhereOperatorsByAttribute, btreeWhereAttributes, query.WhereExpressions, new HashSet<string>());
+                FillAllAttributesAndOperatorsFromExpressions(allJoinOperatorsByAttribute, btreeJoinAttributes, query.JoinExpressions, new HashSet<string>());
+                FillAllAttributesAndOperatorsFromExpressions(allGroupByOperatorsByAttribute, btreeGroupByAttributes, query.GroupByExpressions, new HashSet<string>());
+                FillAllAttributesAndOperatorsFromExpressions(allOrderByOperatorsByAttribute, btreeOrderByAttributes, query.OrderByExpressions, new HashSet<string>());
+                var allProjectionOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
+                var btreeProjectionAttributes = new HashSet<AttributeData>();
+                foreach (var t in query.ProjectionAttributes)
+                {
+                    var attribute = attributesRepository.Get(t.RelationID, t.AttributeNumber);
+                    if (attribute != null)
                     {
-                        var allWhereOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
-                        var btreeWhereAttributes = new HashSet<AttributeData>();
-                        var allJoinOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
-                        var btreeJoinAttributes = new HashSet<AttributeData>();
-                        var allGroupByOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
-                        var btreeGroupByAttributes = new HashSet<AttributeData>();
-                        var allOrderByOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
-                        var btreeOrderByAttributes = new HashSet<AttributeData>();
-                        FillAllAttributesAndOperatorsFromExpressions(allWhereOperatorsByAttribute, btreeWhereAttributes, query.WhereExpressions, new HashSet<string>());
-                        FillAllAttributesAndOperatorsFromExpressions(allJoinOperatorsByAttribute, btreeJoinAttributes, query.JoinExpressions, new HashSet<string>());
-                        FillAllAttributesAndOperatorsFromExpressions(allGroupByOperatorsByAttribute, btreeGroupByAttributes, query.GroupByExpressions, new HashSet<string>());
-                        FillAllAttributesAndOperatorsFromExpressions(allOrderByOperatorsByAttribute, btreeOrderByAttributes, query.OrderByExpressions, new HashSet<string>());
-                        var allProjectionOperatorsByAttribute = new Dictionary<AttributeData, ISet<string>>();
-                        var btreeProjectionAttributes = new HashSet<AttributeData>();
-                        foreach (var t in query.ProjectionAttributes)
+                        if (context.RelationsData.TryGetRelation(t.RelationID, out var relationData))
                         {
-                            var attribute = attributesRepository.Get(t.RelationID, t.AttributeNumber);
-                            if (attribute != null)
+                            var toAdd = CreateIndexAttribute(relationData, attribute);
+                            if (!allProjectionOperatorsByAttribute.ContainsKey(toAdd))
                             {
-                                if (context.RelationsData.TryGetRelation(t.RelationID, out var relationData))
-                                {
-                                    var toAdd = CreateIndexAttribute(relationData, attribute);
-                                    if (!allProjectionOperatorsByAttribute.ContainsKey(toAdd))
-                                    {
-                                        allProjectionOperatorsByAttribute.Add(toAdd, new HashSet<string>());
-                                    }
-                                    if (supportedOperators.Intersect(attribute.SupportedOperators).Count() > 0 // is comparable operator
-                                        && !context.Workload.Definition.Relations.ForbiddenValues.Contains(t.RelationID)) // relation is not forbidden
-                                    {
-                                        btreeProjectionAttributes.Add(toAdd);
-                                    }
-                                }
+                                allProjectionOperatorsByAttribute.Add(toAdd, new HashSet<string>());
+                            }
+                            if (supportedOperators.Intersect(attribute.SupportedOperators).Count() > 0 // is comparable operator
+                                && !context.Workload.Definition.Relations.ForbiddenValues.Contains(t.RelationID)) // relation is not forbidden
+                            {
+                                btreeProjectionAttributes.Add(toAdd);
                             }
                         }
-                        var data = new StatementQueryExtractedData(new SetOfAttributes(allWhereOperatorsByAttribute, btreeWhereAttributes),
-                                                                   new SetOfAttributes(allJoinOperatorsByAttribute, btreeJoinAttributes),
-                                                                   new SetOfAttributes(allGroupByOperatorsByAttribute, btreeGroupByAttributes),
-                                                                   new SetOfAttributes(allOrderByOperatorsByAttribute, btreeOrderByAttributes),
-                                                                   new SetOfAttributes(allProjectionOperatorsByAttribute, btreeProjectionAttributes));
-                        context.StatementsExtractedData.Add(statement.NormalizedStatement, query, data);
                     }
                 }
+                var data = new StatementQueryExtractedData(new SetOfAttributes(allWhereOperatorsByAttribute, btreeWhereAttributes),
+                                                           new SetOfAttributes(allJoinOperatorsByAttribute, btreeJoinAttributes),
+                                                           new SetOfAttributes(allGroupByOperatorsByAttribute, btreeGroupByAttributes),
+                                                           new SetOfAttributes(allOrderByOperatorsByAttribute, btreeOrderByAttributes),
+                                                           new SetOfAttributes(allProjectionOperatorsByAttribute, btreeProjectionAttributes));
+                context.StatementsExtractedData.Add(statement.NormalizedStatement, query, data);
             }
         }
 

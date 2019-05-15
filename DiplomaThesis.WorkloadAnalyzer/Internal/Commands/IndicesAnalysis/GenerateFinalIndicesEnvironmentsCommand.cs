@@ -1,4 +1,5 @@
-﻿using DiplomaThesis.Common.CommandProcessing;
+﻿using DiplomaThesis.Common;
+using DiplomaThesis.Common.CommandProcessing;
 using DiplomaThesis.DBMS.Contracts;
 using System;
 using System.Collections.Generic;

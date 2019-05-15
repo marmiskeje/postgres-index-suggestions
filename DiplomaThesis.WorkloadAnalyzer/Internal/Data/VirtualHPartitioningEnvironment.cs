@@ -12,13 +12,19 @@ namespace DiplomaThesis.WorkloadAnalyzer
         /// <summary>
         /// Key: NormalizedStatementID
         /// </summary>
-        public Dictionary<long, IExplainResult> PlansPerStatement { get; } = new Dictionary<long, IExplainResult>();
+        public Dictionary<long, VirtualEnvironmentStatementEvaluation> StatementsEvaluation { get; } = new Dictionary<long, VirtualEnvironmentStatementEvaluation>();
 
+        public VirtualHPartitioningEnvironmentHPartitioningEvaluation Evaluation { get; } = new VirtualHPartitioningEnvironmentHPartitioningEvaluation();
         public bool IsImproving { get; set; }
 
         public VirtualHPartitioningEnvironment(HPartitioningDefinition partitioning)
         {
             Partitioning = partitioning;
         }
+    }
+
+    internal class VirtualHPartitioningEnvironmentHPartitioningEvaluation
+    {
+        public decimal ImprovementRatio { get; set; }
     }
 }

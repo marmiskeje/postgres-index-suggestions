@@ -24,13 +24,13 @@ namespace DiplomaThesis.WorkloadAnalyzer
             {
                 var query = kv.Key.Query;
                 var statementId = kv.Key.NormalizedStatementID;
-                var statement = context.StatementsData.AllSelects[statementId].NormalizedStatement;
+                var statement = context.StatementsData.All[statementId].NormalizedStatement;
                 var possibleBaseIndices = kv.Value;
                 var queryExtractedData = context.StatementsExtractedData.DataPerQuery[kv.Key];
                 List<IndexDefinition> coveringIndices = new List<IndexDefinition>();
                 foreach (var possibleBaseIndex in possibleBaseIndices)
                 {
-                    if (TryCreateCoveringIndex(queryExtractedData, possibleBaseIndex, out var coveringIndex) != CreateCoveringIndexResult.NotPossible)
+                    if (TryCreateCoveringIndex(query, queryExtractedData, possibleBaseIndex, out var coveringIndex) != CreateCoveringIndexResult.NotPossible)
                     {
                         coveringIndices.Add(coveringIndex);
                     }
@@ -41,7 +41,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             {
                 var query = kv.Key.Query;
                 var statementId = kv.Key.NormalizedStatementID;
-                var statement = context.StatementsData.AllSelects[statementId].NormalizedStatement;
+                var statement = context.StatementsData.All[statementId].NormalizedStatement;
                 var possibleBaseIndices = kv.Value;
                 var queryExtractedData = context.StatementsExtractedData.DataPerQuery[kv.Key];
                 List<IndexDefinition> coveringIndices = new List<IndexDefinition>();
@@ -49,7 +49,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 {
                     if (!context.Workload.Definition.Relations.ForbiddenValues.Contains(possibleBaseIndex.Relation.ID))
                     {
-                        if (TryCreateCoveringIndex(queryExtractedData, possibleBaseIndex, out var coveringIndex) == CreateCoveringIndexResult.CreatedNew)
+                        if (TryCreateCoveringIndex(query, queryExtractedData, possibleBaseIndex, out var coveringIndex) == CreateCoveringIndexResult.CreatedNew)
                         {
                             coveringIndices.Add(coveringIndex);
                         }
@@ -66,7 +66,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             CreatedNew = 2
         }
 
-        private CreateCoveringIndexResult TryCreateCoveringIndex(StatementQueryExtractedData queryExtractedData, IndexDefinition baseIndex, out IndexDefinition coveringIndex)
+        private CreateCoveringIndexResult TryCreateCoveringIndex(DAL.Contracts.StatementQuery query, StatementQueryExtractedData queryExtractedData, IndexDefinition baseIndex, out IndexDefinition coveringIndex)
         {
             var allWhereAttributes = queryExtractedData.WhereAttributes.All.Where(x => x.Relation.ID == baseIndex.Relation.ID);
             var bTreeWhereAttributes = queryExtractedData.WhereAttributes.BTreeApplicable.Where(x => x.Relation.ID == baseIndex.Relation.ID);
@@ -82,7 +82,8 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 && allJoinAttributes.Count() == bTreeJoinAttributes.Count()
                 && allGroupByAttributes.Count() == bTreeGroupByAttributes.Count()
                 && allOrderByAttributes.Count() == bTreeOrderByAttributes.Count()
-                && allProjectionAttributes.Count() == bTreeProjectionAttributes.Count())
+                && allProjectionAttributes.Count() == bTreeProjectionAttributes.Count()
+                && query.CommandType != DAL.Contracts.StatementQueryCommandType.Insert)
             {
                 var includeAttributes = new HashSet<AttributeData>(bTreeWhereAttributes);
                 includeAttributes.UnionWith(bTreeJoinAttributes);

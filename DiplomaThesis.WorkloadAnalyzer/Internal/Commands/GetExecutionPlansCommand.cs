@@ -24,7 +24,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             dictionary.Clear();
             using (var scope = new DatabaseScope(context.Database.Name))
             {
-                foreach (var s in context.StatementsData.AllSelects)
+                foreach (var s in context.StatementsData.All)
                 {
                     var explainResult = explainRepository.Eplain(s.Value.RepresentativeStatistics.RepresentativeStatement);
                     dictionary.Add(s.Key, explainResult);

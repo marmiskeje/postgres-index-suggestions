@@ -12,10 +12,13 @@ namespace DiplomaThesis.DAL.Contracts
         public VirtualEnvironment VirtualEnvironment { get; set; }
         [Required]
         public long NormalizedStatementID { get; set; }
-
         public NormalizedStatement NormalizedStatement { get; set; }
         [Required]
         public long ExecutionPlanID { get; set; }
         public ExecutionPlan ExecutionPlan { get; set; }
+        [Required]
+        public decimal LocalImprovementRatio { get; set; }
+        [Required]
+        public decimal GlobalImprovementRatio { get; set; }
     }
 }

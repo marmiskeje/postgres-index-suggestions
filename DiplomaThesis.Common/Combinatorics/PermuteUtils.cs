@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DiplomaThesis.WorkloadAnalyzer
+namespace DiplomaThesis.Common
 {
-    internal class PermuteUtils
+    public class PermuteUtils
     {
         // Returns an enumeration of enumerators, one for each permutation
         // of the input.

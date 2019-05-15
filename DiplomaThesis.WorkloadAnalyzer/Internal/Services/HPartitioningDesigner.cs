@@ -9,7 +9,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
 {
     internal class AttributeHPartitioningDesigner : IAttributeHPartitioningDesigner
     {
-        private const int MIN_COUNTS_OF_PARTITIONS = 3;
+        private const int MIN_COUNTS_OF_PARTITIONS = 2;
         private const int MAX_COUNT_OF_PARTITIONS = 50;
         private const int POSSIBLE_ADDITIONAL_PARTITIONS_COUNT = 2;
         private static readonly HashSet<string> comparableOperators = new HashSet<string>(new string[] { ">", ">=", "<", "<=" });
@@ -125,28 +125,26 @@ namespace DiplomaThesis.WorkloadAnalyzer
             {
                 histogramBounds.AddRange(attribute.MostCommonValues);
             }
-            if (histogramBounds.Count >= MIN_COUNTS_OF_PARTITIONS)
+            histogramBounds.Sort(GetComparer(attribute.DbType));
+            if (histogramBounds.Count > MIN_COUNTS_OF_PARTITIONS)
             {
                 result = new RangeHPartitioningAttributeDefinition(attribute);
-                int partitionsCount = Math.Min(histogramBounds.Count, MAX_COUNT_OF_PARTITIONS);
+                int partitionsCount = Math.Min(histogramBounds.Count - 1, MAX_COUNT_OF_PARTITIONS);
                 int takeCount = Math.Max((int)Math.Ceiling(histogramBounds.Count / (double)partitionsCount), 1);
                 int counter = 0;
+                string startBoundary = histogramBounds.First();
                 while (counter < partitionsCount)
                 {
                     var bounds = histogramBounds.Skip(counter).Take(takeCount);
-                    var startBoundary = bounds.First();
-                    if (counter > 0)
-                    {
-                        startBoundary = histogramBounds[counter - 1];
-                    }
-                    var endBoundary = bounds.Last();
+                    string endBoundary = bounds.Last();
                     result.Partitions.Add(new RangeHPartitionAttributeDefinition(attribute.DbType, startBoundary, endBoundary));
-                    counter += takeCount;
+                    counter++;
+                    startBoundary = endBoundary;
                 }
                 if (result.Partitions.Count < MAX_COUNT_OF_PARTITIONS)
                 {
                     int anotherAdditionalPartitionsCount = Math.Min(MAX_COUNT_OF_PARTITIONS - result.Partitions.Count, POSSIBLE_ADDITIONAL_PARTITIONS_COUNT);
-                    string startBoundary = result.Partitions.Last().ToValueExclusive;
+                    startBoundary = result.Partitions.Last().ToValueExclusive;
                     string endBoundary = GetNextEndBoundary(attribute.DbType, result.Partitions.Last().FromValueInclusive, result.Partitions.Last().ToValueExclusive);
                     int additionalPartitionsCounter = 0;
                     while (endBoundary != null && additionalPartitionsCounter < anotherAdditionalPartitionsCount && !IsMaxValue(attribute.DbType, endBoundary))
@@ -160,6 +158,62 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 }
             }
             return result;
+        }
+
+        private class NumericValueComparer : IComparer<string>
+        {
+            private static readonly CultureInfo cultureInfo = new CultureInfo("en-US");
+            public int Compare(string x, string y)
+            {
+                return decimal.Parse(x, cultureInfo).CompareTo(decimal.Parse(y, cultureInfo));
+            }
+        }
+
+        private class DateTimeValueComparer : IComparer<string>
+        {
+            private static readonly CultureInfo cultureInfo = new CultureInfo("en-US");
+            public int Compare(string x, string y)
+            {
+                return DateTime.Parse(x).CompareTo(DateTime.Parse(y));
+            }
+        }
+
+        private class TimeSpanValueComparer : IComparer<string>
+        {
+            private static readonly CultureInfo cultureInfo = new CultureInfo("en-US");
+            public int Compare(string x, string y)
+            {
+                return TimeSpan.Parse(x).CompareTo(TimeSpan.Parse(y));
+            }
+        }
+
+        private IComparer<string> GetComparer(DbType type)
+        {
+            switch (type)
+            {
+                case DbType.Byte:
+                case DbType.UInt16:
+                case DbType.UInt32:
+                case DbType.UInt64:
+                    return new NumericValueComparer();
+                case DbType.Int16:
+                case DbType.Int32:
+                case DbType.Int64:
+                case DbType.SByte:
+                    return new NumericValueComparer();
+                case DbType.Date:
+                case DbType.DateTime:
+                case DbType.DateTime2:
+                case DbType.DateTimeOffset:
+                    return new DateTimeValueComparer();
+                case DbType.Decimal:
+                case DbType.Double:
+                case DbType.Single:
+                    return new NumericValueComparer();
+                case DbType.Time:
+                    return new TimeSpanValueComparer();
+            }
+            return null;
         }
 
         private string GetNextEndBoundary(DbType type, string previousStartBoundary, string previousEndBoundary)

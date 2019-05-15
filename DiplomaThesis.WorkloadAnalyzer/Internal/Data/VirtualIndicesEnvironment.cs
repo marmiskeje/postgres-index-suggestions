@@ -14,11 +14,25 @@ namespace DiplomaThesis.WorkloadAnalyzer
         /// <summary>
         /// Key: NormalizedStatementID
         /// </summary>
-        public Dictionary<long, IExplainResult> PlansPerStatement { get; } = new Dictionary<long, IExplainResult>();
+        public Dictionary<long, VirtualEnvironmentStatementEvaluation> StatementsEvaluation { get; } = new Dictionary<long, VirtualEnvironmentStatementEvaluation>();
+
+        public Dictionary<IndexDefinition, VirtualIndicesEnvironmentIndexEvaluation> IndicesEvaluation { get; } = new Dictionary<IndexDefinition, VirtualIndicesEnvironmentIndexEvaluation>();
 
         public VirtualIndicesEnvironment(IndicesData possibleIndices)
         {
             PossibleIndices = possibleIndices;
         }
+    }
+
+    internal class VirtualEnvironmentStatementEvaluation
+    {
+        public IExplainResult ExecutionPlan { get; set; }
+        public decimal LocalImprovementRatio { get; set; }
+        public decimal GlobalImprovementRatio { get; set; }
+    }
+
+    internal class VirtualIndicesEnvironmentIndexEvaluation
+    {
+        public decimal ImprovementRatio { get; set; }
     }
 }

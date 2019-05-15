@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace DiplomaThesis.WorkloadAnalyzer
+namespace DiplomaThesis.Common
 {
     /// <summary>
     /// Stores a set of elements from which combinations may be drawn.
@@ -76,7 +76,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             }
         }
 
-        internal int Count
+        public int Count
         {
             get
             {

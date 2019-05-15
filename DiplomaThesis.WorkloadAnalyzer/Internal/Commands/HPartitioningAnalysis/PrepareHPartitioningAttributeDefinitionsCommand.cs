@@ -23,7 +23,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             foreach (var kv in context.StatementsData.MostSignificantSelectQueriesByRelation)
             {
                 var relationID = kv.Key;
-                if (context.RelationsData.TryGetRelation(relationID, out var relation))
+                if (context.RelationsData.TryGetRelation(relationID, out var relation) && !context.Workload.Definition.Relations.ForbiddenValues.Contains(relationID))
                 {
                     if (relation.TuplesCount >= MIN_RELATION_TUPLES_COUNT_FOR_PARTITIONING)
                     {

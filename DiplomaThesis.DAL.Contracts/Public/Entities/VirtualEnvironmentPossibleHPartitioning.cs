@@ -19,6 +19,8 @@ namespace DiplomaThesis.DAL.Contracts
         public string PartitioningStatement { get; set; }
         [Required]
         public string PartitionStatementsData { get; set; }
+        [Required]
+        public decimal ImprovementRatio { get; set; }
         [NotMapped]
         public HashSet<string> PartitionStatements { get; set; } = new HashSet<string>();
     }

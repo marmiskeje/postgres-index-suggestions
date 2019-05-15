@@ -80,23 +80,36 @@ namespace DiplomaThesis.WorkloadAnalyzer
                             {
                                 var statementID = kv.Key;
                                 var indices = kv.Value;
-                                var normalizedStatement = context.StatementsData.AllSelects[statementID].NormalizedStatement;
-                                var representativeStatement = context.StatementsData.AllSelects[statementID].RepresentativeStatistics.RepresentativeStatement;
+                                var workloadStatement = context.StatementsData.All[statementID];
+                                var normalizedStatement = workloadStatement.NormalizedStatement;
+                                var representativeStatement = workloadStatement.RepresentativeStatistics.RepresentativeStatement;
                                 var statementToUse = RepresentativeStatementReplacementUtility.Provide(normalizedStatement, representativeStatement, context.RelationsData);
                                 var explainResult = explainRepository.Eplain(statementToUse);
                                 var latestPlan = explainResult.Plan;
+                                var realPlan = context.RealExecutionPlansForStatements[statementID].Plan;
                                 HashSet<IndexDefinition> improvingVirtualIndices = new HashSet<IndexDefinition>();
+                                VirtualEnvironmentStatementEvaluation statementEvaluation = new VirtualEnvironmentStatementEvaluation();
+                                statementEvaluation.ExecutionPlan = explainResult;
+                                statementEvaluation.LocalImprovementRatio = 1m - (realPlan.TotalCost > 0 ? latestPlan.TotalCost / realPlan.TotalCost : 0m);
+                                decimal statementPortion = context.StatementsData.AllExecutionsCount > 0 ? workloadStatement.TotalExecutionsCount / (decimal)context.StatementsData.AllExecutionsCount : 0m;
+                                statementEvaluation.GlobalImprovementRatio = statementEvaluation.LocalImprovementRatio * statementPortion;
+                                env.StatementsEvaluation.Add(statementID, statementEvaluation);
 
-                                env.PlansPerStatement.Add(statementID, explainResult);
-                                if (latestPlan.TotalCost < context.RealExecutionPlansForStatements[statementID].Plan.TotalCost)
+                                
+                                foreach (var i in indices)
                                 {
-                                    foreach (var i in indices)
+                                    var virtualIndex = virtualIndicesMapping[i];
+                                    if (explainResult.UsedIndexScanIndices.Contains(virtualIndex.Name))
                                     {
-                                        var virtualIndex = virtualIndicesMapping[i];
-                                        if (explainResult.UsedIndexScanIndices.Contains(virtualIndex.Name))
+                                        if (latestPlan.TotalCost < realPlan.TotalCost)
                                         {
                                             improvingVirtualIndices.Add(i);
+                                            if (!env.IndicesEvaluation.ContainsKey(i))
+                                            {
+                                                env.IndicesEvaluation.Add(i, new VirtualIndicesEnvironmentIndexEvaluation());
+                                            }
                                         }
+                                        env.IndicesEvaluation[i].ImprovementRatio += statementEvaluation.GlobalImprovementRatio;
                                     }
                                 }
                                 foreach (var query in normalizedStatement.StatementDefinition.IndependentQueries)
@@ -109,6 +122,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                                     }
                                 }
                             }
+                            
                         }
                     }
                     finally

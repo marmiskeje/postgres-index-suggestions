@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DiplomaThesis.Common.CommandProcessing;
 using DiplomaThesis.DAL.Contracts;
 using DiplomaThesis.DBMS.Contracts;
+using DiplomaThesis.Common;
 
 namespace DiplomaThesis.WorkloadAnalyzer
 {
@@ -22,7 +23,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             foreach (var kv in context.StatementsExtractedData.DataPerQuery)
             {
                 var query = kv.Key.Query;
-                var statement = context.StatementsData.AllSelects[kv.Key.NormalizedStatementID].NormalizedStatement;
+                var statement = context.StatementsData.All[kv.Key.NormalizedStatementID].NormalizedStatement;
                 var data = kv.Value;
                 GenerateIndices(data, statement, query);
             }

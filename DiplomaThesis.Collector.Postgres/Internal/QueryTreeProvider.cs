@@ -123,6 +123,17 @@ namespace DiplomaThesis.Collector.Postgres
                 });
                 index++;
             }
+            foreach (var g in groupedRtesByQuery)
+            {
+                var queryIndex = queryIndexMap[g.Key];
+                foreach (var item in g.Value)
+                {
+                    if (item.RteKind == RteKind.Relation && item.RelKind == RelKind.Relation && item.RelId.HasValue)
+                    {
+                        result.IndependentQueries[queryIndex].Relations.Add(new QueryTreeRelation() { ID = item.RelId.Value });
+                    }
+                }
+            }
             foreach (var g in groupedTargetResultsByQuery)
             {
                 var queryIndex = queryIndexMap[g.Key];

@@ -21,21 +21,18 @@ namespace DiplomaThesis.WorkloadAnalyzer
         {
             HashSet<uint> allFromStatements = new HashSet<uint>();
             Dictionary<uint, uint> evaluationReplacements = new Dictionary<uint, uint>();
-            using (var scope = new DatabaseScope(context.Database.Name))
+            foreach (var kv in context.StatementsData.AllQueriesByRelation)
             {
-                foreach (var kv in context.StatementsData.AllQueriesByRelation)
-                {
-                    var relationID = kv.Key;
-                    allFromStatements.Add(relationID);
-                }
-                foreach (var kv in context.WorkloadAnalysis.RelationReplacements)
-                {
-                    var originalRelationID = kv.SourceId;
-                    var replacementRelationID = kv.TargetId;
-                    evaluationReplacements.Add(originalRelationID, replacementRelationID);
-                }
+                var relationID = kv.Key;
+                allFromStatements.Add(relationID);
             }
-            context.RelationsData = new WorkloadRelationsData(relationsRepository, attributesRepository, allFromStatements, evaluationReplacements);
+            foreach (var kv in context.WorkloadAnalysis.RelationReplacements)
+            {
+                var originalRelationID = kv.SourceId;
+                var replacementRelationID = kv.TargetId;
+                evaluationReplacements.Add(originalRelationID, replacementRelationID);
+            }
+            context.RelationsData = new WorkloadRelationsData(context.Database.Name, relationsRepository, attributesRepository, allFromStatements, evaluationReplacements);
         }
     }
 }

@@ -13,5 +13,7 @@ namespace DiplomaThesis.DAL.Contracts
         [Required]
         public long PossibleIndexID { get; set; }
         public PossibleIndex PossibleIndex { get; set; }
+        [Required]
+        public decimal ImprovementRatio { get; set; }
     }
 }

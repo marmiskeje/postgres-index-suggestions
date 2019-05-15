@@ -21,6 +21,10 @@ namespace DiplomaThesis.DAL
                     .Where(x => x.DatabaseID == workload.DatabaseID)
                     .Where(x => x.Date >= fromInclusive)
                     .Where(x => x.Date < toExclusive);
+                query = query.Where(x => x.NormalizedStatement.CommandType == StatementQueryCommandType.Delete
+                                    || x.NormalizedStatement.CommandType == StatementQueryCommandType.Insert
+                                    || x.NormalizedStatement.CommandType == StatementQueryCommandType.Update
+                                    || x.NormalizedStatement.CommandType == StatementQueryCommandType.Select);
                 if (workload.Definition.Applications.ForbiddenValues.Count > 0)
                 {
                     query = query.Where(x => !workload.Definition.Applications.ForbiddenValues.Contains(x.ApplicationName));

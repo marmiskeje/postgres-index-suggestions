@@ -7,14 +7,16 @@ namespace DiplomaThesis.WorkloadAnalyzer
 {
     internal class WorkloadRelationsData
     {
+        private readonly string databaseName = null;
         private readonly IRelationsRepository relationsRepository;
         private readonly IRelationAttributesRepository attributesRepository;
         private readonly Dictionary<uint, RelationData> allRelations = new Dictionary<uint, RelationData>();
         private readonly Dictionary<uint, RelationData> evaluationReplacements = new Dictionary<uint, RelationData>();
         private readonly Dictionary<uint, PrimaryKeyData> primaryKeyPerRelation = new Dictionary<uint, PrimaryKeyData>();
-        public WorkloadRelationsData(IRelationsRepository relationsRepository, IRelationAttributesRepository attributesRepository,
+        public WorkloadRelationsData(string databaseName, IRelationsRepository relationsRepository, IRelationAttributesRepository attributesRepository,
                                      HashSet<uint> allRelationIdsFromStatements, IDictionary<uint, uint> evaluationReplacements)
         {
+            this.databaseName = databaseName;
             this.relationsRepository = relationsRepository;
             this.attributesRepository = attributesRepository;
             foreach (var relationId in allRelationIdsFromStatements)
@@ -34,13 +36,16 @@ namespace DiplomaThesis.WorkloadAnalyzer
         {
             if (!allRelations.ContainsKey(relationId))
             {
-                var loadedRelation = relationsRepository.Get(relationId);
-                RelationData relationData = null;
-                if (loadedRelation != null)
+                using (var scope = new DatabaseScope(databaseName))
                 {
-                    relationData = new RelationData(loadedRelation);
+                    var loadedRelation = relationsRepository.Get(relationId);
+                    RelationData relationData = null;
+                    if (loadedRelation != null)
+                    {
+                        relationData = new RelationData(loadedRelation);
+                    }
+                    allRelations.Add(relationId, relationData);
                 }
-                allRelations.Add(relationId, relationData);
             }
             return allRelations[relationId];
         }
@@ -63,24 +68,27 @@ namespace DiplomaThesis.WorkloadAnalyzer
         {
             if (!primaryKeyPerRelation.ContainsKey(relationId))
             {
-                var relation = relationsRepository.Get(relationId);
-                PrimaryKeyData primaryKeyToAdd = null;
-                if (relation != null)
+                using (var scope = new DatabaseScope(databaseName))
                 {
-                    List<AttributeData> primaryKeyAttributes = new List<AttributeData>();
-                    if (relation.PrimaryKeyAttributeNames != null)
+                    var relation = relationsRepository.Get(relationId);
+                    PrimaryKeyData primaryKeyToAdd = null;
+                    if (relation != null)
                     {
-                        foreach (var attributeName in relation.PrimaryKeyAttributeNames)
+                        List<AttributeData> primaryKeyAttributes = new List<AttributeData>();
+                        if (relation.PrimaryKeyAttributeNames != null)
                         {
-                            primaryKeyAttributes.Add(new AttributeData(GetRelation(relationId), attributesRepository.Get(relationId, attributeName)));
+                            foreach (var attributeName in relation.PrimaryKeyAttributeNames)
+                            {
+                                primaryKeyAttributes.Add(new AttributeData(GetRelation(relationId), attributesRepository.Get(relationId, attributeName)));
+                            }
+                        }
+                        if (primaryKeyAttributes.Count > 0)
+                        {
+                            primaryKeyToAdd = new PrimaryKeyData(primaryKeyAttributes);
                         }
                     }
-                    if (primaryKeyAttributes.Count > 0)
-                    {
-                        primaryKeyToAdd = new PrimaryKeyData(primaryKeyAttributes);
-                    }
+                    primaryKeyPerRelation.Add(relationId, primaryKeyToAdd);
                 }
-                primaryKeyPerRelation.Add(relationId, primaryKeyToAdd);
             }
             primaryKey = primaryKeyPerRelation[relationId];
             return primaryKey != null;

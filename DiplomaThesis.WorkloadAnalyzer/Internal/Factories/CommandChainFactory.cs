@@ -23,7 +23,8 @@ namespace DiplomaThesis.WorkloadAnalyzer
             chain.Add(commands.LoadWorkloadStatementsDataCommand(context));
             chain.Add(commands.LoadWorkloadRelationsDataCommand(context));
             chain.Add(commands.ExtractStatementsQueryDataCommand(context));
-            
+            chain.Add(commands.GetRealExecutionPlansCommand(context));
+
             // horizontal partitioning design
             chain.Add(commands.InitializeHPartitioningEnvironmentCommand(context));
             chain.Add(commands.PrepareHPartitioningAttributeDefinitionsCommand(context));
@@ -37,7 +38,6 @@ namespace DiplomaThesis.WorkloadAnalyzer
             chain.Add(commands.LoadExistingIndicesCommand(context));
             chain.Add(commands.GenerateBaseBtreeIndicesCommand(context));
             chain.Add(commands.ExcludeExistingIndicesCommand(context));
-            chain.Add(commands.GetRealExecutionPlansCommand(context));
             chain.Add(commands.GenerateBaseIndicesEnvironmentsCommand(context));
             chain.Add(commands.EvaluateIndicesEnvironmentsCommand(context));
             chain.Add(commands.CleanUpNotImprovingIndiciesAndTheirEnvsCommand(context));

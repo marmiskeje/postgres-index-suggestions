@@ -9,7 +9,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
 {
     internal class EvaluateHPartitioningEnvironmentsCommand : ChainableCommand
     {
-        private const decimal MIN_COST_PERCENTAGE_IMPROVEMENT = 0.75m; //75%
+        private const decimal MIN_GLOBAL_IMPROVEMENT_RATIO = 0.25m; //25%
         private readonly ILog log;
         private readonly WorkloadAnalysisContext context;
         private readonly IVirtualHPartitioningsRepository virtualHPartitioningsRepository;
@@ -46,26 +46,36 @@ namespace DiplomaThesis.WorkloadAnalyzer
                         }
                         if (hPartitioningCreated)
                         {
-                            decimal latestWeightedTotalCost = 0;
-                            decimal originalWeightedTotalCost = 0;
-                            foreach (var queryPair in context.StatementsData.AllSelectQueriesByRelation[env.Partitioning.Relation.ID])
+                            foreach (var queryPair in context.StatementsData.AllQueriesByRelation[env.Partitioning.Relation.ID])
                             {
                                 var statementID = queryPair.NormalizedStatementID;
-                                if (!env.PlansPerStatement.ContainsKey(statementID))
+                                if (!env.StatementsEvaluation.ContainsKey(statementID))
                                 {
-                                    var normalizedStatement = context.StatementsData.AllSelects[statementID].NormalizedStatement;
-                                    var representativeStatement = context.StatementsData.AllSelects[statementID].RepresentativeStatistics.RepresentativeStatement;
+                                    var workloadStatement = context.StatementsData.All[statementID];
+                                    var normalizedStatement = workloadStatement.NormalizedStatement;
+                                    var representativeStatement = workloadStatement.RepresentativeStatistics.RepresentativeStatement;
                                     var statementToUse = RepresentativeStatementReplacementUtility.Provide(normalizedStatement, representativeStatement, context.RelationsData);
-                                    var explainResult = explainRepository.Eplain(statementToUse);
-                                    var latestPlan = explainResult.Plan;
-                                    env.PlansPerStatement.Add(statementID, explainResult);
+                                    var realPlan = context.RealExecutionPlansForStatements[statementID].Plan;
+                                    IExplainResult explainResult = context.RealExecutionPlansForStatements[statementID];
+                                    var latestPlan = realPlan;
+                                    if (normalizedStatement.CommandType == DAL.Contracts.StatementQueryCommandType.Select
+                                        || normalizedStatement.CommandType == DAL.Contracts.StatementQueryCommandType.Insert) // hypo pg currently does not support explain for delete/update for h partitioning
+                                    {
+                                        explainResult = explainRepository.Eplain(statementToUse);
+                                        latestPlan = explainResult.Plan; 
+                                    }
+                                    
+                                    VirtualEnvironmentStatementEvaluation statementEvaluation = new VirtualEnvironmentStatementEvaluation();
+                                    statementEvaluation.ExecutionPlan = explainResult;
+                                    statementEvaluation.LocalImprovementRatio = 1m - (realPlan.TotalCost > 0 ? latestPlan.TotalCost / realPlan.TotalCost : 0m);
+                                    decimal statementPortion = context.StatementsData.AllExecutionsCount > 0 ? workloadStatement.TotalExecutionsCount / (decimal)context.StatementsData.AllExecutionsCount : 0m;
+                                    statementEvaluation.GlobalImprovementRatio = statementEvaluation.LocalImprovementRatio * statementPortion;
+                                    env.StatementsEvaluation.Add(statementID, statementEvaluation);
 
-                                    decimal weight = context.StatementsData.All[statementID].TotalExecutionsCount;
-                                    latestWeightedTotalCost += weight * latestPlan.TotalCost;
-                                    originalWeightedTotalCost += weight * context.RealExecutionPlansForStatements[statementID].Plan.TotalCost;
+                                    env.Evaluation.ImprovementRatio += statementEvaluation.GlobalImprovementRatio;
                                 }
                             }
-                            env.IsImproving = latestWeightedTotalCost <= originalWeightedTotalCost * MIN_COST_PERCENTAGE_IMPROVEMENT;
+                            env.IsImproving = env.Evaluation.ImprovementRatio >= MIN_GLOBAL_IMPROVEMENT_RATIO;
                         }
                     }
                     finally

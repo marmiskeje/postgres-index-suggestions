@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 
-namespace DiplomaThesis.WorkloadAnalyzer
+namespace DiplomaThesis.Common
 {
     /// <summary>
     /// Stores a full specification of combinations to generate, and allows the construction of enumerators to generate the combinations.

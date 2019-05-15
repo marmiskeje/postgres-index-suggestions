@@ -158,7 +158,7 @@ namespace DiplomaThesis.Collector.Postgres
 
         private string CreateUniqueKey(LoggedEntry entry)
         {
-            return $"{entry.ApplicationName}_{entry.ProcessID}_{entry.RemoteHostAndPort}_{entry.SessionID}_{entry.Timestamp}_{entry.UserName}_{entry.VirtualTransactionIdentifier}";
+            return $"{entry.ApplicationName}_{entry.ProcessID}_{entry.RemoteHostAndPort}_{entry.SessionID}_{entry.UserName}_{entry.VirtualTransactionIdentifier}";
         }
 
         private string CreateUniqueKeyWithoutLocalTransactionId(LoggedEntry entry)
@@ -168,7 +168,7 @@ namespace DiplomaThesis.Collector.Postgres
             {
                 backendTransactionId = backendTransactionId.Substring(0, backendTransactionId.IndexOf("/") + 1);
             }
-            return $"{entry.ApplicationName}_{entry.ProcessID}_{entry.RemoteHostAndPort}_{entry.SessionID}_{entry.Timestamp}_{entry.UserName}_{backendTransactionId}";
+            return $"{entry.ApplicationName}_{entry.ProcessID}_{entry.RemoteHostAndPort}_{entry.SessionID}_{entry.UserName}_{backendTransactionId}";
         }
 
         private void Timer_Job(object obj)

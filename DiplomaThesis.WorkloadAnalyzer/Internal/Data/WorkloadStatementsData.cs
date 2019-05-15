@@ -14,6 +14,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
         private readonly Dictionary<uint, List<NormalizedStatementQueryPair>> allQueriesByRelation = new Dictionary<uint, List<NormalizedStatementQueryPair>>();
         private readonly Dictionary<uint, List<NormalizedStatementQueryPair>> allSelectQueriesByRelation = new Dictionary<uint, List<NormalizedStatementQueryPair>>();
         private readonly Dictionary<uint, List<NormalizedStatementQueryPair>> mostSignificantSelectQueriesByRelation = new Dictionary<uint, List<NormalizedStatementQueryPair>>();
+        public long AllExecutionsCount { get; }
         /// <summary>
         /// Key: NormalizedStatement.ID
         /// </summary>
@@ -58,9 +59,11 @@ namespace DiplomaThesis.WorkloadAnalyzer
         }
         public WorkloadStatementsData(IEnumerable<NormalizedWorkloadStatement> data)
         {
+            long allExecutionsCount = 0;
             Dictionary<uint, decimal> allSelectQueriesTotalExecutionsByRelation = new Dictionary<uint, decimal>();
             foreach (var workloadStatement in data)
             {
+                allExecutionsCount += workloadStatement.TotalExecutionsCount;
                 var statementCommandType = workloadStatement.NormalizedStatement.StatementDefinition.CommandType;
                 all.Add(workloadStatement.NormalizedStatement.ID, workloadStatement);
                 if (statementCommandType == StatementQueryCommandType.Select)
@@ -98,6 +101,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 }
             }
             PrepareMostSignificantData(allSelectQueriesTotalExecutionsByRelation);
+            AllExecutionsCount = allExecutionsCount;
         }
         private void PrepareMostSignificantData(Dictionary<uint, decimal> allSelectQueriesTotalExecutionsByRelation)
         {
