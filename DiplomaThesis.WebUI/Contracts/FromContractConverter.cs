@@ -9,7 +9,25 @@ namespace DiplomaThesis.WebUI
 {
     public partial class ContractConverter
     {
-        public Workload CreateWorkload(WorkloadData source)
+        internal WorkloadAnalysis CreateWorkloadAnalysis(CreateWorkloadAnalysisRequest source)
+        {
+            WorkloadAnalysis result = new WorkloadAnalysis();
+            result.CreatedDate = DateTime.Now;
+            result.PeriodFromDate = source.PeriodFromDate;
+            result.PeriodToDate = source.PeriodToDate;
+            result.RelationReplacements = new List<WorkloadAnalysisRelationReplacement>();
+            if (source.RelationReplacements != null)
+            {
+                foreach (var kv in source.RelationReplacements)
+                {
+                    result.RelationReplacements.Add(new WorkloadAnalysisRelationReplacement() { SourceId = kv.Key, TargetId = kv.Value });
+                }
+            }
+            result.State = WorkloadAnalysisStateType.Created;
+            result.WorkloadID = source.WorkloadID;
+            return result;
+        }
+        internal Workload CreateWorkload(WorkloadData source)
         {
             Workload result = new Workload();
             result.CreatedDate = DateTime.Now;

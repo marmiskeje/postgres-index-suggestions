@@ -71,6 +71,7 @@
     <script type="text/javascript" src="app/viewmodel/analysis-workload-detail-view-model.js"></script>
     <script type="text/javascript" src="app/viewmodel/settings-detail-view-model.js"></script>
     <script type="text/javascript" src="app/viewmodel/analysis-workload-analyses-view-model.js"></script>
+    <script type="text/javascript" src="app/viewmodel/analysis-workload-analysis-create-view-model.js"></script>
     <!--services-->
     <script type="text/javascript" src="app/services/drawing-service.js"></script>
     <script type="text/javascript" src="app/services/notifications-service.js"></script>
@@ -118,7 +119,7 @@
 
         </div>
         <div style="width:160px" layout="row">
-            <md-button class="md-fab md-primary md-mini" aria-label="btn-settings">
+            <md-button ng-href="#!/settings-detail" class="md-fab md-primary md-mini" aria-label="btn-settings">
                 <md-tooltip>{{'ROOT.SETTINGS' | translate}}</md-tooltip>
                 <md-icon><i class="material-icons">more_vert</i></md-icon>
             </md-button>

@@ -78,7 +78,8 @@ Web.App.config(['$stateProvider', '$urlRouterProvider', '$translateProvider', '$
     $stateProvider.state(Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSES, {
         url: "/analysis-workload-analyses",
         controller: "AnalysisWorkloadAnalysesController",
-        templateUrl: "/app/views/analysis-workload-analyses.html"
+        templateUrl: "/app/views/analysis-workload-analyses.html",
+        params: { enforceLoading: null }
     });
     $stateProvider.state(Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSIS_CREATE, {
         url: "/analysis-workload-analysis-create",

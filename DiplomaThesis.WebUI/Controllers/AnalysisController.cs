@@ -11,6 +11,28 @@ namespace DiplomaThesis.WebUI.Controllers
     [ApiController]
     public class AnalysisController : BaseApiController
     {
+        [Route("workload-analysis-create")]
+        [HttpPost]
+        public IActionResult CreateWorkloadAnalysis(CreateWorkloadAnalysisRequest request)
+        {
+            BaseOperationResponse result = new BaseOperationResponse() { IsSuccess = false };
+            (bool isValid, string errorMessage) = WorkloadAnalysisValidator.Validate(request);
+            if (!isValid)
+            {
+                result.ErrorMessage = errorMessage;
+            }
+            else
+            {
+                HandleException(() =>
+                {
+                    var workloadAnalysis = Converter.CreateWorkloadAnalysis(request);
+                    var repository = DALRepositories.GetWorkloadAnalysesRepository();
+                    repository.Create(workloadAnalysis);
+                    result.IsSuccess = true;
+                }, ex => result.ErrorMessage = ex.Message);
+            }
+            return Json(result);
+        }
         [Route("workload-analyses")]
         [HttpPost]
         public IActionResult GetWorkloadAnalyses(GetWorkloadAnalysesRequest request)
@@ -57,7 +79,7 @@ namespace DiplomaThesis.WebUI.Controllers
 
         [Route("workload-create")]
         [HttpPost]
-        public IActionResult GetWorkloads(WorkloadData workloadData)
+        public IActionResult CreateWrokload(WorkloadData workloadData)
         {
             BaseOperationResponse result = new BaseOperationResponse() { IsSuccess = false };
             (bool isValid, string errorMessage) = WorkloadValidator.Validate(workloadData);

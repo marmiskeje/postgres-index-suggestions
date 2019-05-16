@@ -127,7 +127,7 @@
                                         }
                                         $rootScope.viewModel.initializationProgress = 100;
                                         $rootScope.viewModel.isLoading = false;
-                                        $state.go(Web.Constants.StateNames.SETTINGS_DETAIL);
+                                        $state.go(Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSES);
                                     }
                                 });
                             }

@@ -1,4 +1,4 @@
-﻿Web.Controllers.AnalysisWorkloadAnalysesController = function ($scope, $rootScope, $http, uiGridConstants, $state, analysisService, drawingService, notificationsService) {
+﻿Web.Controllers.AnalysisWorkloadAnalysesController = function ($scope, $rootScope, $http, uiGridConstants, $state, $stateParams, analysisService, drawingService, notificationsService) {
     $rootScope.pageSubtitle = 'ANALYSIS_WORKLOAD_ANALYSES.PAGE_SUBTITLE';
     $scope.actions = new Object();
     $scope.actions.showAnalysisDetail = function (workloadAnalysis) {
@@ -22,6 +22,7 @@
             {
                 name: 'Actions', displayName: '', field: 'Actions', enableSorting: false, maxWidth: 50, enableHiding: false,
                 cellTemplate: '<md-button style="padding: 0; margin: 0; min-height: inherit; min-width: inherit"' +
+                    'ng-hide="row.entity.state != 2"' +
                     'ng-click="grid.appScope.actions.showAnalysisDetail(row.entity)"><md-tooltip>Show detail</md-tooltip><i class="material-icons md-18">zoom_in</i></md-button>'
             }
         ],
@@ -94,7 +95,7 @@
                     }
                     switch (item.state) {
                         case 0:
-                            item.stateStr = "Unknown";
+                            item.stateStr = "Created";
                             break;
                         case 1:
                             item.stateStr = "In progress";
@@ -134,9 +135,13 @@
     } else {
         $scope.viewModel = $state.current.data;
     }
-    $scope.actions.refreshData(false);
+    var enforceLoading = false;
+    if ($stateParams.enforceLoading) {
+        enforceLoading = true;
+    }
+    $scope.actions.refreshData(enforceLoading);
 }
 
 
 
-angular.module('WebApp').controller('AnalysisWorkloadAnalysesController', ['$scope', '$rootScope', '$http', 'uiGridConstants', '$state', 'analysisService', 'drawingService', 'notificationsService', Web.Controllers.AnalysisWorkloadAnalysesController]);
+angular.module('WebApp').controller('AnalysisWorkloadAnalysesController', ['$scope', '$rootScope', '$http', 'uiGridConstants', '$state', '$stateParams', 'analysisService', 'drawingService', 'notificationsService', Web.Controllers.AnalysisWorkloadAnalysesController]);

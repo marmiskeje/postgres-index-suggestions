@@ -34,5 +34,12 @@
             onFinally(errorResponse);
         });
     }
+    this.createWorkloadAnalysis = function (workloadAnalysis, onFinally) {
+        $http.post('api/analysis/workload-analysis-create', workloadAnalysis).then(function (response) {
+            onFinally(response);
+        }, function (errorResponse) {
+            onFinally(errorResponse);
+        });
+    }
 }
 Web.App.service('analysisService', ['$http', Web.Services.AnalysisService]);
