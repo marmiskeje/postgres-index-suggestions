@@ -18,8 +18,8 @@ namespace DiplomaThesis.Collector.Contracts
         public string TransactionID { get; set; }
         public TimeSpan Duration { get; set; }
         public string Statement { get; set; }
-        public string QueryTree { get; set; }
-        public string PlanTree { get; set; }
+        public HashSet<string> QueryTrees { get; } = new HashSet<string>();
+        public HashSet<string> PlanTrees { get; } = new HashSet<string>();
         public string Detail { get; set; }
     }
 }

@@ -26,6 +26,7 @@ namespace DiplomaThesis.DAL.Contracts
         public List<WorkloadAnalysisRelationReplacement> RelationReplacements { get; set; } = new List<WorkloadAnalysisRelationReplacement>();
         [Required]
         public WorkloadAnalysisStateType State { get; set; }
+        public string ErrorMessage { get; set; }
         public List<VirtualEnvironment> VirtualEnvironments { get; set; }
         public List<WorkloadAnalysisRealStatementEvaluation> WorkloadAnalysisRealStatementEvaluations { get; set; }
     }

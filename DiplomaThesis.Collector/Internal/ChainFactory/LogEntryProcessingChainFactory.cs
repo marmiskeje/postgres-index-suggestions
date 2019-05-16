@@ -17,15 +17,13 @@ namespace DiplomaThesis.Collector
         private readonly IRepositoriesFactory repositoriesFactory;
         private readonly IStatementsProcessingDataAccumulator statementDataAccumulator;
         public LogEntryProcessingChainFactory(ILog log, IGeneralProcessingCommandFactory generalCommands, IStatisticsProcessingCommandFactory statisticsProcessingCommands,
-                                              ILogEntryProcessingCommandFactory externalCommands, IRepositoriesFactory repositoriesFactory,
-                                              IStatementsProcessingDataAccumulator statementDataAccumulator)
+                                              ILogEntryProcessingCommandFactory externalCommands, IRepositoriesFactory repositoriesFactory)
         {
             this.log = log;
             this.generalCommands = generalCommands;
             this.statisticsProcessingCommands = statisticsProcessingCommands;
             this.externalCommands = externalCommands;
             this.repositoriesFactory = repositoriesFactory;
-            this.statementDataAccumulator = statementDataAccumulator;
         }
 
         private IChainableCommand CreateStatementProcessingChain(LogEntryProcessingContext context)
@@ -48,11 +46,6 @@ namespace DiplomaThesis.Collector
             ParallelCommandStepsCreator parallelSteps = new ParallelCommandStepsCreator();
 
             CommandChainCreator queryTreeProcessingChain = new CommandChainCreator();
-            queryTreeProcessingChain.Add(new ActionCommand(() =>
-            {
-                var s = statementDataAccumulator.ProvideNormalizedStatement(context.StatementData.NormalizedStatementFingerprint);
-                return s.StatementDefinition == null;
-            }));
             queryTreeProcessingChain.Add(externalCommands.LoadQueryTreeToContextCommand(context));
             queryTreeProcessingChain.Add(generalCommands.PublishNormalizedStatementDefinitionCommand(context));
             parallelSteps.AddParallelStep(queryTreeProcessingChain.AsChainableCommand());

@@ -110,8 +110,8 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 var queries = kv.Value;
                 queries.Sort((x, y) =>
                 {
-                    var xExecCounts = allSelects[x.NormalizedStatementID].TotalExecutionsCount;
-                    var yExecCounts = allSelects[x.NormalizedStatementID].TotalExecutionsCount;
+                    var xExecCounts = all[x.NormalizedStatementID].TotalExecutionsCount;
+                    var yExecCounts = all[x.NormalizedStatementID].TotalExecutionsCount;
                     return xExecCounts.CompareTo(yExecCounts);
                 });
             }
@@ -124,7 +124,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 int itemsCountToTake = 0;
                 for (int i = 0; i < sortedQueries.Count; i++)
                 {
-                    cumulatedValue += allSelects[sortedQueries[i].NormalizedStatementID].TotalExecutionsCount;
+                    cumulatedValue += all[sortedQueries[i].NormalizedStatementID].TotalExecutionsCount;
                     if (cumulatedValue > threshold)
                     {
                         itemsCountToTake = i+1;

@@ -67,6 +67,16 @@ namespace DiplomaThesis.Collector.Postgres
                 }
                 return result;
             }
+            else if (source is AggregateExpressionResult)
+            {
+                var r = (AggregateExpressionResult)source;
+                var result = new QueryTreeAggregateExpression();
+                foreach (var a in r.Arguments)
+                {
+                    result.Arguments.Add(Convert(a));
+                }
+                return result;
+            }
             else if (source is BooleanExpressionResult)
             {
                 var r = (BooleanExpressionResult)source;
@@ -449,6 +459,10 @@ namespace DiplomaThesis.Collector.Postgres
             {
                 return ResolveNullTestExpression(expr as NullTestExpression);
             }
+            else if (expr is AggregateExpression)
+            {
+                return ResolveAggregateExpression(expr as AggregateExpression);
+            }
             return new UnknownExpressionResult(expr.Source);
         }
         private ExpressionResult ResolveConstExpression(ConstExpression expr)
@@ -464,6 +478,15 @@ namespace DiplomaThesis.Collector.Postgres
         private ExpressionResult ResolveOperatorExpression(OperatorExpression expr)
         {
             var result = new OperatorExpressionResult(expr.Source) { OperatorID = expr.OperatorID, ResultDbType = expr.ResultDbType, ResultTypeID = expr.ResultTypeID };
+            foreach (var a in expr.Arguments)
+            {
+                result.Arguments.Add(ResolveExpression(a));
+            }
+            return result;
+        }
+        private ExpressionResult ResolveAggregateExpression(AggregateExpression expr)
+        {
+            var result = new AggregateExpressionResult(expr.Source);
             foreach (var a in expr.Arguments)
             {
                 result.Arguments.Add(ResolveExpression(a));
@@ -665,6 +688,20 @@ namespace DiplomaThesis.Collector.Postgres
                             result.Arguments.Add(ResolveExpression(data, argExpr, forcedRteNumber));
                         }
                         return result;
+                    }
+                case "AGGREF":
+                    {
+                        var result = new AggregateExpression(data);
+                        foreach (var argExpr in expressionData.SelectToken("args").Children())
+                        {
+                            result.Arguments.Add(ResolveExpression(data, argExpr, forcedRteNumber));
+                        }
+                        return result;
+                    }
+                case "TARGETENTRY":
+                    {
+                        var expr = expressionData.SelectToken("expr");
+                        return ResolveExpression(data, expr, forcedRteNumber);
                     }
                 case "SCALARARRAYOPEXPR":
                     {

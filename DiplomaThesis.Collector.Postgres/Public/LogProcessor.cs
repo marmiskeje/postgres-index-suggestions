@@ -104,11 +104,11 @@ namespace DiplomaThesis.Collector.Postgres
                     }
                     else if ((match = queryRegex.Match(input)) != null && match.Success)
                     {
-                        result.QueryTree = match.Value;
+                        result.QueryTrees.Add(match.Value);
                     }
                     else if ((match = planRegex.Match(input)) != null && match.Success)
                     {
-                        result.PlanTree = match.Value;
+                        result.PlanTrees.Add(match.Value);
                     }
                 }
                 this.cache.Clear();

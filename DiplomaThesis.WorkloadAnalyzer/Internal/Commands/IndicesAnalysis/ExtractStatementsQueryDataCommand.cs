@@ -87,7 +87,11 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 if (e is StatementQueryAttributeExpression)
                 {
                     var t = (StatementQueryAttributeExpression)e;
-                    var attribute = attributesRepository.Get(t.RelationID, t.AttributeNumber);
+                    IRelationAttribute attribute = null;
+                    using (var scope = new DatabaseScope(context.Database.Name))
+                    {
+                        attribute = attributesRepository.Get(t.RelationID, t.AttributeNumber); 
+                    }
                     if (attribute != null)
                     {
                         if (context.RelationsData.TryGetRelation(t.RelationID, out var relationData))
@@ -127,6 +131,11 @@ namespace DiplomaThesis.WorkloadAnalyzer
                     var t = (StatementQueryOperatorExpression)e;
                     var expressionOperator = expressionsRepository.Get(t.OperatorID);
                     FillAllAttributesAndOperatorsFromExpressions(allOperatorsByAttribute, bTreeApplicableAttributes, t.Arguments, operators.Union(new[] { expressionOperator.Name }));
+                }
+                else if (e is StatementQueryAggregateExpression)
+                {
+                    var t = (StatementQueryAggregateExpression)e;
+                    FillAllAttributesAndOperatorsFromExpressions(allOperatorsByAttribute, bTreeApplicableAttributes, t.Arguments, operators);
                 }
             }
         }

@@ -138,6 +138,14 @@ namespace DiplomaThesis.Collector.Contracts
             Arguments = new List<QueryTreeExpression>();
         }
     }
+    public class QueryTreeAggregateExpression : QueryTreeExpression
+    {
+        public List<QueryTreeExpression> Arguments { get; private set; }
+        public QueryTreeAggregateExpression()
+        {
+            Arguments = new List<QueryTreeExpression>();
+        }
+    }
 
     public class QueryTreeNullTestExpression : QueryTreeExpression
     {

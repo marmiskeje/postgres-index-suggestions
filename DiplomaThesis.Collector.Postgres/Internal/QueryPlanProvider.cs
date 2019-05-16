@@ -10,7 +10,6 @@ namespace DiplomaThesis.Collector.Postgres
 {
     class QueryPlanProvider
     {
-#warning treba skontrolovat, preco nie je uplne korektne pre zlozite CTE
         public QueryPlanNode Provide(JObject jObject)
         {
             QueryTreeDataInternal queryTree = new QueryTreeDataInternal();

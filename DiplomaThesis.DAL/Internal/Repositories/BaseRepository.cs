@@ -15,11 +15,22 @@ namespace DiplomaThesis.DAL
         }
         public void Create(TEntity entity)
         {
+            FillEntitySet(entity);
             using (var context = CreateContextFunc())
             {
                 context.Set<TEntity>().Add(entity);
                 context.SaveChanges();
             }
+        }
+
+        protected virtual void FillEntityGet(TEntity entity)
+        {
+
+        }
+
+        protected virtual void FillEntitySet(TEntity entity)
+        {
+
         }
     }
     internal abstract class BaseRepository<TKey, TEntity> : IBaseRepository<TKey, TEntity> where TEntity : class, IEntity<TKey>

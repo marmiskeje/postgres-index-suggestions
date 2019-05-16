@@ -32,6 +32,7 @@ namespace DiplomaThesis.Collector
             var appSettings = configuration.Get<AppSettings>();
 
             var log = Common.Logging.NLog.NLog.Instace;
+            NLog.LogManager.LoadConfiguration("nlog.config");
             var collectorConfiguration = new CollectorConfiguration(appSettings);
             var logProcessor = new Postgres.LogProcessor(collectorConfiguration.LogProcessing);
             var logEntryGroupBox = new Postgres.LogEntryGroupBox();
@@ -51,7 +52,7 @@ namespace DiplomaThesis.Collector
                                                                       dalRepositories, lastProcessedEvidence);
             var externalCommands = new Postgres.LogEntryProcessingCommandFactory(postgresRepositories);
             var statisticsCommands = new StatisticsProcessingCommandFactory(log, statisticsProcessingQueue, statisticsDataAccumulator, postgresRepositories, dalRepositories, dependencyHierarchyProvider);
-            var logEntryProcessingChainFactory = new LogEntryProcessingChainFactory(log, generalCommands, statisticsCommands, externalCommands, dalRepositories, statementDataAccumulator);
+            var logEntryProcessingChainFactory = new LogEntryProcessingChainFactory(log, generalCommands, statisticsCommands, externalCommands, dalRepositories);
             var statisticsChainFactory = new StatisticsProcessingChainFactory(statisticsCommands);
             var logEntryProcessingService = new LogEntryProcessingService(logEntryGroupBox, logEntriesProcessingQueue, logEntryProcessingChainFactory, lastProcessedEvidence);
             var statisticsCollectorService = new StatisticsCollectorService(statisticsProcessingQueue, statisticsChainFactory);

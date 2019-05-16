@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 using System.Linq;
+using DiplomaThesis.Common;
 
 namespace DiplomaThesis.Collector.Postgres
 {
@@ -58,17 +59,9 @@ namespace DiplomaThesis.Collector.Postgres
                 {
                     result.Duration = e.Duration;
                 }
-                if (!String.IsNullOrEmpty(e.PlanTree))
-                {
-                    result.PlanTree = e.PlanTree;
-                }
                 if (!String.IsNullOrEmpty(e.ProcessID))
                 {
                     result.ProcessID = e.ProcessID;
-                }
-                if (!String.IsNullOrEmpty(e.QueryTree))
-                {
-                    result.QueryTree = e.QueryTree;
                 }
                 if (!String.IsNullOrEmpty(e.RemoteHostAndPort))
                 {
@@ -94,6 +87,8 @@ namespace DiplomaThesis.Collector.Postgres
                 {
                     result.UserName = e.UserName;
                 }
+                result.QueryTrees.AddRange(e.QueryTrees);
+                result.PlanTrees.AddRange(e.PlanTrees);
             }
         } 
         #endregion

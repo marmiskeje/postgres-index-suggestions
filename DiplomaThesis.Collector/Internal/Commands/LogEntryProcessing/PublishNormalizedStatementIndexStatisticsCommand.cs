@@ -19,9 +19,9 @@ namespace DiplomaThesis.Collector
         }
         protected override void OnExecute()
         {
-            if (context.QueryPlan != null)
+            foreach (var plan in context.QueryPlans)
             {
-                PublishIndexStatistics(context.QueryPlan);
+                PublishIndexStatistics(plan);
             }
         }
 

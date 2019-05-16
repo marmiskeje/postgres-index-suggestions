@@ -84,6 +84,10 @@ namespace DiplomaThesis.DAL
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            foreach (var property in modelBuilder.Model.GetEntityTypes().SelectMany(t => t.GetProperties()).Where(p => p.ClrType == typeof(decimal) || p.ClrType == typeof(decimal?)))
+            {
+                property.Relational().ColumnType = "decimal(18, 6)";
+            }
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<NormalizedStatement>().HasIndex(x => x.StatementFingerprint).IsUnique();
             modelBuilder.Entity<NormalizedStatement>().HasIndex(x => x.CommandType).HasFilter("CommandType IS NOT NULL");

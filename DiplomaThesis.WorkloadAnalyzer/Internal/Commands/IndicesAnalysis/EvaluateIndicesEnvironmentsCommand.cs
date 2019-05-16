@@ -90,7 +90,13 @@ namespace DiplomaThesis.WorkloadAnalyzer
                                 HashSet<IndexDefinition> improvingVirtualIndices = new HashSet<IndexDefinition>();
                                 VirtualEnvironmentStatementEvaluation statementEvaluation = new VirtualEnvironmentStatementEvaluation();
                                 statementEvaluation.ExecutionPlan = explainResult;
-                                statementEvaluation.LocalImprovementRatio = 1m - (realPlan.TotalCost > 0 ? latestPlan.TotalCost / realPlan.TotalCost : 0m);
+                                decimal fromPrice = realPlan.TotalCost;
+                                decimal toPrice = latestPlan.TotalCost;
+                                decimal divisor = Math.Abs(Math.Max(fromPrice, toPrice));
+                                if (divisor > 0)
+                                {
+                                    statementEvaluation.LocalImprovementRatio = ((toPrice - fromPrice) / divisor) * -1m;
+                                }
                                 decimal statementPortion = context.StatementsData.AllExecutionsCount > 0 ? workloadStatement.TotalExecutionsCount / (decimal)context.StatementsData.AllExecutionsCount : 0m;
                                 statementEvaluation.GlobalImprovementRatio = statementEvaluation.LocalImprovementRatio * statementPortion;
                                 env.StatementsEvaluation.Add(statementID, statementEvaluation);
@@ -99,17 +105,28 @@ namespace DiplomaThesis.WorkloadAnalyzer
                                 foreach (var i in indices)
                                 {
                                     var virtualIndex = virtualIndicesMapping[i];
+                                    if (!env.IndicesEvaluation.ContainsKey(i))
+                                    {
+                                        env.IndicesEvaluation.Add(i, new VirtualIndicesEnvironmentIndexEvaluation());
+                                    }
                                     if (explainResult.UsedIndexScanIndices.Contains(virtualIndex.Name))
                                     {
+                                        statementEvaluation.UsedIndices.Add(i);
+                                        statementEvaluation.AffectingIndices.Add(i);
                                         if (latestPlan.TotalCost < realPlan.TotalCost)
                                         {
                                             improvingVirtualIndices.Add(i);
-                                            if (!env.IndicesEvaluation.ContainsKey(i))
-                                            {
-                                                env.IndicesEvaluation.Add(i, new VirtualIndicesEnvironmentIndexEvaluation());
-                                            }
                                         }
                                         env.IndicesEvaluation[i].ImprovementRatio += statementEvaluation.GlobalImprovementRatio;
+                                    }
+                                    else
+                                    {
+                                        if (normalizedStatement.CommandType == DAL.Contracts.StatementQueryCommandType.Insert
+                                            || normalizedStatement.CommandType == DAL.Contracts.StatementQueryCommandType.Update
+                                            || normalizedStatement.CommandType == DAL.Contracts.StatementQueryCommandType.Delete)
+                                        {
+                                            statementEvaluation.AffectingIndices.Add(i);
+                                        }
                                     }
                                 }
                                 foreach (var query in normalizedStatement.StatementDefinition.IndependentQueries)

@@ -3,7 +3,7 @@ using DiplomaThesis.Common.CommandProcessing;
 using DiplomaThesis.DAL.Contracts;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace DiplomaThesis.Collector
 {
@@ -28,10 +28,7 @@ namespace DiplomaThesis.Collector
                 Statement = context.Entry.Statement,
                 UserName = context.Entry.UserName
             };
-            if (context.QueryPlan != null)
-            {
-                stats.TotalCost = context.QueryPlan.TotalCost;
-            }
+            stats.TotalCost = context.QueryPlans.Sum(x => x.TotalCost);
             statementDataAccumulator.PublishNormalizedStatementStatistics(stats);
         }
     }

@@ -6,18 +6,18 @@ using System.Text;
 
 namespace DiplomaThesis.Collector.Postgres
 {
-    internal class LoadQueryPlanToContextCommand : ChainableCommand
+    internal class LoadQueryPlansToContextCommand : ChainableCommand
     {
         private readonly LogEntryProcessingWrapperContext context;
-        public LoadQueryPlanToContextCommand(LogEntryProcessingWrapperContext context)
+        public LoadQueryPlansToContextCommand(LogEntryProcessingWrapperContext context)
         {
             this.context = context;
         }
         protected override void OnExecute()
         {
-            if (context.QueryPlan != null)
+            foreach (var item in context.QueryPlans)
             {
-                context.InnerContext.QueryPlan = new QueryPlanProvider().Provide(context.QueryPlan);
+                context.InnerContext.QueryPlans.Add(new QueryPlanProvider().Provide(item));
             }
         }
     }

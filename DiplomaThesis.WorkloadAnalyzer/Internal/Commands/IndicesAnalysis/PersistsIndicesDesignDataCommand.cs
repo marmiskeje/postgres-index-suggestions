@@ -2,7 +2,6 @@
 using DiplomaThesis.DAL.Contracts;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Transactions;
 
 namespace DiplomaThesis.WorkloadAnalyzer
@@ -28,56 +27,62 @@ namespace DiplomaThesis.WorkloadAnalyzer
             var executionPlansRepository = dalRepositories.GetExecutionPlansRepository();
             var virtualEnvPossibleCoveringIndicesRepository = dalRepositories.GetVirtualEnvironmentPossibleCoveringIndicesRepository();
             Dictionary<DBMS.Contracts.IndexDefinition, PossibleIndex> createdIndices = new Dictionary<DBMS.Contracts.IndexDefinition, PossibleIndex>();
-            using (var scope = new TransactionScope())
+            foreach (var env in designData.Environments)
             {
-                foreach (var env in designData.Environments)
+                var createdEnvironment = Convert(env);
+                virtualEnvsRepository.Create(createdEnvironment);
+                foreach (var i in env.PossibleIndices.All)
                 {
-                    var createdEnvironment = Convert(env);
-                    virtualEnvsRepository.Create(createdEnvironment);
-                    foreach (var i in env.PossibleIndices.All)
+                    if (!createdIndices.ContainsKey(i))
                     {
-                        if (!createdIndices.ContainsKey(i))
+                        Dictionary<string, long> filters = null;
+                        if (!designData.PossibleIndexFilters.TryGetValue(i, out filters))
                         {
-                            Dictionary<string, long> filters = null;
-                            if (!designData.PossibleIndexFilters.TryGetValue(i, out filters))
-                            {
-                                filters = new Dictionary<string, long>();
-                            }
-                            var createdIndex = Convert(i, designData.PossibleIndexSizes[i], filters);
-                            possibleIndicesRepository.Create(createdIndex);
-                            createdIndices.Add(i, createdIndex);
+                            filters = new Dictionary<string, long>();
                         }
-                        virtualEnvPossibleIndicesRepository.Create(Convert(createdEnvironment, createdIndices[i], env.IndicesEvaluation[i]));
+                        var createdIndex = Convert(i, designData.PossibleIndexSizes[i], filters);
+                        possibleIndicesRepository.Create(createdIndex);
+                        createdIndices.Add(i, createdIndex);
                     }
-                    Dictionary<long, HashSet<long>> coveringIndicesPerStatement = new Dictionary<long, HashSet<long>>();
-                    foreach (var kv in env.PossibleIndices.AllCoveringPerQuery)
+                    virtualEnvPossibleIndicesRepository.Create(Convert(createdEnvironment, createdIndices[i], env.IndicesEvaluation[i]));
+                }
+                Dictionary<long, HashSet<long>> coveringIndicesPerStatement = new Dictionary<long, HashSet<long>>();
+                foreach (var kv in env.PossibleIndices.AllCoveringPerQuery)
+                {
+                    var statementID = kv.Key.NormalizedStatementID;
+                    var indices = kv.Value;
+                    if (!coveringIndicesPerStatement.ContainsKey(statementID))
                     {
-                        var statementID = kv.Key.NormalizedStatementID;
-                        var indices = kv.Value;
-                        if (!coveringIndicesPerStatement.ContainsKey(statementID))
-                        {
-                            coveringIndicesPerStatement.Add(statementID, new HashSet<long>());
-                        }
-                        foreach (var index in indices)
-                        {
-                            var createdIndex = createdIndices[index];
-                            if (!coveringIndicesPerStatement[statementID].Contains(createdIndex.ID))
-                            {
-                                virtualEnvPossibleCoveringIndicesRepository.Create(Convert(createdEnvironment, statementID, createdIndex));
-                                coveringIndicesPerStatement[statementID].Add(createdIndex.ID);
-                            }
-                        }
+                        coveringIndicesPerStatement.Add(statementID, new HashSet<long>());
                     }
-                    foreach (var kv in env.StatementsEvaluation)
+                    foreach (var index in indices)
                     {
-                        var statementID = kv.Key;
-                        var eval = kv.Value;
-                        var createdPlan = Convert(statementID, eval.ExecutionPlan);
-                        executionPlansRepository.Create(createdPlan);
-                        virtualEnvStatementEvalsRepository.Create(Convert(createdEnvironment, statementID, createdPlan, eval));
+                        var createdIndex = createdIndices[index];
+                        if (!coveringIndicesPerStatement[statementID].Contains(createdIndex.ID))
+                        {
+                            virtualEnvPossibleCoveringIndicesRepository.Create(Convert(createdEnvironment, statementID, createdIndex));
+                            coveringIndicesPerStatement[statementID].Add(createdIndex.ID);
+                        }
                     }
                 }
-                scope.Complete();
+                foreach (var kv in env.StatementsEvaluation)
+                {
+                    var statementID = kv.Key;
+                    var eval = kv.Value;
+                    var createdPlan = Convert(statementID, eval.ExecutionPlan);
+                    executionPlansRepository.Create(createdPlan);
+                    var affectingIndicesIds = new HashSet<long>();
+                    foreach (var i in eval.AffectingIndices)
+                    {
+                        affectingIndicesIds.Add(createdIndices[i].ID);
+                    }
+                    var usedIndicesIds = new HashSet<long>();
+                    foreach (var i in eval.UsedIndices)
+                    {
+                        usedIndicesIds.Add(createdIndices[i].ID);
+                    }
+                    virtualEnvStatementEvalsRepository.Create(Convert(createdEnvironment, statementID, createdPlan, eval, affectingIndicesIds, usedIndicesIds));
+                }
             }
         }
 
@@ -96,7 +101,8 @@ namespace DiplomaThesis.WorkloadAnalyzer
             return new ExecutionPlan() { Json = explainResult.PlanJson, TotalCost = explainResult.Plan.TotalCost };
         }
 
-        private DAL.Contracts.VirtualEnvironmentStatementEvaluation Convert(VirtualEnvironment env, long statementID, ExecutionPlan plan, VirtualEnvironmentStatementEvaluation eval)
+        private DAL.Contracts.VirtualEnvironmentStatementEvaluation Convert(VirtualEnvironment env, long statementID, ExecutionPlan plan, VirtualEnvironmentStatementEvaluation eval,
+                                                                            HashSet<long> affectingIndicesIds, HashSet<long> usedIndicesIds)
         {
             DAL.Contracts.VirtualEnvironmentStatementEvaluation result = new DAL.Contracts.VirtualEnvironmentStatementEvaluation();
             result.ExecutionPlanID = plan.ID;
@@ -104,6 +110,8 @@ namespace DiplomaThesis.WorkloadAnalyzer
             result.VirtualEnvironmentID = env.ID;
             result.GlobalImprovementRatio = eval.GlobalImprovementRatio;
             result.LocalImprovementRatio = eval.LocalImprovementRatio;
+            result.AffectingIndices = affectingIndicesIds;
+            result.UsedIndices = usedIndicesIds;
             return result;
         }
 

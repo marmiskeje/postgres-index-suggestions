@@ -8,7 +8,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
 {
     internal interface ICommandFactory
     {
-        IChainableCommand HandleExceptionCommand(IExecutableCommand onExceptionCommand = null, IExecutableCommand finallyCommand = null);
+        IChainableCommand HandleExceptionCommand(Action<Exception> onExceptionAction = null, IExecutableCommand finallyCommand = null);
         IChainableCommand LoadWorkloadCommand(WorkloadAnalysisContext context);
         IChainableCommand LoadWorkloadStatementsDataCommand(WorkloadAnalysisContext context);
         IChainableCommand GenerateBaseBtreeIndicesCommand(WorkloadAnalysisContext context);

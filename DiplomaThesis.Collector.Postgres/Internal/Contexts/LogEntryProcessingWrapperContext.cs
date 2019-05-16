@@ -9,7 +9,7 @@ namespace DiplomaThesis.Collector.Postgres
     internal class LogEntryProcessingWrapperContext
     {
         public LogEntryProcessingContext InnerContext { get; set; }
-        public JObject QueryPlan { get; set; }
-        public JObject QueryTree { get; set; }
+        public List<JObject> QueryPlans { get; } = new List<JObject>();
+        public List<JObject> QueryTrees { get; } = new List<JObject>();
     }
 }

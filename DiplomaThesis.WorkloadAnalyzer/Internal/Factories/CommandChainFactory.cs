@@ -17,7 +17,8 @@ namespace DiplomaThesis.WorkloadAnalyzer
         {
             CommandChainCreator chain = new CommandChainCreator();
             chain.Add(commands.UpdateAnalysisStateCommand(context, WorkloadAnalysisStateType.InProgress));
-            chain.Add(commands.HandleExceptionCommand(commands.UpdateAnalysisStateCommand(context, WorkloadAnalysisStateType.EndedWithError)));
+            chain.Add(commands.HandleExceptionCommand(ex => { context.WorkloadAnalysis.ErrorMessage = ex.Message;
+                                                      commands.UpdateAnalysisStateCommand(context, WorkloadAnalysisStateType.EndedWithError).Execute(); }));
             chain.Add(commands.LoadWorkloadCommand(context));
             chain.Add(commands.LoadDatabaseInfoCommand(context));
             chain.Add(commands.LoadWorkloadStatementsDataCommand(context));

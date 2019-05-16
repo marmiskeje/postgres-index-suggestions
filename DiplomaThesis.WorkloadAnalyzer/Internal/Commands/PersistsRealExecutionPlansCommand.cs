@@ -20,17 +20,13 @@ namespace DiplomaThesis.WorkloadAnalyzer
         {
             var executionPlansRepository = dalRepositories.GetExecutionPlansRepository();
             var analysisRealStatementEvaluationsRepository = dalRepositories.GetWorkloadAnalysisRealStatementEvaluationsRepository();
-            using (var scope = new TransactionScope())
+            foreach (var kv in context.RealExecutionPlansForStatements)
             {
-                foreach (var kv in context.RealExecutionPlansForStatements)
-                {
-                    var statementID = kv.Key;
-                    var explainResult = kv.Value;
-                    var createdPlan = Convert(statementID, explainResult);
-                    executionPlansRepository.Create(createdPlan);
-                    analysisRealStatementEvaluationsRepository.Create(Convert(context.WorkloadAnalysis.ID, statementID, createdPlan));
-                }
-                scope.Complete();
+                var statementID = kv.Key;
+                var explainResult = kv.Value;
+                var createdPlan = Convert(statementID, explainResult);
+                executionPlansRepository.Create(createdPlan);
+                analysisRealStatementEvaluationsRepository.Create(Convert(context.WorkloadAnalysis.ID, statementID, createdPlan));
             }
         }
 

@@ -71,7 +71,9 @@ namespace DiplomaThesis.Collector
             }
             else
             {
-                if (oldStatement.CommandType == null && newStatement.CommandType != null)
+                if (newStatement.StatementDefinition != null &&
+                    (oldStatement.StatementDefinition == null || oldStatement.StatementDefinition.Fingerprint != newStatement.StatementDefinition.Fingerprint
+                                                              || oldStatement.CommandType != newStatement.CommandType))
                 {
                     oldStatement.CommandType = newStatement.CommandType;
                     oldStatement.StatementDefinition = newStatement.StatementDefinition;

@@ -26,25 +26,21 @@ namespace DiplomaThesis.WorkloadAnalyzer
             var executionPlansRepository = dalRepositories.GetExecutionPlansRepository();
             var virtualEnvStatementEvalsRepository = dalRepositories.GetVirtualEnvironmentStatementEvaluationsRepository();
             var designData = context.HPartitioningDesignData;
-            using (var scope = new TransactionScope())
+            foreach (var env in designData.Environments)
             {
-                foreach (var env in designData.Environments)
-                {
-                    var createdEnvironment = Convert(env);
-                    virtualEnvsRepository.Create(createdEnvironment);
-                    var createdHPartitioning = Convert(createdEnvironment, env.Partitioning, env.Evaluation);
-                    virtualHPartitioningsRepository.Create(createdHPartitioning);
+                var createdEnvironment = Convert(env);
+                virtualEnvsRepository.Create(createdEnvironment);
+                var createdHPartitioning = Convert(createdEnvironment, env.Partitioning, env.Evaluation);
+                virtualHPartitioningsRepository.Create(createdHPartitioning);
 
-                    foreach (var kv in env.StatementsEvaluation)
-                    {
-                        var statementID = kv.Key;
-                        var eval = kv.Value;
-                        var createdPlan = Convert(statementID, eval.ExecutionPlan);
-                        executionPlansRepository.Create(createdPlan);
-                        virtualEnvStatementEvalsRepository.Create(Convert(createdEnvironment, statementID, createdPlan, eval));
-                    }
+                foreach (var kv in env.StatementsEvaluation)
+                {
+                    var statementID = kv.Key;
+                    var eval = kv.Value;
+                    var createdPlan = Convert(statementID, eval.ExecutionPlan);
+                    executionPlansRepository.Create(createdPlan);
+                    virtualEnvStatementEvalsRepository.Create(Convert(createdEnvironment, statementID, createdPlan, eval));
                 }
-                scope.Complete();
             }
         }
         private DAL.Contracts.VirtualEnvironmentStatementEvaluation Convert(VirtualEnvironment env, long statementID, ExecutionPlan plan, VirtualEnvironmentStatementEvaluation eval)

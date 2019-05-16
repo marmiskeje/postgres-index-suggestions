@@ -20,8 +20,8 @@ namespace DiplomaThesis.Collector.Postgres
             LogEntryProcessingWrapperContext wrapperContext = new LogEntryProcessingWrapperContext();
             wrapperContext.InnerContext = context;
             var chain = new CommandChainCreator();
-            chain.Add(new LoadDebugTreeToContextCommand(() => context.Entry.QueryTree, x => wrapperContext.QueryTree = x));
-            chain.Add(new LoadQueryTreeToContextCommand(wrapperContext, repositories));
+            chain.Add(new LoadDebugTreesToContextCommand(() => context.Entry.QueryTrees, () => wrapperContext.QueryTrees));
+            chain.Add(new LoadQueryTreesToContextCommand(wrapperContext, repositories));
             return chain.AsChainableCommand();
         }
 
@@ -30,8 +30,8 @@ namespace DiplomaThesis.Collector.Postgres
             LogEntryProcessingWrapperContext wrapperContext = new LogEntryProcessingWrapperContext();
             wrapperContext.InnerContext = context;
             var chain = new CommandChainCreator();
-            chain.Add(new LoadDebugTreeToContextCommand(() => context.Entry.PlanTree, x => wrapperContext.QueryPlan = x));
-            chain.Add(new LoadQueryPlanToContextCommand(wrapperContext));
+            chain.Add(new LoadDebugTreesToContextCommand(() => context.Entry.PlanTrees, () => wrapperContext.QueryPlans));
+            chain.Add(new LoadQueryPlansToContextCommand(wrapperContext));
             return chain.AsChainableCommand();
         }
 

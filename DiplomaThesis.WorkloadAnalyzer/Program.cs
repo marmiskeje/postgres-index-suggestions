@@ -10,6 +10,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
         static void Main(string[] args)
         {
             var log = Common.Logging.NLog.NLog.Instace;
+            NLog.LogManager.LoadConfiguration("nlog.config");
             var queue = new CommandProcessingQueue<IExecutableCommand>(log, "ProcessingQueue");
             var dalRepositories = DAL.RepositoriesFactory.Instance;
             var dbmsRepositories = DBMS.Postgres.RepositoriesFactory.Instance;

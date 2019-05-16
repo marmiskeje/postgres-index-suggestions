@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text;
 
 namespace DiplomaThesis.DAL.Contracts
@@ -20,5 +21,13 @@ namespace DiplomaThesis.DAL.Contracts
         public decimal LocalImprovementRatio { get; set; }
         [Required]
         public decimal GlobalImprovementRatio { get; set; }
+        [Required]
+        public string AffectingIndicesData { get; set; }
+        [NotMapped]
+        public HashSet<long> AffectingIndices { get; set; } = new HashSet<long>();
+        [Required]
+        public string UsedIndicesData { get; set; }
+        [NotMapped]
+        public HashSet<long> UsedIndices { get; set; } = new HashSet<long>();
     }
 }

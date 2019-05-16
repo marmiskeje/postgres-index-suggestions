@@ -26,7 +26,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
         /// Key: NormalizedStatement.ID
         /// </summary>
         public IndicesData PossibleIndices { get; } = new IndicesData();
-        public List<VirtualIndicesEnvironment> Environments { get; } = new List<VirtualIndicesEnvironment>();
+        public HashSet<VirtualIndicesEnvironment> Environments { get; } = new HashSet<VirtualIndicesEnvironment>();
         public Dictionary<IndexDefinition, long> PossibleIndexSizes { get; } = new Dictionary<IndexDefinition, long>();
         public Dictionary<IndexDefinition, Dictionary<string, long>> PossibleIndexFilters { get; } = new Dictionary<IndexDefinition, Dictionary<string, long>>();
     }

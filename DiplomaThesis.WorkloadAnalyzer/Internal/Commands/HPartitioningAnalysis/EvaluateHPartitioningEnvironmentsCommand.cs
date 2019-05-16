@@ -67,7 +67,13 @@ namespace DiplomaThesis.WorkloadAnalyzer
                                     
                                     VirtualEnvironmentStatementEvaluation statementEvaluation = new VirtualEnvironmentStatementEvaluation();
                                     statementEvaluation.ExecutionPlan = explainResult;
-                                    statementEvaluation.LocalImprovementRatio = 1m - (realPlan.TotalCost > 0 ? latestPlan.TotalCost / realPlan.TotalCost : 0m);
+                                    decimal fromPrice = realPlan.TotalCost;
+                                    decimal toPrice = latestPlan.TotalCost;
+                                    decimal divisor = Math.Abs(Math.Max(fromPrice, toPrice));
+                                    if (divisor > 0)
+                                    {
+                                        statementEvaluation.LocalImprovementRatio = ((toPrice - fromPrice) / divisor) * -1m;
+                                    }
                                     decimal statementPortion = context.StatementsData.AllExecutionsCount > 0 ? workloadStatement.TotalExecutionsCount / (decimal)context.StatementsData.AllExecutionsCount : 0m;
                                     statementEvaluation.GlobalImprovementRatio = statementEvaluation.LocalImprovementRatio * statementPortion;
                                     env.StatementsEvaluation.Add(statementID, statementEvaluation);

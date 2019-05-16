@@ -3,6 +3,8 @@ using DiplomaThesis.Common.CommandProcessing;
 using DiplomaThesis.DAL.Contracts;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace DiplomaThesis.Collector
@@ -11,51 +13,95 @@ namespace DiplomaThesis.Collector
     {
         private readonly LogEntryProcessingContext context;
         private readonly IStatementsProcessingDataAccumulator statementDataAccumulator;
+        private static readonly Dictionary<StatementQueryCommandType, int> commandTypeImportance = new Dictionary<StatementQueryCommandType, int>();
         public PublishNormalizedStatementDefinitionCommand(LogEntryProcessingContext context, IStatementsProcessingDataAccumulator statementDataAccumulator)
         {
             this.context = context;
             this.statementDataAccumulator = statementDataAccumulator;
         }
+        static PublishNormalizedStatementDefinitionCommand()
+        {
+            commandTypeImportance.Add(StatementQueryCommandType.Unknown, 0);
+            commandTypeImportance.Add(StatementQueryCommandType.Utility, 1);
+            commandTypeImportance.Add(StatementQueryCommandType.Select, 2);
+            commandTypeImportance.Add(StatementQueryCommandType.Delete, 3);
+            commandTypeImportance.Add(StatementQueryCommandType.Update, 4);
+            commandTypeImportance.Add(StatementQueryCommandType.Insert, 5);
+        }
         protected override void OnExecute()
         {
-            if (context.QueryTree != null)
+            if (context.QueryTrees.Count > 0)
             {
                 StatementDefinition definition = new StatementDefinition();
-                definition.CommandType = Convert(context.QueryTree.CommandType);
-                foreach (var query in context.QueryTree.IndependentQueries)
+                
+                Dictionary<string, StatementQuery> independentQueries = new Dictionary<string, StatementQuery>();
+                foreach (var tree in context.QueryTrees)
                 {
-                    var toAdd = new StatementQuery();
-                    toAdd.CommandType = Convert(query.CommandType);
-                    foreach (var expr in query.GroupByExpressions)
+                    var commandType = Convert(tree.CommandType);
+                    if (commandTypeImportance[commandType] > commandTypeImportance[definition.CommandType])
                     {
-                        toAdd.GroupByExpressions.Add(Convert(expr));
+                        definition.CommandType = commandType;
                     }
-                    foreach (var expr in query.HavingExpressions)
+                    foreach (var query in tree.IndependentQueries)
                     {
-                        toAdd.HavingExpressions.Add(Convert(expr));
+                        var toAdd = new StatementQuery();
+                        toAdd.CommandType = Convert(query.CommandType);
+                        StringBuilder fingerprintBuilder = new StringBuilder();
+                        fingerprintBuilder.Append("_" + toAdd.CommandType.ToString());
+                        foreach (var expr in query.GroupByExpressions)
+                        {
+                            var e = Convert(expr);
+                            fingerprintBuilder.Append("_" + e.CalculateFingerprint());
+                            toAdd.GroupByExpressions.Add(e);
+                        }
+                        foreach (var expr in query.HavingExpressions)
+                        {
+                            var e = Convert(expr);
+                            fingerprintBuilder.Append("_" + e.CalculateFingerprint());
+                            toAdd.HavingExpressions.Add(e);
+                        }
+                        foreach (var expr in query.JoinExpressions)
+                        {
+                            var e = Convert(expr);
+                            fingerprintBuilder.Append("_" + e.CalculateFingerprint());
+                            toAdd.JoinExpressions.Add(e);
+                        }
+                        foreach (var expr in query.OrderByExpressions)
+                        {
+                            var e = Convert(expr);
+                            fingerprintBuilder.Append("_" + e.CalculateFingerprint());
+                            toAdd.OrderByExpressions.Add(e);
+                        }
+                        foreach (var a in query.ProjectionAttributes)
+                        {
+                            var e = Convert(a);
+                            fingerprintBuilder.Append("_" + e.CalculateFingerprint());
+                            toAdd.ProjectionAttributes.Add(e);
+                        }
+                        foreach (var r in query.Relations)
+                        {
+                            var e = Convert(r);
+                            fingerprintBuilder.Append("_" + e.CalculateFingerprint());
+                            toAdd.Relations.Add(e);
+                        }
+                        foreach (var expr in query.WhereExpressions)
+                        {
+                            var e = Convert(expr);
+                            fingerprintBuilder.Append("_" + e.CalculateFingerprint());
+                            toAdd.WhereExpressions.Add(e);
+                        }
+                        using (var sha = SHA1.Create())
+                        {
+                            toAdd.Fingerprint = System.Convert.ToBase64String(sha.ComputeHash(Encoding.UTF8.GetBytes(fingerprintBuilder.ToString())));
+                        }
+                        if (!independentQueries.ContainsKey(toAdd.Fingerprint))
+                        {
+                            independentQueries.Add(toAdd.Fingerprint, toAdd);
+                        }
                     }
-                    foreach (var expr in query.JoinExpressions)
-                    {
-                        toAdd.JoinExpressions.Add(Convert(expr));
-                    }
-                    foreach (var expr in query.OrderByExpressions)
-                    {
-                        toAdd.OrderByExpressions.Add(Convert(expr));
-                    }
-                    foreach (var a in query.ProjectionAttributes)
-                    {
-                        toAdd.ProjectionAttributes.Add(Convert(a));
-                    }
-                    foreach (var r in query.Relations)
-                    {
-                        toAdd.Relations.Add(Convert(r));
-                    }
-                    foreach (var expr in query.WhereExpressions)
-                    {
-                        toAdd.WhereExpressions.Add(Convert(expr));
-                    }
-                    definition.IndependentQueries.Add(toAdd);
                 }
+                definition.IndependentQueries.AddRange(independentQueries.Values);
+                definition.Fingerprint = CalculateFingerprint(definition);
                 statementDataAccumulator.PublishNormalizedStatementDefinition(context.StatementData.NormalizedStatementFingerprint, definition);
             }
             else
@@ -64,6 +110,11 @@ namespace DiplomaThesis.Collector
                 definition.CommandType = context.StatementData.CommandType;
                 statementDataAccumulator.PublishNormalizedStatementDefinition(context.StatementData.NormalizedStatementFingerprint, definition);
             }
+        }
+
+        private string CalculateFingerprint(StatementDefinition definition)
+        {
+            return $"{definition.CommandType}_{String.Join("_", definition.IndependentQueries.Select(x => x.Fingerprint))}";
         }
 
         private StatementQueryRelation Convert(QueryTreeRelation source)
@@ -106,6 +157,10 @@ namespace DiplomaThesis.Collector
             else if (source is QueryTreeAttributeExpression)
             {
                 return ConvertAttributeExpression(source as QueryTreeAttributeExpression);
+            }
+            else if (source is QueryTreeAggregateExpression)
+            {
+                return ConvertAggregateExpression(source as QueryTreeAggregateExpression);
             }
             return new StatementQueryUnknownExpression();
         }
@@ -150,6 +205,15 @@ namespace DiplomaThesis.Collector
             result.OperatorID = source.OperatorID;
             result.ResultDbType = source.ResultDbType;
             result.ResultTypeID = source.ResultTypeID;
+            return result;
+        }
+        private StatementQueryAggregateExpression ConvertAggregateExpression(QueryTreeAggregateExpression source)
+        {
+            StatementQueryAggregateExpression result = new StatementQueryAggregateExpression();
+            foreach (var a in source.Arguments)
+            {
+                result.Arguments.Add(Convert(a));
+            }
             return result;
         }
         private StatementQueryConstExpression ConvertConstExpression(QueryTreeConstExpression source)

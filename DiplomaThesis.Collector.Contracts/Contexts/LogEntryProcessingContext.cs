@@ -11,8 +11,8 @@ namespace DiplomaThesis.Collector.Contracts
         public uint DatabaseID { get; set; }
         public DAL.Contracts.CollectorDatabaseConfiguration DatabaseCollectingConfiguration { get; set; }
         public LogEntryStatementData StatementData { get; private set; }
-        public QueryPlanNode QueryPlan { get; set; }
-        public QueryTreeData QueryTree { get; set; }
+        public List<QueryPlanNode> QueryPlans { get; } = new List<QueryPlanNode>();
+        public List<QueryTreeData> QueryTrees { get; } = new List<QueryTreeData>();
 
         public string Statement
         {

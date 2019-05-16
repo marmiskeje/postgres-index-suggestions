@@ -26,9 +26,9 @@ namespace DiplomaThesis.WorkloadAnalyzer
             this.toSqlValueStringConverter = toSqlValueStringConverter;
             this.attributeHPartitioningDesigner = attributeHPartitioningDesigner;
         }
-        public IChainableCommand HandleExceptionCommand(IExecutableCommand onExceptionCommand = null, IExecutableCommand finallyCommand = null)
+        public IChainableCommand HandleExceptionCommand(Action<Exception> onExceptionAction = null, IExecutableCommand finallyCommand = null)
         {
-            return new HandleExceptionCommand(ex => onExceptionCommand?.Execute(), () => finallyCommand?.Execute());
+            return new HandleExceptionCommand(ex => onExceptionAction?.Invoke(ex), () => finallyCommand?.Execute());
         }
         public IChainableCommand EvaluateIndicesEnvironmentsCommand(WorkloadAnalysisContext context)
         {

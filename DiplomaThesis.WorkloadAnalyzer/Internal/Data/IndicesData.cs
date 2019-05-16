@@ -82,34 +82,88 @@ namespace DiplomaThesis.WorkloadAnalyzer
         public void Remove(IEnumerable<IndexDefinition> indices)
         {
             all.ExceptWith(indices);
+            HashSet<long> idsToRemove = new HashSet<long>();
             foreach (var statementId in allPerStatement.Keys)
             {
                 allPerStatement[statementId].ExceptWith(indices);
+                if (allPerStatement[statementId].Count == 0)
+                {
+                    idsToRemove.Add(statementId);
+                }
             }
+            foreach (var item in idsToRemove)
+            {
+                allPerStatement.Remove(item);
+            }
+            HashSet<NormalizedStatementQueryPair> queriesToRemove = new HashSet<NormalizedStatementQueryPair>();
             foreach (var query in allPerQuery.Keys)
             {
                 allPerQuery[query].ExceptWith(indices);
+                if (allPerQuery[query].Count == 0)
+                {
+                    queriesToRemove.Add(query);
+                }
             }
+            foreach (var item in queriesToRemove)
+            {
+                allPerQuery.Remove(item);
+            }
+            queriesToRemove.Clear();
             foreach (var query in allCoveringPerQuery.Keys)
             {
                 allCoveringPerQuery[query].ExceptWith(indices);
+                if (allCoveringPerQuery[query].Count == 0)
+                {
+                    queriesToRemove.Add(query);
+                }
+            }
+            foreach (var item in queriesToRemove)
+            {
+                allCoveringPerQuery.Remove(item);
             }
         }
 
         public void RemoveExcept(IEnumerable<IndexDefinition> indices)
         {
             all.IntersectWith(indices);
+            HashSet<long> idsToRemove = new HashSet<long>();
             foreach (var statementId in allPerStatement.Keys)
             {
                 allPerStatement[statementId].IntersectWith(indices);
+                if (allPerStatement[statementId].Count == 0)
+                {
+                    idsToRemove.Add(statementId);
+                }
             }
+            foreach (var item in idsToRemove)
+            {
+                allPerStatement.Remove(item);
+            }
+            HashSet<NormalizedStatementQueryPair> queriesToRemove = new HashSet<NormalizedStatementQueryPair>();
             foreach (var query in allPerQuery.Keys)
             {
                 allPerQuery[query].IntersectWith(indices);
+                if (allPerQuery[query].Count == 0)
+                {
+                    queriesToRemove.Add(query);
+                }
             }
+            foreach (var item in queriesToRemove)
+            {
+                allPerQuery.Remove(item);
+            }
+            queriesToRemove.Clear();
             foreach (var query in allCoveringPerQuery.Keys)
             {
                 allCoveringPerQuery[query].IntersectWith(indices);
+                if (allCoveringPerQuery[query].Count == 0)
+                {
+                    queriesToRemove.Add(query);
+                }
+            }
+            foreach (var item in queriesToRemove)
+            {
+                allCoveringPerQuery.Remove(item);
             }
         }
 

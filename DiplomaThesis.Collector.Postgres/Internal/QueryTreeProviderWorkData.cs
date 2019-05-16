@@ -84,6 +84,15 @@ namespace DiplomaThesis.Collector.Postgres
         }
     }
 
+    internal class AggregateExpression : EvalExpression
+    {
+        public List<EvalExpression> Arguments { get; private set; }
+        public AggregateExpression(QueryTreeDataInternal source) : base(source)
+        {
+            Arguments = new List<EvalExpression>();
+        }
+    }
+
     internal class NullTestExpression : EvalExpression
     {
         public NullTestType TestType { get; set; }
@@ -251,6 +260,35 @@ namespace DiplomaThesis.Collector.Postgres
         public uint OperatorID { get; set; }
         public List<ExpressionResult> Arguments { get; private set; }
         public OperatorExpressionResult(QueryTreeDataInternal source) : base(source)
+        {
+            Arguments = new List<ExpressionResult>();
+        }
+
+        public override ISet<QueryTreeRelation> GetAllRelations()
+        {
+            var result = new HashSet<QueryTreeRelation>();
+            foreach (var a in Arguments)
+            {
+                result.AddRange(a.GetAllRelations());
+            }
+            return result;
+        }
+
+        public override ISet<QueryTreeAttribute> GetAllAttributes()
+        {
+            var result = new HashSet<QueryTreeAttribute>();
+            foreach (var a in Arguments)
+            {
+                result.AddRange(a.GetAllAttributes());
+            }
+            return result;
+        }
+    }
+
+    internal class AggregateExpressionResult : ExpressionResult
+    {
+        public List<ExpressionResult> Arguments { get; private set; }
+        public AggregateExpressionResult(QueryTreeDataInternal source) : base(source)
         {
             Arguments = new List<ExpressionResult>();
         }

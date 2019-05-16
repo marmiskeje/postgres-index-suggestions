@@ -7,20 +7,20 @@ using System.Text;
 
 namespace DiplomaThesis.Collector.Postgres
 {
-    internal class LoadQueryTreeToContextCommand : ChainableCommand
+    internal class LoadQueryTreesToContextCommand : ChainableCommand
     {
         private readonly LogEntryProcessingWrapperContext context;
         private readonly IRepositoriesFactory repositories;
-        public LoadQueryTreeToContextCommand(LogEntryProcessingWrapperContext context, IRepositoriesFactory repositories)
+        public LoadQueryTreesToContextCommand(LogEntryProcessingWrapperContext context, IRepositoriesFactory repositories)
         {
             this.context = context;
             this.repositories = repositories;
         }
         protected override void OnExecute()
         {
-            if (context.QueryTree != null)
+            foreach (var item in context.QueryTrees)
             {
-                context.InnerContext.QueryTree = new QueryTreeProvider().Provide(context.QueryTree);
+                context.InnerContext.QueryTrees.Add(new QueryTreeProvider().Provide(item));
             }
         }
     }
