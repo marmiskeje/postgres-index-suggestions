@@ -8,5 +8,6 @@ namespace DiplomaThesis.DAL.Contracts
     {
 
         IEnumerable<WorkloadAnalysis> LoadForProcessing(int maxCount);
+        IEnumerable<WorkloadAnalysis> GetForDatabase(uint databaseID, DateTime createdDateFromInclusive, DateTime createdDateToExlusive);
     }
 }

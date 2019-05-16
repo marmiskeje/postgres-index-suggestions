@@ -72,7 +72,7 @@
                 $scope.gridAnalysisUnusedDbObjects.data = data.objects;
                 for (var i = 0; i < $scope.gridAnalysisUnusedDbObjects.data.length; i++) {
                     if ($scope.gridAnalysisUnusedDbObjects.data[i].lastKnownUsageDate != null) {
-                        $scope.gridAnalysisUnusedDbObjects.data[i].lastKnownUsageDateStr = moment().format("YYYY-MM-DD HH:mm:ss");
+                        $scope.gridAnalysisUnusedDbObjects.data[i].lastKnownUsageDateStr = moment($scope.gridAnalysisUnusedDbObjects.data[i].lastKnownUsageDate).format("YYYY-MM-DD HH:mm:ss");
                     }
                     else {
                         $scope.gridAnalysisUnusedDbObjects.data[i].lastKnownUsageDateStr = "Unknown";

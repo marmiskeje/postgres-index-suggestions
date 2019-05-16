@@ -27,5 +27,12 @@
             onFinally(errorResponse);
         });
     }
+    this.getWorkloadAnalyses = function (request, onFinally) {
+        $http.post('api/analysis/workload-analyses', request).then(function (response) {
+            onFinally(response);
+        }, function (errorResponse) {
+            onFinally(errorResponse);
+        });
+    }
 }
 Web.App.service('analysisService', ['$http', Web.Services.AnalysisService]);

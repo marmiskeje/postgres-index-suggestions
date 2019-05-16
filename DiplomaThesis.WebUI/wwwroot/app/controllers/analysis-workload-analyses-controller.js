@@ -1,4 +1,4 @@
-﻿Web.Controllers.AnalysisWorkloadAnalysesController = function ($scope, $rootScope, $http, uiGridConstants, $state) {
+﻿Web.Controllers.AnalysisWorkloadAnalysesController = function ($scope, $rootScope, $http, uiGridConstants, $state, analysisService, drawingService, notificationsService) {
     $rootScope.pageSubtitle = 'ANALYSIS_WORKLOAD_ANALYSES.PAGE_SUBTITLE';
     $scope.actions = new Object();
     $scope.actions.showAnalysisDetail = function (workloadAnalysis) {
@@ -7,28 +7,18 @@
     $scope.actions.showCreateWindow = function () {
         $state.go(Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSIS_CREATE);
     };
-    $scope.viewModel = new Object();
-    $scope.viewModel.isValid = true;
-    $scope.viewModel.isLoading = false;
-    $scope.viewModel.dateFrom = moment().startOf('day');
-    $scope.viewModel.dateTo = moment().startOf('day').add(1, 'days');
-    var paginationOptions = {
-        pageNumber: 1,
-        pageSize: 25,
-        sort: null
-    };
     $scope.gridAnalyses = {
+        paginationPageSize: 25,
         enablePaginationControls: false,
-        paginationPageSize: paginationOptions.pageSize,
-        useExternalPagination: true,
-        useExternalSorting: true,
+        useExternalPagination: false,
+        useExternalSorting: false,
         columnDefs: [
-            { name: 'CreatedDate', displayName: 'Created date', field: 'CreatedDate' },
-            { name: 'Workload', displayName: 'Workload', field: 'Workload' },
-            { name: 'Period', displayName: 'For period', field: 'Period' },
-            { name: 'State', displayName: 'State', field: 'State' },
-            { name: 'StartDate', displayName: 'Start date', field: 'StartDate' },
-            { name: 'EndDate', displayName: 'End date', field: 'EndDate' },
+            { name: 'CreatedDate', displayName: 'Created date', maxWidth: 200, field: 'createdDateStr' },
+            { name: 'Workload', displayName: 'Workload', field: 'workload.name' },
+            { name: 'Period', displayName: 'For period', field: 'period' },
+            { name: 'State', displayName: 'State', field: 'stateStr' },
+            { name: 'StartDate', displayName: 'Start date', maxWidth: 200, field: 'startDateStr' },
+            { name: 'EndDate', displayName: 'End date', maxWidth: 200, field: 'endDateStr' },
             {
                 name: 'Actions', displayName: '', field: 'Actions', enableSorting: false, maxWidth: 50, enableHiding: false,
                 cellTemplate: '<md-button style="padding: 0; margin: 0; min-height: inherit; min-width: inherit"' +
@@ -36,42 +26,117 @@
             }
         ],
         onRegisterApi: function (gridApi){
-            $scope.gridApi = gridApi;
-            $scope.gridApi.core.on.sortChanged($scope, function (grid, sortColumns) {
-                if (sortColumns.length == 0) {
-                    paginationOptions.sort = null;
-                } else {
-                    paginationOptions.sort = sortColumns[0].sort.direction;
-                }
-                getPage();
-            });
-            gridApi.pagination.on.paginationChanged($scope, function (newPage, pageSize) {
-                paginationOptions.pageNumber = newPage;
-                paginationOptions.pageSize = pageSize;
-                getPage();
-            });
+            $scope.gridAnalysesApi = gridApi;
+            $scope.gridAnalysesApi.core.queueRefresh();
+            $scope.gridAnalysesApi.core.handleWindowResize();
         }
     };
-    var getPage = function () {
-        var data = [];
-        for (var i = 0; i < 100; i++) {
-            var toAdd = new Object();
-            toAdd.Id = i;
-            toAdd.CreatedDate = moment().format("YYYY-MM-DD HH:mm:ss");
-            toAdd.Workload = "Test workload" + i;
-            toAdd.Period = moment().format("YYYY-MM-DD HH:mm:ss") + " - " + moment().format("YYYY-MM-DD HH:mm:ss");
-            toAdd.State = "Finished";
-            toAdd.StartDate = moment().format("YYYY-MM-DD HH:mm:ss");
-            toAdd.EndDate = moment().format("YYYY-MM-DD HH:mm:ss");
-            data.push(toAdd);
-        }
-        $scope.gridAnalyses.totalItems = 100;
-        var firstRow = (paginationOptions.pageNumber - 1) * paginationOptions.pageSize;
-        $scope.gridAnalyses.data = data.slice(firstRow, firstRow + paginationOptions.pageSize);
+    $scope.actions.loadData = function () {
+        return new Promise(function (resolve, reject) {
+            $scope.viewModel.isLoading = true;
+            var request = new Web.Data.AnalysisWorkloadAnalysesRequest();
+            request.databaseID = $rootScope.viewModel.currentDatabase.id;
+            request.filter.dateFrom = moment($scope.viewModel.dateFrom).format('YYYY-MM-DDTHH:mm:ss');
+            request.filter.dateTo = moment($scope.viewModel.dateTo).format('YYYY-MM-DDTHH:mm:ss');
+            analysisService.getWorkloadAnalyses(request, function (response) {
+                $scope.viewModel.isLoading = false;
+                if (response.data == null) {
+                    notificationsService.showError("An error occured during data loading.", response.status, response.statusText);
+                    resolve(null);
+                }
+                else if (response.data.isSuccess && response.data.data != null) {
+                    var result = response.data.data;
+                    resolve(result);
+                }
+                else {
+                    notificationsService.showError("An error occured during data loading.", 500, response.data.errorMessage);
+                    resolve(null);
+                }
+            });
+        });
+    };
+    $scope.actions.clearData = function () {
+        $scope.viewModel.data = null;
+        $scope.gridAnalyses.data = [];
+        $scope.gridAnalysesApi.core.queueRefresh();
+        $scope.gridAnalysesApi.core.handleWindowResize();
     }
-    getPage();
+    $scope.actions.refreshData = function (enforceLoading) {
+        var loadData = new Promise(function (resolve, reject) {
+            if ($scope.viewModel.validate()) {
+                if (enforceLoading || $scope.viewModel.data == null) {
+                    $scope.actions.loadData().then(function (result) {
+                        resolve(result);
+                    });
+                }
+                else {
+                    resolve($scope.viewModel.data)
+                }
+            }
+            else {
+                resolve(null);
+            }
+        });
+        loadData.then(function (data) {
+            $scope.actions.clearData();
+            if (data != null) {
+                for (var i = 0; i < data.length; i++) {
+                    var item = data[i];
+                    item.period = moment(item.periodFromDate).format("YYYY-MM-DD HH:mm") + " - " + moment(item.periodToDate).format("YYYY-MM-DD HH:mm");
+                    item.createdDateStr = moment(item.createdDate).format("YYYY-MM-DD HH:mm:ss");
+                    item.startDateStr = "";
+                    if (item.startDate != null) {
+                        item.startDateStr = moment(item.startDate).format("YYYY-MM-DD HH:mm:ss");
+                    }
+                    item.endDateStr = "";
+                    if (item.endDate != null) {
+                        item.endDateStr = moment(item.endDate).format("YYYY-MM-DD HH:mm:ss");
+                    }
+                    switch (item.state) {
+                        case 0:
+                            item.stateStr = "Unknown";
+                            break;
+                        case 1:
+                            item.stateStr = "In progress";
+                            break;
+                        case 2:
+                            item.stateStr = "Finished";
+                            break;
+                        case 3:
+                            item.stateStr = "Error (" + (item.errorMessage == null ? "Unknown" : item.errorMessage) + ")";
+                            break;
+                        default:
+                            item.stateStr = "Unknown";
+                            break;
+                    }
+                }
+                $scope.viewModel.data = data;
+                $scope.gridAnalyses.data = data;
+                $scope.gridAnalysesApi.core.queueRefresh();
+                $scope.gridAnalysesApi.core.handleWindowResize();
+            }
+        });
+    }
+    $rootScope.$on('onDatabaseChanged', function () {
+        if ($state.is(Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSES)) {
+            $scope.actions.refreshData(true);
+        }
+        else {
+            $scope.actions.clearData();
+        }
+    })
+
+    if ($state.current.data == null) {
+        $scope.viewModel = new Web.ViewModels.AnalysisWorkloadAnalysesViewModel();
+        $scope.viewModel.dateFrom = moment().startOf('day');
+        $scope.viewModel.dateTo = moment().startOf('day').add(1, 'days');
+        $state.current.data = $scope.viewModel;
+    } else {
+        $scope.viewModel = $state.current.data;
+    }
+    $scope.actions.refreshData(false);
 }
 
 
 
-angular.module('WebApp').controller('AnalysisWorkloadAnalysesController', ['$scope', '$rootScope', '$http', 'uiGridConstants', '$state', Web.Controllers.AnalysisWorkloadAnalysesController]);
+angular.module('WebApp').controller('AnalysisWorkloadAnalysesController', ['$scope', '$rootScope', '$http', 'uiGridConstants', '$state', 'analysisService', 'drawingService', 'notificationsService', Web.Controllers.AnalysisWorkloadAnalysesController]);

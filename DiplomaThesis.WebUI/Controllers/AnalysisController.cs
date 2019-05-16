@@ -11,6 +11,28 @@ namespace DiplomaThesis.WebUI.Controllers
     [ApiController]
     public class AnalysisController : BaseApiController
     {
+        [Route("workload-analyses")]
+        [HttpPost]
+        public IActionResult GetWorkloadAnalyses(GetWorkloadAnalysesRequest request)
+        {
+            GetWorkloadAnalysesReponse result = new GetWorkloadAnalysesReponse();
+            if (request != null && request.Filter != null)
+            {
+                HandleException(() =>
+                {
+                    var repository = DALRepositories.GetWorkloadAnalysesRepository();
+                    var analyses = repository.GetForDatabase(request.DatabaseID, request.Filter.DateFrom, request.Filter.DateTo);
+                    result.Data = new List<WorkloadAnalysisData>();
+                    foreach (var a in analyses)
+                    {
+                        result.Data.Add(Converter.Convert(a));
+                    }
+                    result.IsSuccess = result.Data != null;
+                }, ex => result.ErrorMessage = ex.Message);
+            }
+            return Json(result);
+        }
+
         [Route("workloads")]
         [HttpPost]
         public IActionResult GetWorkloads(GetWorkloadsRequest request)

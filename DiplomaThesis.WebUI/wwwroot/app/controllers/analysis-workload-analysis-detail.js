@@ -7,6 +7,7 @@
     $scope.viewModel = new Object();
     $scope.viewModel.WorkloadAnalysis = $stateParams.workloadAnalysis;
     $scope.gridAnalysisIndicesAffectedStatements = {
+        enableFiltering: true,
         minRowsToShow: 10,
         enablePaginationControls: false,
         useExternalPagination: false,
@@ -16,31 +17,31 @@
                 name: 'Statement', displayName: 'Statement', field: 'Statement', minWidth: 200
             },
             {
-                name: 'relation.IndexName0', displayName: 'relation.IndexName0', field: 'IsUsed', headerTooltip: 'Name of possible index',
+                name: 'relation.IndexName0', displayName: 'relation.IndexName0', field: 'IsUsed', headerTooltip: 'Name of possible index', enableFiltering: false,
                 cellTemplate: '<div class="ui-grid-cell-contents" style="text-align: center">' +
                     '<md-checkbox aria-label="is-used" disabled ng-checked="{{row.entity.PossibleIndices[0].IsUsed}}">{{row.entity.PossibleIndices[0].IsCovering ? "COVERING!" : ""}}</md-checkbox>' +
                     '<md-tooltip md-direction="top">{{row.entity.PossibleIndices[0].IsUsed ? "Used" : "Not used"}}</md-tooltip></div>'
             },
             {
-                name: 'relation.IndexName1', displayName: 'relation.IndexName1', field: 'IsUsed', headerTooltip: 'Name of possible index',
+                name: 'relation.IndexName1', displayName: 'relation.IndexName1', field: 'IsUsed', headerTooltip: 'Name of possible index', enableFiltering: false,
                 cellTemplate: '<div class="ui-grid-cell-contents" style="text-align: center">' +
                     '<md-checkbox aria-label="is-used" disabled ng-checked="{{row.entity.PossibleIndices[0].IsUsed}}"></md-checkbox>' +
                     '<md-tooltip md-direction="top">{{row.entity.PossibleIndices[0].IsUsed ? "Used" : "Not used"}}</md-tooltip></div>'
             },
             {
-                name: 'ExecutionCount', displayName: 'Execution count', field: 'ExecutionCount', maxWidth: 160
+                name: 'ExecutionCount', displayName: 'Execution count', field: 'ExecutionCount', maxWidth: 160, enableFiltering: false
             },
             {
-                name: 'RealTotalCost', displayName: 'Real total cost', field: 'RealTotalCost', maxWidth: 160
+                name: 'RealTotalCost', displayName: 'Real total cost', field: 'RealTotalCost', maxWidth: 160, enableFiltering: false
             },
             {
-                name: 'PotentialTotalCost', displayName: 'Potential total cost', field: 'PotentialTotalCost', maxWidth: 170
+                name: 'PotentialTotalCost', displayName: 'Potential total cost', field: 'PotentialTotalCost', maxWidth: 170, enableFiltering: false
             },
             {
-                name: 'LocalImprovement', displayName: 'Local % ↑', field: 'LocalImprovement', maxWidth: 100, headerTooltip: '% improvement of statement execution price'
+                name: 'LocalImprovement', displayName: 'Local % ↑', field: 'LocalImprovement', maxWidth: 100, headerTooltip: '% improvement of statement execution price', enableFiltering: false
             },
             {
-                name: 'GlobalImprovement', displayName: 'Global % ↑', field: 'GlobalImprovement', maxWidth: 100, headerTooltip: '% improvement towards others'
+                name: 'GlobalImprovement', displayName: 'Global % ↑', field: 'GlobalImprovement', maxWidth: 100, headerTooltip: '% improvement towards others', enableFiltering: false
             }
         ],
         onRegisterApi: function (gridApi) {

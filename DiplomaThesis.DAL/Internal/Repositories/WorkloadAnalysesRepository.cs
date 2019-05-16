@@ -36,5 +36,14 @@ namespace DiplomaThesis.DAL
                 entity.RelationReplacements = JsonSerializationUtility.Deserialize<List<WorkloadAnalysisRelationReplacement>>(entity.RelationReplacementsData); 
             }
         }
+
+        public IEnumerable<WorkloadAnalysis> GetForDatabase(uint databaseID, DateTime createdDateFromInclusive, DateTime createdDateToExlusive)
+        {
+            using (var context = CreateContextFunc())
+            {
+                return context.WorkloadAnalyses.Include(x => x.Workload).Where(x => x.Workload.DatabaseID == databaseID && x.CreatedDate >= createdDateFromInclusive && x.CreatedDate < createdDateToExlusive)
+                            .OrderByDescending(x => x.CreatedDate).ToList();
+            }
+        }
     }
 }

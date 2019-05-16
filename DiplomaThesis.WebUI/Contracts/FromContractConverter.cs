@@ -48,6 +48,21 @@ namespace DiplomaThesis.WebUI
             return result;
         }
 
+        internal WorkloadAnalysisData Convert(WorkloadAnalysis source)
+        {
+            WorkloadAnalysisData result = new WorkloadAnalysisData();
+            result.CreatedDate = source.CreatedDate;
+            result.EndDate = source.EndDate;
+            result.ErrorMessage = source.ErrorMessage;
+            result.ID = source.ID;
+            result.PeriodFromDate = source.PeriodFromDate;
+            result.PeriodToDate = source.PeriodToDate;
+            result.StartDate = source.StartDate;
+            result.State = (int)source.State;
+            result.Workload = Convert(source.Workload);
+            return result;
+        }
+
         internal ConfigurationCollectorData Convert(CollectorConfiguration source)
         {
             ConfigurationCollectorData result = new ConfigurationCollectorData();
