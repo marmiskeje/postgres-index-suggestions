@@ -7,7 +7,7 @@ namespace DiplomaThesis.DAL
 {
     internal class WorkloadsRepository : BaseRepository<long, Workload>, IWorkloadsRepository
     {
-        public WorkloadsRepository(Func<IndexSuggestionsContext> createContextFunc) : base(createContextFunc)
+        public WorkloadsRepository(Func<DiplomaThesisContext> createContextFunc) : base(createContextFunc)
         {
             CacheExpiration = TimeSpan.FromMinutes(5);
         }

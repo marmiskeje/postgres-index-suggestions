@@ -69,10 +69,11 @@ namespace DiplomaThesis.Collector.Contracts
     {
         public int AttributeNumber { get; set; }
         public uint RelationID { get; set; }
+        public bool WithAppliedAggregationFunction { get; set; }
 
         public override int GetHashCode()
         {
-            return $"{RelationID}_{AttributeNumber}".GetHashCode();
+            return $"{RelationID}_{AttributeNumber}_{WithAppliedAggregationFunction}".GetHashCode();
         }
 
         public override bool Equals(object obj)
@@ -82,7 +83,7 @@ namespace DiplomaThesis.Collector.Contracts
                 return false;
             }
             QueryTreeAttribute tmp = (QueryTreeAttribute)obj;
-            return RelationID.Equals(tmp.RelationID) && AttributeNumber.Equals(tmp.AttributeNumber);
+            return RelationID.Equals(tmp.RelationID) && AttributeNumber.Equals(tmp.AttributeNumber) && WithAppliedAggregationFunction.Equals(tmp.WithAppliedAggregationFunction);
         }
     }
 

@@ -6,10 +6,11 @@ using DiplomaThesis.Common;
 
 namespace DiplomaThesis.DAL
 {
-    internal static class IndexSuggestionsContextSeedDataUtility
+    internal static class DiplomaThesisContextSeedDataUtility
     {
         public static void SeedData(ModelBuilder modelBuilder)
         {
+            /*
             uint tpccDaabaseID = 371580;
             uint testDatabaseID = 16393;
             //workloads
@@ -51,7 +52,7 @@ namespace DiplomaThesis.DAL
             testWorkload.DefinitionData = SerializeToJson(testWorkload.Definition);
 
             modelBuilder.Entity<Workload>().HasData(tpccWorkload);
-            modelBuilder.Entity<Workload>().HasData(testWorkload);
+            modelBuilder.Entity<Workload>().HasData(testWorkload);*/
             //
 
             // settings
@@ -76,8 +77,8 @@ namespace DiplomaThesis.DAL
             modelBuilder.Entity<SettingProperty>().HasData(new SettingProperty() { ID = 4, Key = SettingPropertyKeys.EMAIL_TEMPLATE_SUMMARY_REPORT, StrValue = SerializeToJson(summaryReportTemplate) });
 
             CollectorConfiguration collectorConfiguration = new CollectorConfiguration();
-            collectorConfiguration.Databases.Add(tpccDaabaseID, new CollectorDatabaseConfiguration() { DatabaseID = tpccDaabaseID, IsEnabledGeneralCollection = true, IsEnabledStatementCollection = true });
-            collectorConfiguration.Databases.Add(testDatabaseID, new CollectorDatabaseConfiguration() { DatabaseID = testDatabaseID, IsEnabledGeneralCollection = true, IsEnabledStatementCollection = true });
+            //collectorConfiguration.Databases.Add(tpccDaabaseID, new CollectorDatabaseConfiguration() { DatabaseID = tpccDaabaseID, IsEnabledGeneralCollection = true, IsEnabledStatementCollection = true });
+            //collectorConfiguration.Databases.Add(testDatabaseID, new CollectorDatabaseConfiguration() { DatabaseID = testDatabaseID, IsEnabledGeneralCollection = true, IsEnabledStatementCollection = true });
             modelBuilder.Entity<SettingProperty>().HasData(new SettingProperty() { ID = 5, Key = SettingPropertyKeys.COLLECTOR_CONFIGURATION, StrValue = SerializeToJson(collectorConfiguration) });
         }
 

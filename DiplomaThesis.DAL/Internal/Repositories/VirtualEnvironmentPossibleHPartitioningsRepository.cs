@@ -8,7 +8,7 @@ namespace DiplomaThesis.DAL
 {
     internal class VirtualEnvironmentPossibleHPartitioningsRepository : BaseRepository<long, VirtualEnvironmentPossibleHPartitioning>, IVirtualEnvironmentPossibleHPartitioningsRepository
     {
-        public VirtualEnvironmentPossibleHPartitioningsRepository(Func<IndexSuggestionsContext> createContextFunc) : base(createContextFunc)
+        public VirtualEnvironmentPossibleHPartitioningsRepository(Func<DiplomaThesisContext> createContextFunc) : base(createContextFunc)
         {
 
         }

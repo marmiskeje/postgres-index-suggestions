@@ -17,9 +17,9 @@
                 field: 'statement'
             },
             { displayName: 'Total executions count', maxWidth: 220, name: 'totalExecutionsCount', field: 'totalExecutionsCount' },
-            { displayName: 'Min duration', maxWidth: 170, field: 'minDuration', name: 'minDuration' },
-            { displayName: 'Max duration', maxWidth: 170, field: 'maxDuration', name: 'maxDuration' },
-            { displayName: 'Avg duration', maxWidth: 170, field: 'avgDuration', name: 'avgDuration' },
+            { displayName: 'Min duration (ms)', maxWidth: 170, field: 'minDurationStr', name: 'minDuration' },
+            { displayName: 'Max duration (ms)', maxWidth: 170, field: 'maxDurationStr', name: 'maxDuration' },
+            { displayName: 'Avg duration (ms)', maxWidth: 170, field: 'avgDurationStr', name: 'avgDuration' },
             { displayName: 'Min cost', maxWidth: 100, field: 'minTotalCost', name: 'minTotalCost' },
             { displayName: 'Max cost', maxWidth: 100, field: 'minTotalCost', name: 'maxTotalCost' },
             { displayName: 'Avg cost', maxWidth: 100, field: 'minTotalCost', name: 'avgTotalCost' }
@@ -83,6 +83,9 @@
                 $scope.viewModel.data = data;
                 for (var i = 0; i < data.summaryNormalizedStatementStatistics.length; i++) {
                     var item = data.summaryNormalizedStatementStatistics[i];
+                    item.minDurationStr = moment.duration(item.minDuration).asMilliseconds();
+                    item.maxDurationStr = moment.duration(item.maxDuration).asMilliseconds();
+                    item.avgDurationStr = moment.duration(item.avgDuration).asMilliseconds();
                     if (item.commandType != null) {
                         switch (item.commandType) {
                             case 1:

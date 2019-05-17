@@ -77,19 +77,17 @@ namespace DiplomaThesis.WorkloadAnalyzer
             var allOrderByAttributes = queryExtractedData.OrderByAttributes.All.Where(x => x.Relation.ID == baseIndex.Relation.ID);
             var bTreeOrderByAttributes = queryExtractedData.OrderByAttributes.BTreeApplicable.Where(x => x.Relation.ID == baseIndex.Relation.ID);
             var allProjectionAttributes = queryExtractedData.ProjectionAttributes.All.Where(x => x.Relation.ID == baseIndex.Relation.ID);
-            var bTreeProjectionAttributes = queryExtractedData.ProjectionAttributes.BTreeApplicable.Where(x => x.Relation.ID == baseIndex.Relation.ID);
             if (allWhereAttributes.Count() == bTreeWhereAttributes.Count()
                 && allJoinAttributes.Count() == bTreeJoinAttributes.Count()
                 && allGroupByAttributes.Count() == bTreeGroupByAttributes.Count()
                 && allOrderByAttributes.Count() == bTreeOrderByAttributes.Count()
-                && allProjectionAttributes.Count() == bTreeProjectionAttributes.Count()
                 && query.CommandType != DAL.Contracts.StatementQueryCommandType.Insert)
             {
                 var includeAttributes = new HashSet<AttributeData>(bTreeWhereAttributes);
                 includeAttributes.UnionWith(bTreeJoinAttributes);
                 includeAttributes.UnionWith(bTreeGroupByAttributes);
                 includeAttributes.UnionWith(bTreeOrderByAttributes);
-                includeAttributes.UnionWith(bTreeProjectionAttributes);
+                includeAttributes.UnionWith(allProjectionAttributes);
                 includeAttributes.ExceptWith(baseIndex.Attributes);
                 List<AttributeData> includeSortedAttributes = new List<AttributeData>(includeAttributes.OrderBy(x => x.CardinalityIndicator));
                 coveringIndex = new IndexDefinition(baseIndex.StructureType, baseIndex.Relation, baseIndex.Attributes, includeSortedAttributes);

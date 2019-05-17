@@ -56,14 +56,40 @@ namespace DiplomaThesis.Collector.Tests.Scenarios
             }
         }
         [Test]
-        public void Scenario_BaseTeeest()
+        public void Scenario_Base5()
         {
-            string query = "select max(temperature) from test.temperature_log where sensor_id = 3";
-            using (var scope = CreateDatabaseScope("test"))
+            string query = "select c_first, c_last from public.customer where c_balance > 0";
+            using (var scope = CreateDatabaseScope())
             {
                 var result = Repository.ExecuteQuery<dynamic>(query);
             }
         }
-        
+        [Test]
+        public void Scenario_Base6()
+        {
+            string query = "select max(c_credit) from public.customer";
+            using (var scope = CreateDatabaseScope())
+            {
+                var result = Repository.ExecuteQuery<dynamic>(query);
+            }
+        }
+        [Test]
+        public void Scenario_Base7()
+        {
+            string query = "delete from public.history where h_date >= '2018-1-1' and h_date < '2018-2-1'";
+            using (var scope = CreateDatabaseScope())
+            {
+                var result = Repository.ExecuteQuery<dynamic>(query);
+            }
+        }
+        [Test]
+        public void Scenario_Base8()
+        {
+            string query = "select * from vw_customers_history where h_date < '2018-1-1'";
+            using (var scope = CreateDatabaseScope())
+            {
+                var result = Repository.ExecuteQuery<dynamic>(query);
+            }
+        }
     }
 }

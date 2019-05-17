@@ -7,7 +7,7 @@ namespace DiplomaThesis.DAL
 {
     internal class PossibleIndicesRepository : BaseRepository<long, PossibleIndex>, IPossibleIndicesRepository
     {
-        public PossibleIndicesRepository(Func<IndexSuggestionsContext> createContextFunc) : base(createContextFunc)
+        public PossibleIndicesRepository(Func<DiplomaThesisContext> createContextFunc) : base(createContextFunc)
         {
 
         }

@@ -129,6 +129,7 @@ namespace DiplomaThesis.Collector
             StatementQueryAttribute result = new StatementQueryAttribute();
             result.AttributeNumber = source.AttributeNumber;
             result.RelationID = source.RelationID;
+            result.WithAppliedAggregateFunction = source.WithAppliedAggregationFunction;
             return result;
         }
 

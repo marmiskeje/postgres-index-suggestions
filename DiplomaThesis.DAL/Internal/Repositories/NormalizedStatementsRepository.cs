@@ -8,7 +8,7 @@ namespace DiplomaThesis.DAL
 {
     internal class NormalizedStatementsRepository : BaseRepository<long, NormalizedStatement>, INormalizedStatementsRepository
     {
-        public NormalizedStatementsRepository(Func<IndexSuggestionsContext> createContextFunc) : base(createContextFunc)
+        public NormalizedStatementsRepository(Func<DiplomaThesisContext> createContextFunc) : base(createContextFunc)
         {
             
         }

@@ -18,7 +18,7 @@ namespace DiplomaThesis.Collector
         }
         protected override void OnExecute()
         {
-            this.IsEnabledSuccessorCall = context.Entry.ApplicationName != "IndexSuggestions";
+            this.IsEnabledSuccessorCall = context.Entry.ApplicationName != "DiplomaThesis";
         }
     }
 }

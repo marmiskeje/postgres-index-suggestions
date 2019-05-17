@@ -101,10 +101,11 @@ namespace DiplomaThesis.DAL.Contracts
     {
         public int AttributeNumber { get; set; }
         public uint RelationID { get; set; }
+        public bool WithAppliedAggregateFunction { get; set; }
 
         public override int GetHashCode()
         {
-            return $"{RelationID}_{AttributeNumber}".GetHashCode();
+            return $"{RelationID}_{AttributeNumber}_{WithAppliedAggregateFunction}".GetHashCode();
         }
 
         public override bool Equals(object obj)
@@ -114,12 +115,12 @@ namespace DiplomaThesis.DAL.Contracts
                 return false;
             }
             StatementQueryAttribute tmp = (StatementQueryAttribute)obj;
-            return RelationID.Equals(tmp.RelationID) && AttributeNumber.Equals(tmp.AttributeNumber);
+            return RelationID.Equals(tmp.RelationID) && AttributeNumber.Equals(tmp.AttributeNumber) && WithAppliedAggregateFunction.Equals(tmp.WithAppliedAggregateFunction);
         }
 
         public string CalculateFingerprint()
         {
-            return $"{RelationID}_{AttributeNumber}";
+            return $"{RelationID}_{AttributeNumber}_{WithAppliedAggregateFunction}";
         }
     }
 

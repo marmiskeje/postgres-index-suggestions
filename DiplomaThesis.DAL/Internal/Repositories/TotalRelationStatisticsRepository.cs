@@ -8,7 +8,7 @@ namespace DiplomaThesis.DAL
 {
     internal class TotalRelationStatisticsRepository : BaseRepository<long, TotalRelationStatistics>, ITotalRelationStatisticsRepository
     {
-        public TotalRelationStatisticsRepository(Func<IndexSuggestionsContext> createContextFunc) : base(createContextFunc)
+        public TotalRelationStatisticsRepository(Func<DiplomaThesisContext> createContextFunc) : base(createContextFunc)
         {
             
         }

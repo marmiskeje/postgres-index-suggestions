@@ -8,7 +8,7 @@ namespace DiplomaThesis.DAL
 {
     internal class WorkloadAnalysesRepository : BaseRepository<long, WorkloadAnalysis>, IWorkloadAnalysesRepository
     {
-        public WorkloadAnalysesRepository(Func<IndexSuggestionsContext> createContextFunc) : base(createContextFunc)
+        public WorkloadAnalysesRepository(Func<DiplomaThesisContext> createContextFunc) : base(createContextFunc)
         {
 
         }
@@ -42,7 +42,7 @@ namespace DiplomaThesis.DAL
             using (var context = CreateContextFunc())
             {
                 return context.WorkloadAnalyses.Include(x => x.Workload).Where(x => x.Workload.DatabaseID == databaseID && x.CreatedDate >= createdDateFromInclusive && x.CreatedDate < createdDateToExlusive)
-                            .OrderByDescending(x => x.CreatedDate).ToList();
+                            .OrderByDescending(x => x.CreatedDate).ThenByDescending(x => x.StartDate).ThenByDescending(x => x.EndDate).ToList();
             }
         }
 

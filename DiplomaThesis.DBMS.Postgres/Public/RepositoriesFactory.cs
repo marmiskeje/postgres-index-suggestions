@@ -44,7 +44,7 @@ namespace DiplomaThesis.DBMS.Postgres
             foreach (var keyValue in connectionStringSplit)
             {
                 var keyValueSplit = keyValue.Split("=");
-                if (keyValueSplit[0].Trim().Replace(" ", "").ToLower() == "applicationname" && keyValueSplit[1].Trim() == "IndexSuggestions")
+                if (keyValueSplit[0].Trim().Replace(" ", "").ToLower() == "applicationname" && keyValueSplit[1].Trim() == "DiplomaThesis")
                 {
                     containsAppName = true;
                     break;
@@ -52,7 +52,7 @@ namespace DiplomaThesis.DBMS.Postgres
             }
             if (!containsAppName)
             {
-                throw new ArgumentException("ConnectionString must contain ApplicationName=IndexSuggestions!"); // otherwise infinite log processing may occur
+                throw new ArgumentException("ConnectionString must contain ApplicationName=DiplomaThesis!"); // otherwise infinite log processing may occur
             }
         }
 

@@ -26,9 +26,9 @@ namespace DiplomaThesis.DAL
             dalSettings = configuration.Get<DalSettings>();
         }
 
-        private IndexSuggestionsContext CreateContext()
+        private DiplomaThesisContext CreateContext()
         {
-            var context = new IndexSuggestionsContext(dalSettings.DBConnection.ProviderName, dalSettings.DBConnection.ConnectionString);
+            var context = new DiplomaThesisContext(dalSettings.DBConnection.ProviderName, dalSettings.DBConnection.ConnectionString);
             return context;
         }
 

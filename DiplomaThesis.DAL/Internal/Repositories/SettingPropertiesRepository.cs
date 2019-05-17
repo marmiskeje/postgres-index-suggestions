@@ -8,7 +8,7 @@ namespace DiplomaThesis.DAL
 {
     internal class SettingPropertiesRepository : BaseRepository<long, SettingProperty>, ISettingPropertiesRepository
     {
-        public SettingPropertiesRepository(Func<IndexSuggestionsContext> createContextFunc) : base(createContextFunc)
+        public SettingPropertiesRepository(Func<DiplomaThesisContext> createContextFunc) : base(createContextFunc)
         {
 
         }

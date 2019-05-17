@@ -113,7 +113,7 @@ namespace DiplomaThesis.Collector.Postgres
         }
 
         public abstract ISet<QueryTreeRelation> GetAllRelations();
-        public abstract ISet<QueryTreeAttribute> GetAllAttributes();
+        public abstract ISet<QueryTreeAttribute> GetAllAttributes(bool withAppliedAggregationFunction = false);
     }
 
     internal class FunctionExpressionResult : ExpressionResult
@@ -136,12 +136,12 @@ namespace DiplomaThesis.Collector.Postgres
             return result;
         }
 
-        public override ISet<QueryTreeAttribute> GetAllAttributes()
+        public override ISet<QueryTreeAttribute> GetAllAttributes(bool withAppliedAggregationFunction = false)
         {
             var result = new HashSet<QueryTreeAttribute>();
             foreach (var a in Arguments)
             {
-                result.AddRange(a.GetAllAttributes());
+                result.AddRange(a.GetAllAttributes(withAppliedAggregationFunction));
             }
             return result;
         }
@@ -154,7 +154,7 @@ namespace DiplomaThesis.Collector.Postgres
 
         }
 
-        public override ISet<QueryTreeAttribute> GetAllAttributes()
+        public override ISet<QueryTreeAttribute> GetAllAttributes(bool withAppliedAggregationFunction = false)
         {
             return new HashSet<QueryTreeAttribute>();
         }
@@ -183,10 +183,10 @@ namespace DiplomaThesis.Collector.Postgres
             return result;
         }
 
-        public override ISet<QueryTreeAttribute> GetAllAttributes()
+        public override ISet<QueryTreeAttribute> GetAllAttributes(bool withAppliedAggregationFunction = false)
         {
             var result = new HashSet<QueryTreeAttribute>();
-            result.Add(new QueryTreeAttribute() { RelationID = RelationID, AttributeNumber = AttributeNumber });
+            result.Add(new QueryTreeAttribute() { RelationID = RelationID, AttributeNumber = AttributeNumber, WithAppliedAggregationFunction = withAppliedAggregationFunction });
             return result;
         }
     }
@@ -198,7 +198,7 @@ namespace DiplomaThesis.Collector.Postgres
         {
 
         }
-        public override ISet<QueryTreeAttribute> GetAllAttributes()
+        public override ISet<QueryTreeAttribute> GetAllAttributes(bool withAppliedAggregationFunction = false)
         {
             return new HashSet<QueryTreeAttribute>();
         }
@@ -216,7 +216,7 @@ namespace DiplomaThesis.Collector.Postgres
         {
 
         }
-        public override ISet<QueryTreeAttribute> GetAllAttributes()
+        public override ISet<QueryTreeAttribute> GetAllAttributes(bool withAppliedAggregationFunction = false)
         {
             return new HashSet<QueryTreeAttribute>();
         }
@@ -243,12 +243,12 @@ namespace DiplomaThesis.Collector.Postgres
             return result;
         }
 
-        public override ISet<QueryTreeAttribute> GetAllAttributes()
+        public override ISet<QueryTreeAttribute> GetAllAttributes(bool withAppliedAggregationFunction = false)
         {
             var result = new HashSet<QueryTreeAttribute>();
             foreach (var a in Arguments)
             {
-                result.AddRange(a.GetAllAttributes());
+                result.AddRange(a.GetAllAttributes(withAppliedAggregationFunction));
             }
             return result;
         }
@@ -274,12 +274,12 @@ namespace DiplomaThesis.Collector.Postgres
             return result;
         }
 
-        public override ISet<QueryTreeAttribute> GetAllAttributes()
+        public override ISet<QueryTreeAttribute> GetAllAttributes(bool withAppliedAggregationFunction = false)
         {
             var result = new HashSet<QueryTreeAttribute>();
             foreach (var a in Arguments)
             {
-                result.AddRange(a.GetAllAttributes());
+                result.AddRange(a.GetAllAttributes(withAppliedAggregationFunction));
             }
             return result;
         }
@@ -303,12 +303,12 @@ namespace DiplomaThesis.Collector.Postgres
             return result;
         }
 
-        public override ISet<QueryTreeAttribute> GetAllAttributes()
+        public override ISet<QueryTreeAttribute> GetAllAttributes(bool withAppliedAggregationFunction = false)
         {
             var result = new HashSet<QueryTreeAttribute>();
             foreach (var a in Arguments)
             {
-                result.AddRange(a.GetAllAttributes());
+                result.AddRange(a.GetAllAttributes(true));
             }
             return result;
         }
@@ -329,10 +329,10 @@ namespace DiplomaThesis.Collector.Postgres
             return result;
         }
 
-        public override ISet<QueryTreeAttribute> GetAllAttributes()
+        public override ISet<QueryTreeAttribute> GetAllAttributes(bool withAppliedAggregationFunction = false)
         {
             var result = new HashSet<QueryTreeAttribute>();
-            result.AddRange(Argument.GetAllAttributes());
+            result.AddRange(Argument.GetAllAttributes(withAppliedAggregationFunction));
             return result;
         }
     }

@@ -65,6 +65,14 @@ namespace DiplomaThesis.WorkloadAnalyzer
                                 && !context.Workload.Definition.Relations.ForbiddenValues.Contains(t.RelationID)) // relation is not forbidden
                             {
                                 btreeProjectionAttributes.Add(toAdd);
+                                if (t.WithAppliedAggregateFunction)
+                                {
+                                    btreeGroupByAttributes.Add(toAdd);
+                                    if (!allGroupByOperatorsByAttribute.ContainsKey(toAdd))
+                                    {
+                                        allGroupByOperatorsByAttribute.Add(toAdd, new HashSet<string>());
+                                    }
+                                }
                             }
                         }
                     }

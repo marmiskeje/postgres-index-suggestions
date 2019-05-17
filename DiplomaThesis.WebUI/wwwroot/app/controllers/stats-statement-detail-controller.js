@@ -51,25 +51,25 @@
             datasets: []
         };
         var minDurationDataset = {
-            label: 'Min duration (s)',
+            label: 'Min duration (ms)',
             data: [],
             fill: false
         };
         var maxDurationDataset = {
-            label: 'Max duration (s)',
+            label: 'Max duration (ms)',
             data: [],
             fill: false
         };
         var avgDurationDataset = {
-            label: 'Avg duration (s)',
+            label: 'Avg duration (ms)',
             data: [],
             fill: false
         };
         for (var i = 0; i < graphData.length; i++) {
             data.labels.push(graphData[i].date);
-            minDurationDataset.data.push(moment.duration(graphData[i].minDuration).asSeconds());
-            maxDurationDataset.data.push(moment.duration(graphData[i].maxDuration).asSeconds());
-            avgDurationDataset.data.push(moment.duration(graphData[i].avgDuration).asSeconds());
+            minDurationDataset.data.push(moment.duration(graphData[i].minDuration).asMilliseconds());
+            maxDurationDataset.data.push(moment.duration(graphData[i].maxDuration).asMilliseconds());
+            avgDurationDataset.data.push(moment.duration(graphData[i].avgDuration).asMilliseconds());
         }
         data.datasets.push(minDurationDataset);
         data.datasets.push(maxDurationDataset);

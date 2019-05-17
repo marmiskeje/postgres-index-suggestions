@@ -81,6 +81,7 @@
         $scope.viewModel.workload.databaseID = $rootScope.viewModel.currentDatabase.id;
         /*
          * implict forbidden relations - system ones
+         */
         if ($rootScope.viewModel.currentDatabase.id in $rootScope.viewModel.databaseRelations) {
             for (var i = 0; i < $rootScope.viewModel.databaseRelations[$rootScope.viewModel.currentDatabase.id].length; i++) {
                 var relation = $rootScope.viewModel.databaseRelations[$rootScope.viewModel.currentDatabase.id][i];
@@ -88,7 +89,7 @@
                     $scope.viewModel.forbiddenRelations.push(relation);
                 }
             }
-        }*/
+        }
         $scope.viewModel.validate();
     }
     $scope.pageSubtitle = $rootScope.pageSubtitle;

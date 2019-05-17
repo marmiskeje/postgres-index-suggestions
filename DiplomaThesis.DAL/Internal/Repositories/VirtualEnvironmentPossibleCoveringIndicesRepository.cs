@@ -8,7 +8,7 @@ namespace DiplomaThesis.DAL
 {
     internal class VirtualEnvironmentPossibleCoveringIndicesRepository : BaseSimpleRepository<VirtualEnvironmentPossibleCoveringIndex>, IVirtualEnvironmentPossibleCoveringIndicesRepository
     {
-        public VirtualEnvironmentPossibleCoveringIndicesRepository(Func<IndexSuggestionsContext> createContextFunc) : base(createContextFunc)
+        public VirtualEnvironmentPossibleCoveringIndicesRepository(Func<DiplomaThesisContext> createContextFunc) : base(createContextFunc)
         {
 
         }

@@ -215,87 +215,83 @@ namespace DiplomaThesis.Collector.Postgres
                 var query = node;
                 if (rte.SubQuery != null)
                 {
-                    query = rte.SubQuery;
-                    FillAllRtesGroups(query, rtes, targetResults, whereQuals, joinQuals, havingQuals, groupBys, orderBys);
+                    FillAllRtesGroups(rte.SubQuery, rtes, targetResults, whereQuals, joinQuals, havingQuals, groupBys, orderBys);
                 }
-                else
+                if (!targetResults.ContainsKey(query))
                 {
-                    if (!targetResults.ContainsKey(query))
+                    targetResults.Add(query, new List<ExpressionResult>());
+                    foreach (var e in query.TargetEntries)
                     {
-                        targetResults.Add(query, new List<ExpressionResult>());
-                        foreach (var e in query.TargetEntries)
+                        var targetResult = ResolveExpression(e);
+                        targetResults[query].Add(targetResult);
+                        if (targetResult is SublinkExpressionResult)
                         {
-                            var targetResult = ResolveExpression(e);
-                            targetResults[query].Add(targetResult);
-                            if (targetResult is SublinkExpressionResult)
-                            {
-                                var sublink = (SublinkExpressionResult)targetResult;
-                                FillAllRtesGroups(sublink.SubQuery, rtes, targetResults, whereQuals, joinQuals, havingQuals, groupBys, orderBys);
-                            }
+                            var sublink = (SublinkExpressionResult)targetResult;
+                            FillAllRtesGroups(sublink.SubQuery, rtes, targetResults, whereQuals, joinQuals, havingQuals, groupBys, orderBys);
                         }
                     }
-                    if (!whereQuals.ContainsKey(query))
+                }
+                if (!whereQuals.ContainsKey(query))
+                {
+                    whereQuals.Add(query, new List<ExpressionResult>());
+                    foreach (var q in query.WhereQuals)
                     {
-                        whereQuals.Add(query, new List<ExpressionResult>());
-                        foreach (var q in query.WhereQuals)
+                        var exprResult = ResolveExpression(q);
+                        whereQuals[query].Add(exprResult);
+                        if (exprResult is SublinkExpressionResult)
                         {
-                            var exprResult = ResolveExpression(q);
-                            whereQuals[query].Add(exprResult);
-                            if (exprResult is SublinkExpressionResult)
-                            {
-                                var sublink = (SublinkExpressionResult)exprResult;
-                                FillAllRtesGroups(sublink.SubQuery, rtes, targetResults, whereQuals, joinQuals, havingQuals, groupBys, orderBys);
-                            }
+                            var sublink = (SublinkExpressionResult)exprResult;
+                            FillAllRtesGroups(sublink.SubQuery, rtes, targetResults, whereQuals, joinQuals, havingQuals, groupBys, orderBys);
                         }
                     }
-                    if (!joinQuals.ContainsKey(query))
+                }
+                if (!joinQuals.ContainsKey(query))
+                {
+                    joinQuals.Add(query, new List<ExpressionResult>());
+                    foreach (var q in query.JoinQuals)
                     {
-                        joinQuals.Add(query, new List<ExpressionResult>());
-                        foreach (var q in query.JoinQuals)
+                        var exprResult = ResolveExpression(q);
+                        joinQuals[query].Add(exprResult);
+                        if (exprResult is SublinkExpressionResult)
                         {
-                            var exprResult = ResolveExpression(q);
-                            joinQuals[query].Add(exprResult);
-                            if (exprResult is SublinkExpressionResult)
-                            {
-                                var sublink = (SublinkExpressionResult)exprResult;
-                                FillAllRtesGroups(sublink.SubQuery, rtes, targetResults, whereQuals, joinQuals, havingQuals, groupBys, orderBys);
-                            }
+                            var sublink = (SublinkExpressionResult)exprResult;
+                            FillAllRtesGroups(sublink.SubQuery, rtes, targetResults, whereQuals, joinQuals, havingQuals, groupBys, orderBys);
                         }
                     }
-                    if (!havingQuals.ContainsKey(query))
+                }
+                if (!havingQuals.ContainsKey(query))
+                {
+                    havingQuals.Add(query, new List<ExpressionResult>());
+                    foreach (var q in query.HavingQuals)
                     {
-                        havingQuals.Add(query, new List<ExpressionResult>());
-                        foreach (var q in query.HavingQuals)
+                        var exprResult = ResolveExpression(q);
+                        havingQuals[query].Add(exprResult);
+                        if (exprResult is SublinkExpressionResult)
                         {
-                            var exprResult = ResolveExpression(q);
-                            havingQuals[query].Add(exprResult);
-                            if (exprResult is SublinkExpressionResult)
-                            {
-                                var sublink = (SublinkExpressionResult)exprResult;
-                                FillAllRtesGroups(sublink.SubQuery, rtes, targetResults, whereQuals, joinQuals, havingQuals, groupBys, orderBys);
-                            }
+                            var sublink = (SublinkExpressionResult)exprResult;
+                            FillAllRtesGroups(sublink.SubQuery, rtes, targetResults, whereQuals, joinQuals, havingQuals, groupBys, orderBys);
                         }
                     }
-                    if (!groupBys.ContainsKey(query))
+                }
+                if (!groupBys.ContainsKey(query))
+                {
+                    groupBys.Add(query, new List<ExpressionResult>());
+                    foreach (var q in query.GroupByEntries)
                     {
-                        groupBys.Add(query, new List<ExpressionResult>());
-                        foreach (var q in query.GroupByEntries)
-                        {
-                            groupBys[query].Add(ResolveExpression(q));
-                        }
+                        groupBys[query].Add(ResolveExpression(q));
                     }
-                    if (!orderBys.ContainsKey(query))
+                }
+                if (!orderBys.ContainsKey(query))
+                {
+                    orderBys.Add(query, new List<ExpressionResult>());
+                    foreach (var q in query.OrderByEntries)
                     {
-                        orderBys.Add(query, new List<ExpressionResult>());
-                        foreach (var q in query.OrderByEntries)
-                        {
-                            orderBys[query].Add(ResolveExpression(q));
-                        }
+                        orderBys[query].Add(ResolveExpression(q));
                     }
-                    if (rte.CteName != null)
-                    {
-                        FillFromCte(query, FindCte(query, rte.CteName), whereQuals, joinQuals, havingQuals, groupBys, orderBys);
-                    }
+                }
+                if (rte.CteName != null)
+                {
+                    FillFromCte(query, FindCte(query, rte.CteName), whereQuals, joinQuals, havingQuals, groupBys, orderBys);
                 }
                 if (!rtes.ContainsKey(query))
                 {

@@ -57,7 +57,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                             var normalizedStatement = context.StatementsData.All[normalizedStatementID].NormalizedStatement;
                             var query = statementQueryPair.Query;
                             var extractedData = context.StatementsExtractedData.DataPerQuery[statementQueryPair];
-                            if (IsIndexApplicableForQuery(extractedData, existingIndexToAdd))
+                            if (IndexApplicability.IsIndexApplicableForQuery(extractedData, existingIndexToAdd))
                             {
                                 context.IndicesDesignData.ExistingIndices.TryAddPossibleIndices(new[] { existingIndexToAdd }, normalizedStatement, query);
                             }
@@ -67,13 +67,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             }
         }
 
-        private bool IsIndexApplicableForQuery(StatementQueryExtractedData extractedData, IndexDefinition index)
-        {
-            return extractedData.WhereAttributes.All
-                .Union(extractedData.JoinAttributes.All)
-                .Union(extractedData.GroupByAttributes.All)
-                .Union(extractedData.OrderByAttributes.All).Contains(index.Attributes.First());
-        }
+        
 
         private bool IsIncludedAttribute(string indexDefinition, string attributeName)
         {

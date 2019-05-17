@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DiplomaThesis.DAL
 {
-    internal partial class IndexSuggestionsContext : DbContext
+    internal partial class DiplomaThesisContext : DbContext
     {
         private readonly string providerName = null;
         private readonly string connectionString = null;
@@ -34,7 +34,7 @@ namespace DiplomaThesis.DAL
         public DbSet<WorkloadAnalysisRealStatementEvaluation> WorkloadAnalysisRealStatementEvaluations { get; set; }
         public DbSet<VirtualEnvironmentPossibleCoveringIndex> VirtualEnvironmentPossibleCoveringIndices { get; set; }
         public DbSet<VirtualEnvironmentPossibleHPartitioning> VirtualEnvironmentPossibleHPartitionings { get; set; }
-        public IndexSuggestionsContext(string providerName, string connectionString) : base()
+        public DiplomaThesisContext(string providerName, string connectionString) : base()
         {
             this.providerName = providerName;
             this.connectionString = connectionString;
@@ -43,7 +43,7 @@ namespace DiplomaThesis.DAL
             foreach (var keyValue in connectionStringSplit)
             {
                 var keyValueSplit = keyValue.Split("=");
-                if (keyValueSplit[0].Trim().Replace(" ", "").ToLower() == "applicationname" && keyValueSplit[1].Trim() == "IndexSuggestions")
+                if (keyValueSplit[0].Trim().Replace(" ", "").ToLower() == "applicationname" && keyValueSplit[1].Trim() == "DiplomaThesis")
                 {
                     containsAppName = true;
                     break;
@@ -51,7 +51,7 @@ namespace DiplomaThesis.DAL
             }
             if (!containsAppName)
             {
-                throw new ArgumentException("ConnectionString must contain ApplicationName=IndexSuggestions!"); // otherwise infinite log processing may occur
+                throw new ArgumentException("ConnectionString must contain ApplicationName=DiplomaThesis!"); // otherwise infinite log processing may occur
             }
             Database.EnsureCreated();
         }
@@ -129,7 +129,7 @@ namespace DiplomaThesis.DAL
             modelBuilder.Entity<VirtualEnvironmentPossibleCoveringIndex>().HasOne(x => x.VirtualEnvironment).WithMany(x => x.VirtualEnvironmentPossibleCoveringIndices).HasForeignKey(x => x.VirtualEnvironmentID);
             modelBuilder.Entity<VirtualEnvironmentPossibleHPartitioning>().HasOne(x => x.VirtualEnvironment).WithMany(x => x.VirtualEnvironmentPossibleHPartitionings).HasForeignKey(x => x.VirtualEnvironmentID);
 
-            IndexSuggestionsContextSeedDataUtility.SeedData(modelBuilder);
+            DiplomaThesisContextSeedDataUtility.SeedData(modelBuilder);
         }
     }
 }

@@ -7,17 +7,23 @@
     $scope.actions.selectEnv = function (env) {
         $state.go(Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSIS_DETAIL, { workloadAnalysis: $stateParams.workloadAnalysis, data: $stateParams.data, selectedEnvironmentID: env.environmentID });
     };
+    $scope.actions.getPercentage = function (val) {
+        return (val * 100.0).toFixed(2) + " %";
+    }
     $scope.viewModel = new Object();
     $scope.viewModel.environments = [];
     for (var envID in $stateParams.data.indicesEnvironments) {
         var env = $stateParams.data.indicesEnvironments[envID];
         var indexNames = [];
+        var improvementRatio = 0.0;
         for (var indexID in env.indices) {
             var indexExtended = $stateParams.data.indices[indexID];
-            indexNames.push(indexExtended.name);
+            var index = env.indices[indexID];
+            improvementRatio += index.improvementRatio;
+            indexNames.push({ "long": indexExtended.name, "short": indexExtended.name.substring(0, 60)});
         }
         
-        $scope.viewModel.environments.push({ indexNames: indexNames, environmentID: envID});
+        $scope.viewModel.environments.push({ indexNames: indexNames, environmentID: envID, improvementRatio: $scope.actions.getPercentage(improvementRatio)});
     }
 }
 

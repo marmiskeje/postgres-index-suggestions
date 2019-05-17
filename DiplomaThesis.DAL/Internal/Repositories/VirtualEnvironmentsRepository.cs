@@ -8,7 +8,7 @@ namespace DiplomaThesis.DAL
 {
     internal class VirtualEnvironmentsRepository : BaseRepository<long, VirtualEnvironment>, IVirtualEnvironmentsRepository
     {
-        public VirtualEnvironmentsRepository(Func<IndexSuggestionsContext> createContextFunc) : base(createContextFunc)
+        public VirtualEnvironmentsRepository(Func<DiplomaThesisContext> createContextFunc) : base(createContextFunc)
         {
 
         }

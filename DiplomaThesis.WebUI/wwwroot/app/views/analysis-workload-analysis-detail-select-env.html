@@ -23,7 +23,12 @@
                 <div layout="column" style="text-align:center">
                     <div layout="column" layout-align="center center" class="infoContainer">
                         <span ng-repeat="n in e.indexNames">
-                            {{n}}
+                            {{n.short}}{{n.short != n.long ? "..." : ""}}
+                            <md-tooltip>{{n.long}}</md-tooltip>
+                        </span>
+                        <span>
+                            {{e.improvementRatio}}
+                            <md-tooltip>Sum of global indices impacts</md-tooltip>
                         </span>
                     </div>
                 </div>

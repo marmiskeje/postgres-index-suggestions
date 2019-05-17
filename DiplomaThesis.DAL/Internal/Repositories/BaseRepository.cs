@@ -8,8 +8,8 @@ namespace DiplomaThesis.DAL
 {
     internal abstract class BaseSimpleRepository<TEntity> where TEntity : class
     {
-        protected Func<IndexSuggestionsContext> CreateContextFunc { get; private set; }
-        public BaseSimpleRepository(Func<IndexSuggestionsContext> createContextFunc)
+        protected Func<DiplomaThesisContext> CreateContextFunc { get; private set; }
+        public BaseSimpleRepository(Func<DiplomaThesisContext> createContextFunc)
         {
             CreateContextFunc = createContextFunc;
         }
@@ -42,9 +42,9 @@ namespace DiplomaThesis.DAL
         }
         protected TimeSpan CacheExpiration { get; set; }
 
-        protected Func<IndexSuggestionsContext> CreateContextFunc { get; private set; }
+        protected Func<DiplomaThesisContext> CreateContextFunc { get; private set; }
 
-        public BaseRepository(Func<IndexSuggestionsContext> createContextFunc)
+        public BaseRepository(Func<DiplomaThesisContext> createContextFunc)
         {
             ThisType = GetType();
             CreateContextFunc = createContextFunc;
