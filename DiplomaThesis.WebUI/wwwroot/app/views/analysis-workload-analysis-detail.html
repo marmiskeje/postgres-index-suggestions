@@ -9,20 +9,25 @@
         </div>
         <div layout="row" class="lighterText">
             <span>Created date:</span>
-            <span style="padding-left: 12px">{{viewModel.WorkloadAnalysis.CreatedDate}}</span>
+            <span style="padding-left: 12px">{{viewModel.workloadAnalysis.createdDateStr}}</span>
         </div>
         <div layout="row" class="lighterText" style="padding-left: 30px">
             <span>Period:</span>
-            <span style="padding-left: 12px">{{viewModel.WorkloadAnalysis.Period}}</span>
+            <span style="padding-left: 12px">{{viewModel.workloadAnalysis.period}}</span>
         </div>
         <div layout="row" class="lighterText" style="padding-left: 30px">
             <span>Workload:</span>
-            <span style="padding-left: 12px">{{viewModel.WorkloadAnalysis.Workload}}</span>
+            <span style="padding-left: 12px">{{viewModel.workloadAnalysis.workload.name}}</span>
         </div>
     </div>
 </div>
 <div class="mainContentBody" layout="column" flex>
-    <md-content>
+    <md-content ng-hide="viewModel.isLoading">
+        <div ng-hide="!viewModel.isLoadingEnv" style="position:absolute; background: rgba(0,0,0,0.03); width:100%; height:100%; z-index:999">
+            <div layout="row" layout-align="space-around" style="margin-top:100px">
+                <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+            </div>
+        </div>
         <md-tabs class="md-primary md-dynamic-height">
             <md-tab label="Indices">
                 <md-content class="md-padding">
@@ -31,13 +36,13 @@
                             <div>
                                 <md-button>
                                     <md-icon><i class="material-icons">reorder</i></md-icon>
-                                    <span>Select environment</span>
+                                    <span ng-click="actions.showSelectEnvironmentDialog()">Select environment</span>
                                 </md-button>
                             </div>
                             <div>
                                 <md-button>
                                     <md-icon><i class="material-icons">tune</i></md-icon>
-                                    <span>Find best environment</span>
+                                    <span ng-click="actions.findBestEnvironment()">Find best environment</span>
                                 </md-button>
                             </div>
                         </div>
@@ -47,7 +52,13 @@
                             </div>
                             <div><br /></div>
                             <div>
-                                <div ui-grid="gridAnalysisIndicesAffectedStatements" ui-grid-pagination ui-grid-resize-columns class="grid"></div>
+                                <div ui-grid="gridAnalysisIndicesAffectedStatements" ui-grid-pagination ui-grid-resize-columns class="grid">
+                                    <div class="no-rows" ng-show="!gridAnalysisIndicesAffectedStatements.data.length">
+                                        <div class="msg">
+                                            <span>No data available</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div><br /></div>
                             <div>
@@ -55,7 +66,13 @@
                             </div>
                             <div><br /></div>
                             <div>
-                                <div ui-grid="gridAnalysisIndicesPossibleIndices" ui-grid-pagination ui-grid-resize-columns class="grid"></div>
+                                <div ui-grid="gridAnalysisIndicesPossibleIndices" ui-grid-pagination ui-grid-resize-columns class="grid">
+                                    <div class="no-rows" ng-show="!gridAnalysisIndicesPossibleIndices.data.length">
+                                        <div class="msg">
+                                            <span>No data available</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                             <div><br /></div>
                             <div>
@@ -63,7 +80,13 @@
                             </div>
                             <div><br /></div>
                             <div>
-                                <div ui-grid="gridAnalysisIndicesNotAffectedStatements" ui-grid-pagination ui-grid-resize-columns class="grid"></div>
+                                <div ui-grid="gridAnalysisIndicesNotAffectedStatements" ui-grid-pagination ui-grid-resize-columns class="grid">
+                                    <div class="no-rows" ng-show="!gridAnalysisIndicesNotAffectedStatements.data.length">
+                                        <div class="msg">
+                                            <span>No data available</span>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -71,15 +94,55 @@
             </md-tab>
             <md-tab label="Horizontal partitionings">
                 <md-content class="md-padding">
-                    <h2 class="md-display-1">Horizontal partitionings</h2>
-                    <p class="md-body-1">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla venenatis ante augue.
-                        Phasellus volutpat neque ac dui mattis vulputate. Etiam consequat aliquam cursus. In
-                        sodales pretium ultrices. Maecenas lectus est, sollicitudin consectetur felis nec,
-                        feugiat ultricies mi.
-                    </p>
+                    <div layout="column">
+                        <div class="secondaryContentMenu" layout="row">
+                            <div>
+                                <md-input-container>
+                                    <md-select ng-model="viewModel.data.currentHP" aria-label="select-current-relation" ng-change="actions.onChangedHP()">
+                                        <md-option ng-repeat="p in viewModel.data.allHPs" ng-value="p">
+                                            {{p.partitioningStatementStr}}
+                                        </md-option>
+                                    </md-select>
+                                    <md-tooltip>Horizontal partitioning</md-tooltip>
+                                </md-input-container>
+                            </div>
+                        </div>
+                        <div class="secondaryContentBody" layout="column" flex>
+                            <div>
+                                <span>Affected statements:</span>
+                            </div>
+                            <div><br /></div>
+                            <div>
+                                <div ui-grid="gridAnalysisHPStatements" ui-grid-pagination ui-grid-resize-columns class="grid">
+                                    <div class="no-rows" ng-show="!gridAnalysisHPStatements.data.length">
+                                        <div class="msg">
+                                            <span>No data available</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div><br /></div>
+                            <div>
+                                <span>Partitioning statement:</span>
+                            </div>
+                            <div><textarea readonly="readonly" style="width:100%">{{viewModel.data.currentHP.partitioningStatementStr}}</textarea></div>
+                            <div>
+                                <span>Partition statements:</span>
+                            </div>
+                            <div><textarea readonly="readonly" style="width:100%">{{viewModel.data.currentHP.partitionStatementsStr}}</textarea></div>
+                            <div>
+                                <span>Global % impact:</span>
+                            </div>
+                            <div>
+                                <span>{{viewModel.data.currentHP.impactStr}}</span>
+                            </div>
+                        </div>
+                     </div>  
                 </md-content>
             </md-tab>
         </md-tabs>
     </md-content>
+    <div ng-hide="!viewModel.isLoading" layout="row" layout-align="space-around">
+        <md-progress-circular md-mode="indeterminate"></md-progress-circular>
+    </div>
 </div>

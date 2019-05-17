@@ -1,0 +1,32 @@
+﻿<div class="mainContentMenu" layout="row">
+    <div class="mainContentMenuBody" layout="row" flex layout-align="start center">
+        <div flex="20" layout="row" layout-align="start center">
+            <md-button class="btn-nav-menu" style="min-width: inherit" ng-click="actions.goBack()">
+                <i class="material-icons">keyboard_backspace</i>
+            </md-button>
+            <div style="width: 7px"></div>
+            <span>{{'ANALYSIS_WORKLOAD_ANALYSIS_DETAIL_SELECT_ENV.PAGE_SUBTITLE' | translate}}</span>
+        </div>
+    </div>
+</div>
+<div class="mainContentBody" layout="column" flex>
+    <div>
+        Select environment:
+    </div>
+    <div ng-hide="viewModel.environments != null && viewModel.environments.length > 0">
+        No environment available
+    </div>
+    <md-grid-list md-cols-gt-md="2" md-cols="2" md-cols-md="2"
+                  md-row-height-gt-md="16:4" md-row-height="16:4"
+                  md-gutter-gt-md="16px" md-gutter-md="16px" md-gutter="16px">
+            <md-grid-tile ng-repeat="e in viewModel.environments" class="workload-analysis-env" ng-click="actions.selectEnv(e)">
+                <div layout="column" style="text-align:center">
+                    <div layout="column" layout-align="center center" class="infoContainer">
+                        <span ng-repeat="n in e.indexNames">
+                            {{n}}
+                        </span>
+                    </div>
+                </div>
+            </md-grid-tile>
+    </md-grid-list>
+</div>

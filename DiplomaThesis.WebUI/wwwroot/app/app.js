@@ -90,7 +90,7 @@ Web.App.config(['$stateProvider', '$urlRouterProvider', '$translateProvider', '$
         url: "/analysis-workload-analysis-detail",
         controller: "AnalysisWorkloadAnalysisDetailController",
         templateUrl: "/app/views/analysis-workload-analysis-detail.html",
-        params: { workloadAnalysis: null }
+        params: { workloadAnalysis: null, data: null, selectedEnvironmentID: null }
     });
     $stateProvider.state(Web.Constants.StateNames.ANALYSIS_UNUSED_DB_OBJECTS, {
         url: "/analysis-unused-db-objects",
@@ -106,6 +106,12 @@ Web.App.config(['$stateProvider', '$urlRouterProvider', '$translateProvider', '$
         url: "/settings-detail",
         controller: "SettingsDetailController",
         templateUrl: "/app/views/settings-detail.html"
+    });
+    $stateProvider.state(Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSIS_DETAIL_SELECT_ENV, {
+        url: "/analysis-workload-analysis-detail-select-env",
+        controller: "AnalysisWorkloadAnalysisDetailSelectEnvController",
+        templateUrl: "/app/views/analysis-workload-analysis-detail-select-env.html",
+        params: { workloadAnalysis: null, data: null, currentEnvironmentID: null }
     });
     
     $translateProvider.useStaticFilesLoader({

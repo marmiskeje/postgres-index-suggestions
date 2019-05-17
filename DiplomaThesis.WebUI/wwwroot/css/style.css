@@ -244,3 +244,12 @@ code {
 .infoContainer > span {
     padding-top: 2px;
 }
+
+.workload-analysis-env {
+    border: 1px solid rgba(0,0,0,0.12);
+    cursor: pointer;
+}
+
+.workload-analysis-env:hover {
+    background: rgba(0,0,0,0.05);
+}

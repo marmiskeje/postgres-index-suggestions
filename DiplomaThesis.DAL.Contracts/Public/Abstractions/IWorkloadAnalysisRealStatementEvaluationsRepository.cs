@@ -6,6 +6,6 @@ namespace DiplomaThesis.DAL.Contracts
 {
     public interface IWorkloadAnalysisRealStatementEvaluationsRepository : IBaseSimpleRepository<WorkloadAnalysisRealStatementEvaluation>
     {
-        
+        IEnumerable<WorkloadAnalysisRealStatementEvaluation> GetAllForWorkloadAnalysis(long workloadAnalysisID);
     }
 }

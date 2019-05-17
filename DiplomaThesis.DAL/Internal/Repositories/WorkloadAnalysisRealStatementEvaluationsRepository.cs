@@ -12,5 +12,15 @@ namespace DiplomaThesis.DAL
         {
 
         }
+
+        public IEnumerable<WorkloadAnalysisRealStatementEvaluation> GetAllForWorkloadAnalysis(long workloadAnalysisID)
+        {
+            using (var context = CreateContextFunc())
+            {
+                return context.WorkloadAnalysisRealStatementEvaluations
+                    .Include(x => x.ExecutionPlan).Include(x => x.NormalizedStatement)
+                    .Where(x => x.WorkloadAnalysisID == workloadAnalysisID).ToList();
+            }
+        }
     }
 }

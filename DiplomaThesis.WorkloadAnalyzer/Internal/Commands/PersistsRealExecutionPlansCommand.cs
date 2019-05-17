@@ -23,10 +23,11 @@ namespace DiplomaThesis.WorkloadAnalyzer
             foreach (var kv in context.RealExecutionPlansForStatements)
             {
                 var statementID = kv.Key;
+                var totalExecutionsCount = context.StatementsData.All[statementID].TotalExecutionsCount;
                 var explainResult = kv.Value;
                 var createdPlan = Convert(statementID, explainResult);
                 executionPlansRepository.Create(createdPlan);
-                analysisRealStatementEvaluationsRepository.Create(Convert(context.WorkloadAnalysis.ID, statementID, createdPlan));
+                analysisRealStatementEvaluationsRepository.Create(Convert(context.WorkloadAnalysis.ID, statementID, createdPlan, totalExecutionsCount));
             }
         }
 
@@ -35,9 +36,15 @@ namespace DiplomaThesis.WorkloadAnalyzer
             return new ExecutionPlan() { Json = explainResult.PlanJson, TotalCost = explainResult.Plan.TotalCost };
         }
 
-        private WorkloadAnalysisRealStatementEvaluation Convert(long workloadAnalysisID, long statementID, ExecutionPlan createdPlan)
+        private WorkloadAnalysisRealStatementEvaluation Convert(long workloadAnalysisID, long statementID, ExecutionPlan createdPlan, long totalExecutionsCount)
         {
-            return new WorkloadAnalysisRealStatementEvaluation() { ExecutionPlanID = createdPlan.ID, NormalizedStatementID = statementID, WorkloadAnalysisID = workloadAnalysisID };
+            return new WorkloadAnalysisRealStatementEvaluation()
+            {
+                ExecutionPlanID = createdPlan.ID,
+                NormalizedStatementID = statementID,
+                WorkloadAnalysisID = workloadAnalysisID,
+                TotalExecutionsCount = totalExecutionsCount
+            };
         }
     }
 }

@@ -17,5 +17,7 @@ namespace DiplomaThesis.DAL.Contracts
         [Required]
         public long ExecutionPlanID { get; set; }
         public ExecutionPlan ExecutionPlan { get; set; }
+        [Required]
+        public long TotalExecutionsCount { get; set; }
     }
 }

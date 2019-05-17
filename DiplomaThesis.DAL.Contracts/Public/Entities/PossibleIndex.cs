@@ -13,6 +13,8 @@ namespace DiplomaThesis.DAL.Contracts
         [Required]
         public string Name { get; set; }
         [Required]
+        public uint RelationID { get; set; }
+        [Required]
         public string CreateDefinition { get; set; }
         [NotMapped]
         public PossibleIndexFilterExpressionsData FilterExpressions { get; set; }

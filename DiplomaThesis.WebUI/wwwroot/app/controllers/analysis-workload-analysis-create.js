@@ -1,4 +1,4 @@
-﻿Web.Controllers.AnalysisWorkloadAnalysisCreateController = function ($scope, $rootScope, $window, uiGridConstants, $state, $stateParams, analysisService, drawingService, notificationsService, $translate) {
+﻿Web.Controllers.AnalysisWorkloadAnalysisCreateController = function ($scope, $rootScope, $window, uiGridConstants, $state, $stateParams, analysisService, drawingService, notificationsService, $translate, $mdDialog) {
     $rootScope.pageSubtitle = 'ANALYSIS_WORKLOAD_ANALYSIS_CREATE.PAGE_SUBTITLE';
     $scope.actions = new Object();
     $scope.actions.goBack = function () {
@@ -97,4 +97,4 @@
 
 
 
-angular.module('WebApp').controller('AnalysisWorkloadAnalysisCreateController', ['$scope', '$rootScope', '$window', 'uiGridConstants', '$state', '$stateParams', 'analysisService', 'drawingService', 'notificationsService', '$translate', Web.Controllers.AnalysisWorkloadAnalysisCreateController]);
+angular.module('WebApp').controller('AnalysisWorkloadAnalysisCreateController', ['$scope', '$rootScope', '$window', 'uiGridConstants', '$state', '$stateParams', 'analysisService', 'drawingService', 'notificationsService', '$translate', '$mdDialog', Web.Controllers.AnalysisWorkloadAnalysisCreateController]);

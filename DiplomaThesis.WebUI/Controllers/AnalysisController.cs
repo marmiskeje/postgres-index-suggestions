@@ -11,6 +11,80 @@ namespace DiplomaThesis.WebUI.Controllers
     [ApiController]
     public class AnalysisController : BaseApiController
     {
+        [Route("workload-analysis-detail")]
+        [HttpPost]
+        public IActionResult GetWorkloadAnalysisDetail(GetWorkloadAnalysisDetailRequest request)
+        {
+            GetWorkloadAnalysisDetailReponse result = new GetWorkloadAnalysisDetailReponse();
+            if (request != null)
+            {
+                HandleException(() =>
+                {
+                    var environmentsRepository = DALRepositories.GetVirtualEnvironmentsRepository();
+                    var indicesRepository = DALRepositories.GetPossibleIndicesRepository();
+
+                    var indicesEnvs = environmentsRepository.GetAllForWorkloadAnalysis(request.WorkloadAnalysisID, DAL.Contracts.VirtualEnvironmentType.Indices);
+                    var hPartsEnvs = environmentsRepository.GetAllForWorkloadAnalysis(request.WorkloadAnalysisID, DAL.Contracts.VirtualEnvironmentType.HPartitionings);
+                    var indicesIds = indicesEnvs.SelectMany(x => x.VirtualEnvironmentPossibleIndices).Select(x => x.PossibleIndexID).ToHashSet();
+                    var indices = indicesRepository.GetByIds(indicesIds);
+
+                    result.Data = Converter.ConvertToWorkloadAnalysisDetail(indicesEnvs, hPartsEnvs, indices);
+                    result.IsSuccess = result.Data != null;
+                }, ex => result.ErrorMessage = ex.Message);
+            }
+            return Json(result);
+        }
+
+        [Route("workload-analysis-detail-env")]
+        [HttpPost]
+        public IActionResult GetWorkloadAnalysisDetailForEnvironment(GetWorkloadAnalysisDetailForEnvRequest request)
+        {
+            GetWorkloadAnalysisDetailForEnvReponse result = new GetWorkloadAnalysisDetailForEnvReponse();
+            if (request != null)
+            {
+                HandleException(() =>
+                {
+                    var environmentsRepository = DALRepositories.GetVirtualEnvironmentsRepository();
+                    var realStatementEvaluationsRepository = DALRepositories.GetWorkloadAnalysisRealStatementEvaluationsRepository();
+
+                    var env = environmentsRepository.GetDetail(request.EnvironmentID);
+                    var statements = realStatementEvaluationsRepository.GetAllForWorkloadAnalysis(request.WorkloadAnalysisID);
+
+                    result.Data = Converter.ConvertToWorkloadAnalysisDetailForEnv(env, statements);
+                    result.IsSuccess = result.Data != null;
+                }, ex => result.ErrorMessage = ex.Message);
+            }
+            return Json(result);
+        }
+        [Route("workload-analysis-detail-env-best")]
+        [HttpPost]
+        public IActionResult GetWorkloadAnalysisDetailForBestEnvironment(GetWorkloadAnalysisDetailForBestEnvRequest request)
+        {
+            GetWorkloadAnalysisDetailForEnvReponse result = new GetWorkloadAnalysisDetailForEnvReponse();
+            if (request != null)
+            {
+                HandleException(() =>
+                {
+                    var environmentsRepository = DALRepositories.GetVirtualEnvironmentsRepository();
+                    var realStatementEvaluationsRepository = DALRepositories.GetWorkloadAnalysisRealStatementEvaluationsRepository();
+                    var environmentID = environmentsRepository.GetBestEnvironmentForWorkloadAnalysis(request.WorkloadAnalysisID);
+                    if (environmentID > 0)
+                    {
+                        var env = environmentsRepository.GetDetail(environmentID);
+                        var statements = realStatementEvaluationsRepository.GetAllForWorkloadAnalysis(request.WorkloadAnalysisID);
+
+                        result.Data = Converter.ConvertToWorkloadAnalysisDetailForEnv(env, statements); 
+                    }
+                    else
+                    {
+                        result.Data = new WorkloadAnalysisDetailForEnvData();
+                    }
+                    result.IsSuccess = result.Data != null;
+                }, ex => result.ErrorMessage = ex.Message);
+            }
+            return Json(result);
+        }
+
         [Route("workload-analysis-create")]
         [HttpPost]
         public IActionResult CreateWorkloadAnalysis(CreateWorkloadAnalysisRequest request)

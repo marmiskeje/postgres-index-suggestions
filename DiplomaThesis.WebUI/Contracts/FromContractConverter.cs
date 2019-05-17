@@ -66,6 +66,128 @@ namespace DiplomaThesis.WebUI
             return result;
         }
 
+        internal WorkloadAnalysisDetailForEnvData ConvertToWorkloadAnalysisDetailForEnv(VirtualEnvironment env, IEnumerable<WorkloadAnalysisRealStatementEvaluation> statements)
+        {
+            WorkloadAnalysisDetailForEnvData result = new WorkloadAnalysisDetailForEnvData();
+            result.EnvironmentID = env.ID;
+            foreach (var item in statements)
+            {
+                result.Statements.Add(item.NormalizedStatementID, Convert(item));
+            }
+            Dictionary<long, HashSet<long>> coveringIndicesPerStatement = new Dictionary<long, HashSet<long>>();
+            foreach (var item in env.VirtualEnvironmentPossibleCoveringIndices)
+            {
+                if (!coveringIndicesPerStatement.ContainsKey(item.NormalizedStatementID))
+                {
+                    coveringIndicesPerStatement.Add(item.NormalizedStatementID, new HashSet<long>());
+                }
+                coveringIndicesPerStatement[item.NormalizedStatementID].Add(item.PossibleIndexID);
+            }
+            foreach (var item in env.VirtualEnvironmentStatementEvaluations)
+            {
+                result.EvaluatedStatements.Add(item.NormalizedStatementID, Convert(item, coveringIndicesPerStatement));
+            }
+            return result;
+        }
+
+        private WorkloadAnalysisDetailForEnvStatementEvaluationData Convert(VirtualEnvironmentStatementEvaluation source, Dictionary<long, HashSet<long>> coveringIndicesPerStatement)
+        {
+            WorkloadAnalysisDetailForEnvStatementEvaluationData result = new WorkloadAnalysisDetailForEnvStatementEvaluationData();
+            if (source.AffectingIndices != null)
+            {
+                result.AffectingIndices.AddRange(source.AffectingIndices);
+            }
+            if (coveringIndicesPerStatement.ContainsKey(source.NormalizedStatementID))
+            {
+                result.CoveringIndices.AddRange(coveringIndicesPerStatement[source.NormalizedStatementID]);
+            }
+            result.GlobalImprovementRatio = source.GlobalImprovementRatio;
+            result.LocalImprovementRatio = source.LocalImprovementRatio;
+            result.TotalCost = source.ExecutionPlan.TotalCost;
+            if (source.UsedIndices != null)
+            {
+                result.UsedIndices.AddRange(source.UsedIndices);
+            }
+            return result;
+        }
+
+        private WorkloadAnalysisDetailForEnvStatementData Convert(WorkloadAnalysisRealStatementEvaluation source)
+        {
+            WorkloadAnalysisDetailForEnvStatementData result = new WorkloadAnalysisDetailForEnvStatementData();
+            result.Statement = source.NormalizedStatement.Statement;
+            result.TotalCost = source.ExecutionPlan.TotalCost;
+            result.TotalExecutionsCount = source.TotalExecutionsCount;
+            return result;
+        }
+
+        internal WorkloadAnalysisDetailData ConvertToWorkloadAnalysisDetail(IEnumerable<VirtualEnvironment> indicesEnvs, IEnumerable<VirtualEnvironment> hPartsEnvs, IEnumerable<PossibleIndex> indices)
+        {
+            WorkloadAnalysisDetailData result = new WorkloadAnalysisDetailData();
+            foreach (var e in indicesEnvs)
+            {
+                result.IndicesEnvironments.Add(e.ID, Convert(e));
+            }
+            foreach (var e in hPartsEnvs)
+            {
+                result.HPartitioningsEnvironments.Add(e.ID, Convert(e));
+            }
+            foreach (var item in indices)
+            {
+                result.Indices.Add(item.ID, Convert(item));
+            }
+            return result;
+        }
+
+        private WorkloadAnalysisEnvironmentIndexExtended Convert(PossibleIndex source)
+        {
+            WorkloadAnalysisEnvironmentIndexExtended result = new WorkloadAnalysisEnvironmentIndexExtended();
+            result.CreateDefinition = source.CreateDefinition;
+            if (source.FilterExpressions != null && source.FilterExpressions.Expressions != null)
+            {
+                foreach (var item in source.FilterExpressions.Expressions)
+                {
+                    result.Filters.Add(item.Expression, item.Size);
+                }
+            }
+            result.ID = source.ID;
+            result.Name = source.Name;
+            result.RelationID = source.RelationID;
+            result.Size = source.Size;
+            return result;
+        }
+
+        private WorkloadAnalysisEnvironment Convert(VirtualEnvironment source)
+        {
+            WorkloadAnalysisEnvironment result = new WorkloadAnalysisEnvironment();
+            result.ID = source.ID;
+            if (source.VirtualEnvironmentPossibleHPartitionings != null)
+            {
+                foreach (var item in source.VirtualEnvironmentPossibleHPartitionings)
+                {
+                    result.HPartitionings.Add(item.ID, Convert(item));
+                }
+            }
+            if (source.VirtualEnvironmentPossibleIndices != null)
+            {
+                foreach (var item in source.VirtualEnvironmentPossibleIndices)
+                {
+                    result.Indices.Add(item.PossibleIndexID, new WorkloadAnalysisEnvironmentIndex() { ID = item.PossibleIndexID, ImprovementRatio = item.ImprovementRatio });
+                }
+            }
+            return result;
+        }
+
+        private WorkloadAnalysisEnvironmentHPartitioning Convert(VirtualEnvironmentPossibleHPartitioning source)
+        {
+            WorkloadAnalysisEnvironmentHPartitioning result = new WorkloadAnalysisEnvironmentHPartitioning();
+            result.ID = source.ID;
+            result.ImprovementRatio = source.ImprovementRatio;
+            result.PartitioningStatement = source.PartitioningStatement;
+            result.PartitionStatements.AddRange(source.PartitionStatements);
+            result.RelationID = source.RelationID;
+            return result;
+        }
+
         internal WorkloadAnalysisData Convert(WorkloadAnalysis source)
         {
             WorkloadAnalysisData result = new WorkloadAnalysisData();

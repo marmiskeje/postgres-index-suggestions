@@ -127,6 +127,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
         private PossibleIndex Convert(DBMS.Contracts.IndexDefinition indexDefinition, long size, Dictionary<string, long> filters)
         {
             PossibleIndex result = new PossibleIndex();
+            result.RelationID = indexDefinition.Relation.ID;
             result.CreateDefinition = dbObjectDefinitionGenerator.Generate(indexDefinition).CreateStatement;
             result.FilterExpressions = new PossibleIndexFilterExpressionsData();
             foreach (var f in filters)

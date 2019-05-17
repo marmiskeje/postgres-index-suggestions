@@ -1,7 +1,7 @@
 ﻿using DiplomaThesis.DAL.Contracts;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace DiplomaThesis.DAL
 {
@@ -22,6 +22,16 @@ namespace DiplomaThesis.DAL
         {
             base.FillEntityGet(entity);
             entity.FilterExpressions = JsonSerializationUtility.Deserialize<PossibleIndexFilterExpressionsData>(entity.FilterExpressionsData);
+        }
+
+        public IEnumerable<PossibleIndex> GetByIds(IEnumerable<long> ids)
+        {
+            using (var context = CreateContextFunc())
+            {
+                var result = context.PossibleIndices.Where(x => ids.Contains(x.ID)).ToList();
+                result.ForEach(x => FillEntityGet(x));
+                return result;
+            }
         }
     }
 }

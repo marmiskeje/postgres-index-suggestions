@@ -41,5 +41,26 @@
             onFinally(errorResponse);
         });
     }
+    this.getWorkloadAnalysisDetail = function (request, onFinally) {
+        $http.post('api/analysis/workload-analysis-detail', request).then(function (response) {
+            onFinally(response);
+        }, function (errorResponse) {
+            onFinally(errorResponse);
+        });
+    }
+    this.getWorkloadAnalysisDetailForEnv = function (request, onFinally) {
+        $http.post('api/analysis/workload-analysis-detail-env', request).then(function (response) {
+            onFinally(response);
+        }, function (errorResponse) {
+            onFinally(errorResponse);
+        });
+    }
+    this.getWorkloadAnalysisDetailForBestEnv = function (request, onFinally) {
+        $http.post('api/analysis/workload-analysis-detail-env-best', request).then(function (response) {
+            onFinally(response);
+        }, function (errorResponse) {
+            onFinally(errorResponse);
+        });
+    }
 }
 Web.App.service('analysisService', ['$http', Web.Services.AnalysisService]);

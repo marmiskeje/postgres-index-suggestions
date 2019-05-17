@@ -45,5 +45,8 @@
   },
   "SETTINGS_DETAIL": {
     "PAGE_SUBTITLE": "Settings"
+  },
+  "ANALYSIS_WORKLOAD_ANALYSIS_DETAIL_SELECT_ENV": {
+    "PAGE_SUBTITLE": "Select environment"
   }
 }

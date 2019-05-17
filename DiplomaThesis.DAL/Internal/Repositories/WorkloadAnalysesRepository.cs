@@ -45,5 +45,13 @@ namespace DiplomaThesis.DAL
                             .OrderByDescending(x => x.CreatedDate).ToList();
             }
         }
+
+        public WorkloadAnalysis Get(long workloadAnalysisID)
+        {
+            using (var context = CreateContextFunc())
+            {
+                return context.WorkloadAnalyses.Where(x => x.ID == workloadAnalysisID).SingleOrDefault();
+            }
+        }
     }
 }

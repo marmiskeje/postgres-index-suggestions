@@ -14,6 +14,7 @@ Web.Constants.StateNames.ANALYSIS_WORKLOAD_DETAIL = "analysis-workload-detail";
 Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSES = "analysis-workload-analyses";
 Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSIS_CREATE = "analysis-workload-analysis-create-detail";
 Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSIS_DETAIL = "analysis-workload-analysis-detail";
+Web.Constants.StateNames.ANALYSIS_WORKLOAD_ANALYSIS_DETAIL_SELECT_ENV = "analysis-workload-analysis-detail-select-env";
 Web.Constants.StateNames.ANALYSIS_UNUSED_DB_OBJECTS = "analysis-unused-db-objects";
 Web.Constants.StateNames.HELP_DETAIL = "help-detail";
 Web.Constants.StateNames.SETTINGS_DETAIL = "settings-detail";
