@@ -26,7 +26,6 @@ namespace DiplomaThesis.DAL.Contracts
         public DateTime CreatedDate { get; set; }
         [Required]
         public long TotalExecutionsCount { get; set; }
-#warning Tu este navrhujem, aby si mohol pouzivatel nastavit zber nielen per db, ale aj per command (Select, insert, update, ...) - aby sa dali ignorovat inserty, etc.
         [Required]
         public string RepresentativeStatement { get; set; }
         [Required]

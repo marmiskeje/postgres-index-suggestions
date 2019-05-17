@@ -36,8 +36,6 @@ namespace DiplomaThesis.DBMS.Postgres
         {
             return GetAllById().Values.Where(x => !SystemObjects.SystemSchemas.Contains(x.SchemaName));
         }
-
-#warning pozor, toto je iba per aktualna databaza, treba prerobit, aj na ostatnych miestach
         private Dictionary<string, Relation> GetAllById()
         {
             var cacheKey = CreateCacheKeyForThisType(ALL_BY_ID_CACHE_KEY);

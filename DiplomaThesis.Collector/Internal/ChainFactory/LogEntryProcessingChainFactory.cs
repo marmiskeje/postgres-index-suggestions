@@ -15,7 +15,6 @@ namespace DiplomaThesis.Collector
         private readonly IStatisticsProcessingCommandFactory statisticsProcessingCommands;
         private readonly ILogEntryProcessingCommandFactory externalCommands;
         private readonly IRepositoriesFactory repositoriesFactory;
-        private readonly IStatementsProcessingDataAccumulator statementDataAccumulator;
         public LogEntryProcessingChainFactory(ILog log, IGeneralProcessingCommandFactory generalCommands, IStatisticsProcessingCommandFactory statisticsProcessingCommands,
                                               ILogEntryProcessingCommandFactory externalCommands, IRepositoriesFactory repositoriesFactory)
         {

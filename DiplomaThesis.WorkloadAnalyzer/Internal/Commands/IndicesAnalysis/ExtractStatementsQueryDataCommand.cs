@@ -87,11 +87,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 if (e is StatementQueryAttributeExpression)
                 {
                     var t = (StatementQueryAttributeExpression)e;
-                    IRelationAttribute attribute = null;
-                    using (var scope = new DatabaseScope(context.Database.Name))
-                    {
-                        attribute = attributesRepository.Get(t.RelationID, t.AttributeNumber); 
-                    }
+                    var attribute = attributesRepository.Get(t.RelationID, t.AttributeNumber);
                     if (attribute != null)
                     {
                         if (context.RelationsData.TryGetRelation(t.RelationID, out var relationData))
