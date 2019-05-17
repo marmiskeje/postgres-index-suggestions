@@ -111,8 +111,8 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 queries.Sort((x, y) =>
                 {
                     var xExecCounts = all[x.NormalizedStatementID].TotalExecutionsCount;
-                    var yExecCounts = all[x.NormalizedStatementID].TotalExecutionsCount;
-                    return xExecCounts.CompareTo(yExecCounts);
+                    var yExecCounts = all[y.NormalizedStatementID].TotalExecutionsCount;
+                    return yExecCounts.CompareTo(xExecCounts);
                 });
             }
             foreach (var kv in AllSelectQueriesByRelation)
@@ -124,11 +124,15 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 int itemsCountToTake = 0;
                 for (int i = 0; i < sortedQueries.Count; i++)
                 {
-                    cumulatedValue += all[sortedQueries[i].NormalizedStatementID].TotalExecutionsCount;
+                    var executionsCount = all[sortedQueries[i].NormalizedStatementID].TotalExecutionsCount;
+                    cumulatedValue += executionsCount;
                     if (cumulatedValue > threshold)
                     {
-                        itemsCountToTake = i+1;
-                        break;
+                        if (i >= sortedQueries.Count - 1 || all[sortedQueries[i+1].NormalizedStatementID].TotalExecutionsCount < executionsCount)
+                        {
+                            itemsCountToTake = i + 1;
+                            break; 
+                        }
                     }
                 }
                 mostSignificantSelectQueriesByRelation.Add(relationID, new List<NormalizedStatementQueryPair>(sortedQueries.Take(itemsCountToTake)));

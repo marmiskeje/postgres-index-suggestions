@@ -9,16 +9,17 @@ namespace DiplomaThesis.WorkloadAnalyzer
 {
     internal class EvaluateHPartitioningEnvironmentsCommand : ChainableCommand
     {
-        private const decimal MIN_GLOBAL_IMPROVEMENT_RATIO = 0.25m; //25%
         private readonly ILog log;
+        private readonly AnalysisSettings settings;
         private readonly WorkloadAnalysisContext context;
         private readonly IVirtualHPartitioningsRepository virtualHPartitioningsRepository;
         private readonly IExplainRepository explainRepository;
         private readonly IDbObjectDefinitionGenerator dbObjectDefinitionGenerator;
-        public EvaluateHPartitioningEnvironmentsCommand(ILog log, WorkloadAnalysisContext context, IVirtualHPartitioningsRepository virtualHPartitioningsRepository,
+        public EvaluateHPartitioningEnvironmentsCommand(ILog log, AnalysisSettings settings, WorkloadAnalysisContext context, IVirtualHPartitioningsRepository virtualHPartitioningsRepository,
                                                         IExplainRepository explainRepository, IDbObjectDefinitionGenerator dbObjectDefinitionGenerator)
         {
             this.log = log;
+            this.settings = settings;
             this.context = context;
             this.virtualHPartitioningsRepository = virtualHPartitioningsRepository;
             this.explainRepository = explainRepository;
@@ -61,8 +62,15 @@ namespace DiplomaThesis.WorkloadAnalyzer
                                     if (normalizedStatement.CommandType == DAL.Contracts.StatementQueryCommandType.Select
                                         || normalizedStatement.CommandType == DAL.Contracts.StatementQueryCommandType.Insert) // hypo pg currently does not support explain for delete/update for h partitioning
                                     {
-                                        explainResult = explainRepository.Eplain(statementToUse);
-                                        latestPlan = explainResult.Plan; 
+                                        try
+                                        {
+                                            explainResult = explainRepository.Eplain(statementToUse);
+                                            latestPlan = explainResult.Plan;
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            log.Write(ex);
+                                        }
                                     }
                                     
                                     VirtualEnvironmentStatementEvaluation statementEvaluation = new VirtualEnvironmentStatementEvaluation();
@@ -81,7 +89,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                                     env.Evaluation.ImprovementRatio += statementEvaluation.GlobalImprovementRatio;
                                 }
                             }
-                            env.IsImproving = env.Evaluation.ImprovementRatio >= MIN_GLOBAL_IMPROVEMENT_RATIO;
+                            env.IsImproving = env.Evaluation.ImprovementRatio >= settings.HPartitioningMinTotalImprovementRatio;
                         }
                     }
                     finally

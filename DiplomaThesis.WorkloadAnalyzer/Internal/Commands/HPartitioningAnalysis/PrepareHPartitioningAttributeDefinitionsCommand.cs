@@ -9,13 +9,14 @@ namespace DiplomaThesis.WorkloadAnalyzer
 {
     internal class PrepareHPartitioningAttributeDefinitionsCommand : ChainableCommand
     {
-        private const int MIN_RELATION_TUPLES_COUNT_FOR_PARTITIONING = 1000000;
         private readonly WorkloadAnalysisContext context;
         private readonly IAttributeHPartitioningDesigner attributeHPartitioningDesigner;
-        public PrepareHPartitioningAttributeDefinitionsCommand(WorkloadAnalysisContext context, IAttributeHPartitioningDesigner attributeHPartitioningDesigner)
+        private readonly AnalysisSettings settings;
+        public PrepareHPartitioningAttributeDefinitionsCommand(WorkloadAnalysisContext context, IAttributeHPartitioningDesigner attributeHPartitioningDesigner, AnalysisSettings settings)
         {
             this.context = context;
             this.attributeHPartitioningDesigner = attributeHPartitioningDesigner;
+            this.settings = settings;
         }
         protected override void OnExecute()
         {
@@ -25,7 +26,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 var relationID = kv.Key;
                 if (context.RelationsData.TryGetRelation(relationID, out var relation) && !context.Workload.Definition.Relations.ForbiddenValues.Contains(relationID))
                 {
-                    if (relation.TuplesCount >= MIN_RELATION_TUPLES_COUNT_FOR_PARTITIONING)
+                    if (relation.TuplesCount >= settings.HPartitioningMinRowsCount)
                     {
                         var statementQueries = kv.Value;
                         foreach (var statementQuery in statementQueries)

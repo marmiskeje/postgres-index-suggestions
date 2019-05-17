@@ -10,12 +10,13 @@ namespace DiplomaThesis.WorkloadAnalyzer
 {
     internal class GenerateBaseBtreeIndicesCommand : ChainableCommand
     {
-        private const int MULTICOLUMN_ATTRIBUTES_MAX_COUNT = 5;
         private readonly WorkloadAnalysisContext context;
+        private readonly AnalysisSettings settings;
 
-        public GenerateBaseBtreeIndicesCommand(WorkloadAnalysisContext context)
+        public GenerateBaseBtreeIndicesCommand(WorkloadAnalysisContext context, AnalysisSettings settings)
         {
             this.context = context;
+            this.settings = settings;
         }
 
         protected override void OnExecute()
@@ -75,9 +76,9 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 var whereJoinPermutations = GenerateAllPermutations(relation, attributes);
                 // where U join
                 possibleIndices.TryAddPossibleIndices(whereJoinPermutations.AllPermutations, normalizedStatement, query);
-                if (whereJoinPermutations.LastGenerationNumber < MULTICOLUMN_ATTRIBUTES_MAX_COUNT)
+                if (whereJoinPermutations.LastGenerationNumber < settings.IndexMaxAttributesCount)
                 {
-                    var maxAttributesCountToConcat = MULTICOLUMN_ATTRIBUTES_MAX_COUNT - whereJoinPermutations.LastGenerationNumber;
+                    var maxAttributesCountToConcat = settings.IndexMaxAttributesCount - whereJoinPermutations.LastGenerationNumber;
                     // where U join + group by
                     if (groupByAttributesToUse.ContainsKey(relation))
                     {
@@ -153,7 +154,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
 
         private Dictionary<RelationData, SortedSet<AttributeData>> GroupAttributesByRelationAndPrepare(IEnumerable<AttributeData> attributes)
         {
-            return attributes.GroupBy(x => x.Relation).ToDictionary(x => x.Key, x => new SortedSet<AttributeData>(x.OrderBy(y => y.CardinalityIndicator).Take(MULTICOLUMN_ATTRIBUTES_MAX_COUNT), IndexAttributeCardinalityComparer.Default));
+            return attributes.GroupBy(x => x.Relation).ToDictionary(x => x.Key, x => new SortedSet<AttributeData>(x.OrderBy(y => y.CardinalityIndicator).Take(settings.IndexMaxAttributesCount), IndexAttributeCardinalityComparer.Default));
         }
 
     }

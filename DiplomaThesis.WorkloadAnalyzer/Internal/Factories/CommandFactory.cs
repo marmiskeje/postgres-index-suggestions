@@ -11,15 +11,17 @@ namespace DiplomaThesis.WorkloadAnalyzer
     {
         private readonly IRepositoriesFactory dalRepositories;
         private readonly ILog log;
+        private readonly AppSettings settings;
         private readonly DBMS.Contracts.IRepositoriesFactory dbmsRepositories;
         private readonly DBMS.Contracts.IDbObjectDefinitionGenerator dbObjectDefinitionGenerator;
         private readonly DBMS.Contracts.IToSqlValueStringConverter toSqlValueStringConverter;
         private readonly IAttributeHPartitioningDesigner attributeHPartitioningDesigner;
-        public CommandFactory(ILog log, IRepositoriesFactory dalRepositories, DBMS.Contracts.IRepositoriesFactory dbmsRepositories,
+        public CommandFactory(ILog log, AppSettings settings, IRepositoriesFactory dalRepositories, DBMS.Contracts.IRepositoriesFactory dbmsRepositories,
                               DBMS.Contracts.IDbObjectDefinitionGenerator dbObjectDefinitionGenerator, DBMS.Contracts.IToSqlValueStringConverter toSqlValueStringConverter,
                               IAttributeHPartitioningDesigner attributeHPartitioningDesigner)
         {
             this.log = log;
+            this.settings = settings;
             this.dalRepositories = dalRepositories;
             this.dbmsRepositories = dbmsRepositories;
             this.dbObjectDefinitionGenerator = dbObjectDefinitionGenerator;
@@ -38,7 +40,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
 
         public IChainableCommand GenerateBaseBtreeIndicesCommand(WorkloadAnalysisContext context)
         {
-            return new GenerateBaseBtreeIndicesCommand(context);
+            return new GenerateBaseBtreeIndicesCommand(context, settings.AnalysisSettings);
         }
 
         public IChainableCommand GetRealExecutionPlansCommand(WorkloadAnalysisContext context)
@@ -129,7 +131,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
 
         public IChainableCommand PrepareHPartitioningAttributeDefinitionsCommand(WorkloadAnalysisContext context)
         {
-            return new PrepareHPartitioningAttributeDefinitionsCommand(context, attributeHPartitioningDesigner);
+            return new PrepareHPartitioningAttributeDefinitionsCommand(context, attributeHPartitioningDesigner, settings.AnalysisSettings);
         }
 
         public IChainableCommand GenerateBaseHPartitioningEnvironmentsCommand(WorkloadAnalysisContext context)
@@ -139,7 +141,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
 
         public IChainableCommand EvaluateHPartitioningEnvironmentsCommand(WorkloadAnalysisContext context)
         {
-            return new EvaluateHPartitioningEnvironmentsCommand(log, context, dbmsRepositories.GetVirtualHPartitioningsRepository(), dbmsRepositories.GetExplainRepository(),
+            return new EvaluateHPartitioningEnvironmentsCommand(log, settings.AnalysisSettings, context, dbmsRepositories.GetVirtualHPartitioningsRepository(), dbmsRepositories.GetExplainRepository(),
                                                                 dbObjectDefinitionGenerator);
         }
 
