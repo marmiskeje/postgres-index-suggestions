@@ -30,7 +30,7 @@ namespace DiplomaThesis.ReportingService
         private static Dictionary<TimeSpan, IExecutableCommand> PlanRegularTasks(ICommandChainFactory chains)
         {
             var regularTasks = new Dictionary<TimeSpan, IExecutableCommand>();
-            regularTasks.Add(DateTime.Now.AddSeconds(5).TimeOfDay/*new TimeSpan(2, 0, 0)*/, new ActionCommand(() =>
+            regularTasks.Add(new TimeSpan(2, 0, 0), new ActionCommand(() =>
               {
                   DateTime previousDay = DateTime.Now.Date.AddDays(-1);
                   var context = new ReportContextWithModel<SummaryEmailModel>();
