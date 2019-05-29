@@ -519,31 +519,19 @@ namespace DiplomaThesis.Collector.Postgres
                     }
                 case RteKind.Subquery:
                     {
-                        return ResolveExpression(rte.SubQuery.TargetEntries[variable.Position - 1]);
-                        /*
-                        return ResolveExpression(rte.SubQuery.TargetEntries.First(x =>
+                        if (variable.Position > 0)
                         {
-                            if (x is VariableExpression)
-                            {
-                                var a = (VariableExpression)x;
-                                return variable.Position == a.Position;
-                            }
-                            return false;
-                        }));*/
+                            return ResolveExpression(rte.SubQuery.TargetEntries[variable.Position - 1]);
+                        }
+                        break;
                     }
                 case RteKind.Join:
                     {
-                        return ResolveExpression(rte.JoinVars[variable.Position - 1]);
-                        /*
-                        return ResolveExpression(rte.JoinVars.First(x =>
+                        if (variable.Position > 0)
                         {
-                            if (x is VariableExpression)
-                            {
-                                var a = (VariableExpression)x;
-                                return variable.Position == a.Position && variable.RteNumber == a.RteNumber;
-                            }
-                            return false;
-                        }));*/
+                            return ResolveExpression(rte.JoinVars[variable.Position - 1]);
+                        }
+                        break;
                     }
                 case RteKind.Function:
                     break;
@@ -554,17 +542,11 @@ namespace DiplomaThesis.Collector.Postgres
                 case RteKind.CTE:
                     {
                         var cte = FindCte(variable.Source, rte.CteName);
-                        return ResolveExpression(cte.TargetEntries[variable.Position - 1]);
-                        /*
-                        return ResolveExpression(cte.TargetEntries.First(x =>
+                        if (variable.Position > 0)
                         {
-                            if (x is VariableExpression)
-                            {
-                                var a = (VariableExpression)x;
-                                return variable.Position == a.Position && variable.RteNumber == a.RteNumber;
-                            }
-                            return false;
-                        }));*/
+                            return ResolveExpression(cte.TargetEntries[variable.Position - 1]);
+                        }
+                        break;
                     }
                 case RteKind.NamedTupleStore:
                     break;

@@ -14,15 +14,6 @@ namespace DiplomaThesis.Collector
 {
     class Program
     {
-        /// <summary>
-        /// Treba si ujasnit spracovanie logov. Nestaci iba spracovavat logovane statementy? Normalizovat ich a ulozit aspon jednu verziu, aby bolo mozne ziskat exekucny plan?
-        /// Naco je dobre logovat plan a parse tree? Parse tree netreba - pouzije sa pg query. PLAN TREBA!! Ako inak namapovat dotaz a pouzity index?!!
-        /// Je mozne, ze idealne riesenie bude: sledovat iba statements - vieme dobu vykonavania aa potom ked bude spustene sledovanie kvoli indexom, tak ukladat aj vsetky vykonane dotazy na analyzu - pre kazdy dotaz sa ziska normovana verzia a k nej sa ulozia vsetky realne
-        /// Pozor - ale pri funkciach sa nam zide parse tree, lebo inak nevieme aky statement bol vykonany. PgQuery to nevie? Ze nam vrati rovno prepisany statement? (bez anonymizacie)
-        /// 
-        /// Log nam garantuje, ze su do neho vyliate zaznamy vztahujuce sa k statementu hned po sebe? Ak ano, tak grupuj hned v LogProcesore!!!! Toto treba overit.
-        /// </summary>
-        /// <param name="args"></param>
         static void Main(string[] args)
         {
             Directory.SetCurrentDirectory(AppDomain.CurrentDomain.BaseDirectory);
