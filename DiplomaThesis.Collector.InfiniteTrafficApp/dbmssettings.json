@@ -1,0 +1,8 @@
+﻿
+{
+  "DBConnection": {
+    "ConnectionString": "Server=localhost;Port=5432;Database=tpcc;User Id=tpcc;Password = tpcc;Application Name=DiplomaThesis;"
+    /*
+    "ConnectionString": "Server=35.206.169.212;Port=5432;Database=test;User Id=postgres;Password = postgres.pass;Application Name=DiplomaThesis;"*/
+  }
+}

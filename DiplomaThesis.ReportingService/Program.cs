@@ -19,7 +19,7 @@ namespace DiplomaThesis.ReportingService
             var regularTasks = PlanRegularTasks(chains);
             var taskScheduler = new RegularTaskScheduler(queue, regularTasks);
             taskScheduler.Start();
-            Console.WriteLine("Service is running. Pres any key to exit...");
+            Console.WriteLine("ReportingService is running. Pres any key to exit...");
             Console.ReadLine();
             taskScheduler.Stop();
             taskScheduler.Dispose();
