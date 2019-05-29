@@ -156,7 +156,7 @@
 
     if ($state.current.data == null) {
         $scope.viewModel = new Web.ViewModels.StatsIndicesViewModel();
-        $scope.viewModel.dateFrom = moment().startOf('day');
+        $scope.viewModel.dateFrom = moment().startOf('day').add(Web.Constants.Defaults.DATE_PERIOD_ADD_FROM_DAYS, 'days');
         $scope.viewModel.dateTo = moment().startOf('day').add(1, 'days');
         $scope.actions.updateAvailableRelations();
         $state.current.data = $scope.viewModel;

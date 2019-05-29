@@ -109,7 +109,7 @@
 
     if ($state.current.data == null) {
         $scope.viewModel = new Web.ViewModels.StatsStoredProceduresViewModel();
-        $scope.viewModel.dateFrom = moment().startOf('day');
+        $scope.viewModel.dateFrom = moment().startOf('day').add(Web.Constants.Defaults.DATE_PERIOD_ADD_FROM_DAYS, 'days');
         $scope.viewModel.dateTo = moment().startOf('day').add(1, 'days');
         $scope.actions.updateAvailableProcedures();
         $state.current.data = $scope.viewModel;

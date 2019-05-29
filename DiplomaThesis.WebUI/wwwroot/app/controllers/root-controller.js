@@ -84,6 +84,11 @@
                 for (var i = 0; i < databases.length; i++) {
                     $rootScope.viewModel.allDatabases.push(databases[i]);
                 }
+                $rootScope.viewModel.allDatabases.sort(function (x, y) {
+                    if (x.name < y.name) return -1;
+                    if (x.name > y.name) return 1;
+                    return 0;
+                });
                 if ($rootScope.viewModel.allDatabases.length > 0) {
                     $rootScope.viewModel.currentDatabase = $rootScope.viewModel.allDatabases[0];
                 }
@@ -100,6 +105,11 @@
                                 $rootScope.viewModel.databaseRelations[databaseId].push(relation);
                                 $rootScope.viewModel.allRelations[relation.id] = relation;
                             }
+                            $rootScope.viewModel.databaseRelations[databaseId].sort(function (x, y) {
+                                if (x.fullName < y.fullName) return -1;
+                                if (x.fullName > y.fullName) return 1;
+                                return 0;
+                            });
                         }
                         $rootScope.viewModel.initializationProgress = 50;
                         $scope.actions.loadIndices().then(function (indicesPerRelation) {
@@ -113,6 +123,11 @@
                                         $rootScope.viewModel.relationIndices[relationId].push(index);
                                         $rootScope.viewModel.allIndices[index.id] = index;
                                     }
+                                    $rootScope.viewModel.relationIndices[relationId].sort(function (x, y) {
+                                        if (x.fullName < y.fullName) return -1;
+                                        if (x.fullName > y.fullName) return 1;
+                                        return 0;
+                                    });
                                 }
                                 $rootScope.viewModel.initializationProgress = 75;
                                 $scope.actions.loadStoredProcedures().then(function (proceduresPerDatabase) {
@@ -124,6 +139,11 @@
                                             for (var i = 0; i < proceduresPerDatabase[databaseId].length; i++) {
                                                 $rootScope.viewModel.databaseStoredProcedures[databaseId].push(proceduresPerDatabase[databaseId][i]);
                                             }
+                                            $rootScope.viewModel.databaseStoredProcedures[databaseId].sort(function (x, y) {
+                                                if (x.fullName < y.fullName) return -1;
+                                                if (x.fullName > y.fullName) return 1;
+                                                return 0;
+                                            });
                                         }
                                         $rootScope.viewModel.initializationProgress = 100;
                                         $rootScope.viewModel.isLoading = false;

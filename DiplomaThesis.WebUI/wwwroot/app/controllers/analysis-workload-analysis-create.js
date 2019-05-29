@@ -77,7 +77,7 @@
     $scope.viewModel = new Web.ViewModels.AnalysisWorkloadAnalysisCreateViewModel();
     $scope.actions.loadWorkloads().then(function (workloads) {
         $scope.viewModel.workloadAnalysis = new Object();
-        $scope.viewModel.workloadAnalysis.periodFromDate = moment().startOf('day');
+        $scope.viewModel.workloadAnalysis.periodFromDate = moment().startOf('day').add(Web.Constants.Defaults.DATE_PERIOD_ADD_FROM_DAYS, 'days');
         $scope.viewModel.workloadAnalysis.periodToDate = moment().startOf('day').add(1, 'days');
         $scope.viewModel.allAvailableRelations = $rootScope.viewModel.databaseRelations[$rootScope.viewModel.currentDatabase.id];
         

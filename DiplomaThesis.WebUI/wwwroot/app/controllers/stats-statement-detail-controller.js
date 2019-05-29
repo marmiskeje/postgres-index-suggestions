@@ -210,7 +210,7 @@
         $scope.viewModel.dateTo = $stateParams.dateTo;
     }
     else {
-        $scope.viewModel.dateFrom = moment().startOf('day');
+        $scope.viewModel.dateFrom = moment().startOf('day').add(Web.Constants.Defaults.DATE_PERIOD_ADD_FROM_DAYS, 'days');
         $scope.viewModel.dateTo = moment().startOf('day').add(1, 'days');
     }
     $scope.actions.refreshData(true);
