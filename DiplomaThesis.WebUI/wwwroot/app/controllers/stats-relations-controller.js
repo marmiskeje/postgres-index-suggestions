@@ -1,8 +1,8 @@
 ﻿Web.Controllers.StatsRelationsController = function ($scope, $rootScope, $http, uiGridConstants, $state, statisticsService, drawingService, notificationsService) {
     $rootScope.pageSubtitle = 'STATS_RELATIONS.PAGE_SUBTITLE';
     $scope.actions = new Object();
-    $scope.actions.showStatementDetail = function (statementId) {
-        $state.go(Web.Constants.StateNames.STATS_STATEMENT_DETAIL, { statementId: statementId, dateFrom: $scope.viewModel.dateFrom, dateTo: $scope.viewModel.dateTo });
+    $scope.actions.showStatementDetail = function (statement) {
+        $state.go(Web.Constants.StateNames.STATS_STATEMENT_DETAIL, { statement: statement, dateFrom: $scope.viewModel.dateFrom, dateTo: $scope.viewModel.dateTo });
     };
     $scope.gridStatsRelationsStatements = {
         paginationPageSize: 25,
@@ -13,7 +13,7 @@
             {
                 name: 'Statement', displayName: 'Statement',
                 cellTemplate: '<div class="ui-grid-cell-contents">' +
-                    '  <a href="javascript:void(0)" ng-click="grid.appScope.actions.showStatementDetail(row.entity.normalizedStatementID)" >{{row.entity.normalizedStatement}}</a>' +
+                    '  <a href="javascript:void(0)" ng-click="grid.appScope.actions.showStatementDetail(row.entity)" >{{row.entity.normalizedStatement}}</a>' +
                     '</div>',
                 field: 'normalizedStatement'
             },

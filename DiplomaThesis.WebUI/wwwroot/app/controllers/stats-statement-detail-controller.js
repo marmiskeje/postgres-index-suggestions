@@ -130,7 +130,7 @@
         return new Promise(function (resolve, reject) {
             $scope.viewModel.isLoading = true;
             var request = new Web.Data.StatsStatementRequest();
-            request.statementID = $scope.viewModel.statement.statementID;
+            request.statementID = $scope.viewModel.statement.normalizedStatementID;
             request.filter.dateFrom = moment($scope.viewModel.dateFrom).format('YYYY-MM-DDTHH:mm:ss');
             request.filter.dateTo = moment($scope.viewModel.dateTo).format('YYYY-MM-DDTHH:mm:ss');
             statisticsService.getStatementStats(request, function (response) {

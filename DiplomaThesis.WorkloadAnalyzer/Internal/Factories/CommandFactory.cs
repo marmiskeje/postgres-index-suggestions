@@ -45,7 +45,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
 
         public IChainableCommand GetRealExecutionPlansCommand(WorkloadAnalysisContext context)
         {
-            return new GetExecutionPlansCommand(context, () => context.RealExecutionPlansForStatements, dbmsRepositories.GetExplainRepository());
+            return new GetExecutionPlansCommand(log, context, () => context.RealExecutionPlansForStatements, dbmsRepositories.GetExplainRepository());
         }
 
         public IChainableCommand InitializeVirtualIndicesEnvironmentCommand(WorkloadAnalysisContext context)

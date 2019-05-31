@@ -58,7 +58,7 @@
     $scope.viewModel.days.push({ id: 6, name: 'Saturday' });
     $scope.viewModel.forbiddenDateTimeSlotDay = $scope.viewModel.days[0];
     if ($stateParams.workload) {
-        $rootScope.pageSubtitle = $translate.instant('ANALYSIS_WORKLOAD_DETAIL.VIEW') + " " + $stateParams.workload.Name;
+        $rootScope.pageSubtitle = $translate.instant('ANALYSIS_WORKLOAD_DETAIL.VIEW') + " " + $stateParams.workload.name;
         $scope.viewModel.isReadonly = true;
         $scope.viewModel.workload = $stateParams.workload;
         if ($scope.viewModel.workload.definition == null) {

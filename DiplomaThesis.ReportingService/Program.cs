@@ -19,8 +19,34 @@ namespace DiplomaThesis.ReportingService
             var regularTasks = PlanRegularTasks(chains);
             var taskScheduler = new RegularTaskScheduler(queue, regularTasks);
             taskScheduler.Start();
-            Console.WriteLine("ReportingService is running. Pres any key to exit...");
-            Console.ReadLine();
+            Console.WriteLine("ReportingService is running. Type in S to immediately send current report. Type in any other key to exit...");
+            bool canQuit = false;
+            do
+            {
+                var line = (Console.ReadLine() ?? "").ToLower();
+                if (line == "s")
+                {
+                    DateTime now = DateTime.Now;
+                    var context = new ReportContextWithModel<SummaryEmailModel>();
+                    context.DateFromInclusive = now.AddDays(-1);
+                    context.DateToExclusive = now;
+                    context.TemplateId = DAL.Contracts.SettingPropertyKeys.EMAIL_TEMPLATE_SUMMARY_REPORT;
+                    try
+                    {
+                        chains.SummaryReportChain(context).Execute();
+                        Console.WriteLine("Current report sent.");
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Write(ex);
+                    }
+                    canQuit = false;
+                }
+                else
+                {
+                    canQuit = true;
+                }
+            } while (!canQuit);
             taskScheduler.Stop();
             taskScheduler.Dispose();
             queue.Dispose();

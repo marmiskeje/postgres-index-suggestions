@@ -7,8 +7,8 @@ namespace DiplomaThesis.DAL.Contracts
     public class SummaryNormalizedStatementStatistics
     {
         public StatementQueryCommandType? CommandType { get; set; }
-        public long StatementID { get; set; }
-        public string Statement { get; set; }
+        public long NormalizedStatementID { get; set; }
+        public string NormalizedStatement { get; set; }
         public long TotalExecutionsCount { get; set; }
         public TimeSpan MinDuration { get; set; }
         public TimeSpan MaxDuration { get; set; }

@@ -30,9 +30,12 @@ namespace DiplomaThesis.WorkloadAnalyzer
                 List<IndexDefinition> coveringIndices = new List<IndexDefinition>();
                 foreach (var possibleBaseIndex in possibleBaseIndices)
                 {
-                    if (TryCreateCoveringIndex(query, queryExtractedData, possibleBaseIndex, out var coveringIndex) != CreateCoveringIndexResult.NotPossible)
+                    if (!context.Workload.Definition.Relations.ForbiddenValues.Contains(possibleBaseIndex.Relation.ID))
                     {
-                        coveringIndices.Add(coveringIndex);
+                        if (TryCreateCoveringIndex(query, queryExtractedData, possibleBaseIndex, out var coveringIndex) != CreateCoveringIndexResult.NotPossible)
+                        {
+                            coveringIndices.Add(coveringIndex);
+                        }
                     }
                 }
                 context.IndicesDesignData.PossibleIndices.TryAddPossibleCoveringIndices(coveringIndices, statement, query);

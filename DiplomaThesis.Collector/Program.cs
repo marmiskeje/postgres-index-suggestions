@@ -57,7 +57,7 @@ namespace DiplomaThesis.Collector
             logProcessingService.Start();
             logEntryProcessingService.Start();
             taskScheduler.Start();
-            Console.WriteLine("Collector is running. Pres any key to exit...");
+            Console.WriteLine("Collector is running. Press any key to exit...");
             Console.ReadLine();
             dependencyHierarchyProvider.Dispose();
             taskScheduler.Dispose();

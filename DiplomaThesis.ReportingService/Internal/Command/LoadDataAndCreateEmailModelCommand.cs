@@ -9,7 +9,7 @@ namespace DiplomaThesis.ReportingService
 {
     internal class LoadDataAndCreateEmailModelCommand : ChainableCommand
     {
-        private const int TOP_COUNT = 0;
+        private const int TOP_COUNT = 10;
         private readonly ILog log;
         private readonly ReportContextWithModel<SummaryEmailModel> context;
         private readonly DBMS.Contracts.IDatabasesRepository databasesRepository;
@@ -89,7 +89,7 @@ namespace DiplomaThesis.ReportingService
             result.ExecutionCount = source.TotalExecutionsCount;
             result.MaxDuration = FormatDuration(source.MaxDuration);
             result.MinDuration = FormatDuration(source.MinDuration);
-            result.Statement = source.Statement;
+            result.Statement = source.NormalizedStatement;
             if (result.Statement.Length > 250)
             {
                 result.Statement = result.Statement.Substring(0, 250) + "...";

@@ -24,8 +24,8 @@
 </div>
 <div class="mainContentBody" layout="column">
     <div ng-hide="viewModel.isLoading" style="padding-left: 25px">
-        <h3>{{viewModel.statement.statement.length > 100 ? (viewModel.statement.statement.substring(0,100) + "...") : viewModel.statement.statement}}</h3>
-        <md-tooltip>{{viewModel.statement.statement}}</md-tooltip>
+        <h3>{{viewModel.statement.normalizedStatement.length > 100 ? (viewModel.statement.normalizedStatement.substring(0,100) + "...") : viewModel.statement.normalizedStatement}}</h3>
+        <md-tooltip>{{viewModel.statement.normalizedStatement}}</md-tooltip>
         <br />
     </div>
     <div ng-hide="viewModel.isLoading">

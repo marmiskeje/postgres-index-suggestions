@@ -43,7 +43,7 @@ namespace DiplomaThesis.DAL
                         join i in context.VirtualEnvironmentPossibleIndices on e.ID equals i.VirtualEnvironemntID
                         where e.WorkloadAnalysisID == workloadAnalysisID
                         group i by i.VirtualEnvironemntID into g
-                        orderby g.Sum(x => x.ImprovementRatio) descending
+                        orderby g.Sum(x => x.ImprovementRatio) descending, g.Count() ascending
                         select new { Key = g.Key }).Select(x => x.Key).FirstOrDefault();
             }
         }

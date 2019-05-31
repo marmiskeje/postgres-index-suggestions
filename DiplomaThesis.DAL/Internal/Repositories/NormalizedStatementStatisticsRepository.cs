@@ -102,8 +102,8 @@ namespace DiplomaThesis.DAL
                                  MaxTotalCost = x.Max(y => y.MaxTotalCost),
                                  MinDuration = x.Min(y => y.MinDuration),
                                  MinTotalCost = x.Min(y => y.MinTotalCost),
-                                 Statement = x.Key.Statement,
-                                 StatementID = x.Key.ID,
+                                 NormalizedStatement = x.Key.Statement,
+                                 NormalizedStatementID = x.Key.ID,
                                  TotalDuration = TimeSpan.FromTicks(x.Sum(y => y.TotalDuration.Ticks)),
                                  TotalExecutionsCount = x.Sum(y => y.TotalExecutionsCount)
                              }).ToList();

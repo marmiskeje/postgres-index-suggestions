@@ -166,7 +166,7 @@ namespace DiplomaThesis.WebUI
             {
                 var itemToAdd = new ChartDataItem<string, long>();
                 itemToAdd.DependentValue = s.TotalExecutionsCount;
-                itemToAdd.IndependentValue = s.Statement;
+                itemToAdd.IndependentValue = s.NormalizedStatement;
                 result.Add(itemToAdd);
             }
             return result;
@@ -179,7 +179,7 @@ namespace DiplomaThesis.WebUI
             {
                 var itemToAdd = new ChartDataItem<string, double>();
                 itemToAdd.DependentValue = s.MaxDuration.TotalMilliseconds;
-                itemToAdd.IndependentValue = s.Statement;
+                itemToAdd.IndependentValue = s.NormalizedStatement;
                 result.Add(itemToAdd);
             }
             return result;

@@ -12,7 +12,7 @@
             {
                 name: 'Statement',
                 cellTemplate: '<div class="ui-grid-cell-contents">' +
-                    '  <a href="javascript:void(0)" ng-click="grid.appScope.actions.showStatementDetail(row.entity)" >{{row.entity.statement}}</a>' +
+                    '  <a href="javascript:void(0)" ng-click="grid.appScope.actions.showStatementDetail(row.entity)" >{{row.entity.normalizedStatement}}</a>' +
                     '</div>',
                 field: 'statement'
             },

@@ -18,17 +18,59 @@ namespace DiplomaThesis.Collector.InfiniteTrafficApp
             actions.Add(scenarios.Scenario_Base3);
             actions.Add(scenarios.Scenario_Base4);
             actions.Add(scenarios.Scenario_Base5);
+            actions.Add(scenarios.Scenario_Base5);
+            actions.Add(scenarios.Scenario_Base5);
             actions.Add(scenarios.Scenario_Base6);
             actions.Add(scenarios.Scenario_Base7);
-            actions.Add(scenarios.Scenario_Base8);
+            actions.Add(scenarios.Scenario_Base8InlineNoJoin);
+            actions.Add(scenarios.Scenario_Base8InlineNoJoin);
+            actions.Add(scenarios.Scenario_Base8InlineNoJoin);
+            actions.Add(scenarios.Scenario_Base8InlineNoJoin);
+            actions.Add(() => scenarios.ExecuteQuery(@"select * from public.customer where c_w_id = 1 and c_d_id = 1 limit 1"));
+            actions.Add(() => scenarios.ExecuteQuery(@"select * from public.customer where c_w_id = 1 and c_d_id = 1 limit 1"));
+            actions.Add(() => scenarios.ExecuteQuery(@"select* from public.district where d_id = 1 and d_w_id = 1 limit 1"));
+            actions.Add(() => scenarios.ExecuteQuery(@"select* from public.district where d_id = 1 and d_w_id = 1 limit 1"));
+            actions.Add(() => scenarios.ExecuteQuery(@"select * from public.fn_customertest()"));
             Console.WriteLine("Infinite traffic is running. Press any key to exit...");
-            using (var timer = new Timer(Timer_Elapsed, null, 0, 60000))
+            TestScenarios();
+            using (var timer = new Timer(Timer_Elapsed, null, 30000, 30000))
             {
                 Console.ReadLine();
                 timer.Change(Timeout.Infinite, Timeout.Infinite);
             }
         }
 
+        private static void TestScenarios()
+        {
+            var scenarios = new ScenariosStatements();
+            List<Action> actions = new List<Action>();
+            actions.Add(scenarios.Scenario_Base1);
+            actions.Add(scenarios.Scenario_Base2);
+            actions.Add(scenarios.Scenario_Base3);
+            actions.Add(scenarios.Scenario_Base4);
+            actions.Add(scenarios.Scenario_Base5);
+            actions.Add(scenarios.Scenario_Base5);
+            actions.Add(scenarios.Scenario_Base5);
+            actions.Add(scenarios.Scenario_Base6);
+            actions.Add(scenarios.Scenario_Base7);
+            actions.Add(scenarios.Scenario_Base8InlineNoJoin);
+            actions.Add(scenarios.Scenario_Base8InlineNoJoin);
+            actions.Add(scenarios.Scenario_Base8InlineNoJoin);
+            actions.Add(scenarios.Scenario_Base8InlineNoJoin);
+            try
+            {
+                Console.WriteLine("INIT CYCLE " + DateTime.Now);
+                foreach (var a in actions)
+                {
+                    a.Invoke();
+                }
+                Console.WriteLine("------------------");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
         private static void Timer_Elapsed(object obj)
         {
             try

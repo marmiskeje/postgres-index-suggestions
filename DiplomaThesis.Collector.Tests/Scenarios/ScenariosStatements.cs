@@ -19,6 +19,15 @@ namespace DiplomaThesis.Collector.Tests.Scenarios
             get { return RepositoriesFactory.Instance.GetRawSqlExecutionRepository(); }
         }
 
+        public void ExecuteQuery(string query)
+        {
+            Console.WriteLine(query);
+            using (var scope = CreateDatabaseScope())
+            {
+                var result = Repository.ExecuteQuery<dynamic>(query);
+            }
+        }
+
         [Test]
         public void Scenario_Base1()
         {
@@ -92,6 +101,28 @@ namespace DiplomaThesis.Collector.Tests.Scenarios
         public void Scenario_Base8()
         {
             string query = "select * from vw_customers_history where h_date < '2018-1-1'";
+            Console.WriteLine(query);
+            using (var scope = CreateDatabaseScope())
+            {
+                var result = Repository.ExecuteQuery<dynamic>(query);
+            }
+        }
+        [Test]
+        public void Scenario_Base8Inline()
+        {
+            string query = "select distinct c.c_first, c.c_last, h.h_date, h.h_amount from public.history h inner join public.customer c on h.h_c_id = c.c_id and h.h_c_d_id = c.c_id and h.h_c_w_id = c.c_w_id where h.h_date < '2018-1-1'";
+
+            Console.WriteLine(query);
+            using (var scope = CreateDatabaseScope())
+            {
+                var result = Repository.ExecuteQuery<dynamic>(query);
+            }
+        }
+        [Test]
+        public void Scenario_Base8InlineNoJoin()
+        {
+            string query = "select h.h_date, h.h_amount from public.history h where h.h_date < '2018-1-1'";
+
             Console.WriteLine(query);
             using (var scope = CreateDatabaseScope())
             {

@@ -29,7 +29,7 @@ namespace DiplomaThesis.WorkloadAnalyzer
             var chainFactory = new CommandChainFactory(commandFactory);
             var requestsLoader = new AnalysisRequestsLoader(log, queue, dalRepositories.GetWorkloadAnalysesRepository(), chainFactory);
             requestsLoader.Start();
-            Console.WriteLine("Analyzer is running. Pres any key to exit...");
+            Console.WriteLine("Analyzer is running. Press any key to exit...");
             Console.ReadLine();
             requestsLoader.Stop();
             requestsLoader.Dispose();
